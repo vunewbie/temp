@@ -1,0 +1,131 @@
+.delivery-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.delivery-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.delivery-header h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.delivery-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.delivery-info, .delivery-steps, .delivery-cta {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 2rem;
+}
+
+.delivery-info h2, .delivery-steps h2, .delivery-cta h2 {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.delivery-list {
+  list-style: none;
+  padding: 0;
+}
+
+.delivery-list li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+  font-size: 1.1rem;
+  color: #444;
+}
+
+.delivery-list li:last-child {
+  border-bottom: none;
+}
+
+.delivery-list li strong {
+  color: #f97316;
+  margin-right: 0.5rem;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+}
+
+.step {
+  text-align: center;
+}
+
+.step-number {
+  width: 50px;
+  height: 50px;
+  background-color: #f97316;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0 auto 1rem;
+}
+
+.step h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 0.75rem;
+}
+
+.step p {
+  color: #666;
+  line-height: 1.5;
+}
+
+.delivery-cta {
+  text-align: center;
+}
+
+.delivery-cta p {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.order-button {
+  display: inline-block;
+  background-color: #f97316;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.order-button:hover {
+  background-color: #ea580c;
+}
+
+@media (max-width: 768px) {
+  .delivery-header h1 {
+    font-size: 2rem;
+  }
+  
+  .steps {
+    grid-template-columns: 1fr;
+  }
+} 

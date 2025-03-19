@@ -1,0 +1,171 @@
+.promotions-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.promotions-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.promotions-header h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.promotions-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.promotion-card {
+  display: flex;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.promotion-card:hover {
+  transform: translateY(-5px);
+}
+
+.promotion-image {
+  width: 200px;
+  background-color: #eee;
+}
+
+.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.placeholder::after {
+  content: "Hình ảnh khuyến mãi";
+}
+
+.promotion-content {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+.promotion-content h2 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.promotion-description {
+  color: #666;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.promotion-validity {
+  color: #f97316;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+.use-promotion-button {
+  background-color: #f97316;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.use-promotion-button:hover {
+  background-color: #ea580c;
+}
+
+.membership-section {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.membership-section h2 {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.membership-section p {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.membership-benefits {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.membership-benefits li {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-size: 1rem;
+  color: #444;
+  flex: 1;
+  min-width: 200px;
+}
+
+.register-button {
+  display: inline-block;
+  background-color: #f97316;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.register-button:hover {
+  background-color: #ea580c;
+}
+
+@media (max-width: 768px) {
+  .promotions-header h1 {
+    font-size: 2rem;
+  }
+  
+  .promotions-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .promotion-card {
+    flex-direction: column;
+  }
+  
+  .promotion-image {
+    width: 100%;
+    height: 200px;
+  }
+} 

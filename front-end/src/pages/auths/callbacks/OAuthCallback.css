@@ -1,0 +1,50 @@
+.oauth-callback-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 2rem;
+  text-align: center;
+}
+
+.oauth-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.oauth-spinner {
+  width: 60px;
+  height: 60px;
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #db0000;
+  animation: spin 1s ease-in-out infinite;
+}
+
+.oauth-error {
+  color: #db0000;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: rgba(219, 0, 0, 0.05);
+}
+
+.oauth-error h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.oauth-error p {
+  margin-bottom: 0.5rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+} 

@@ -1,0 +1,224 @@
+.terms-container {
+  padding: 4rem 0;
+  background: linear-gradient(135deg, #fff9c4, #ffecb3);
+  min-height: calc(100vh - 60px - 200px);
+}
+
+.terms-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 3rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-top: 5px solid #ffcc80;
+}
+
+.terms-title {
+  font-size: 2.5rem;
+  color: #1f2937;
+  margin-bottom: 0.8rem;
+  text-align: center;
+  position: relative;
+  padding-bottom: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.terms-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 4px;
+  background: linear-gradient(to right, #ffecb3, #ffcc80);
+  border-radius: 2px;
+}
+
+.terms-date {
+  text-align: center;
+  color: #666;
+  margin-bottom: 2.5rem;
+  font-style: italic;
+  font-size: 1.05rem;
+}
+
+.terms-section {
+  margin-bottom: 3rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 2rem;
+}
+
+.terms-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.terms-section-title {
+  font-size: 1.8rem;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  position: relative;
+  padding-left: 1rem;
+  border-left: 4px solid #ffcc80;
+}
+
+.terms-subsection-title {
+  font-size: 1.4rem;
+  color: #374151;
+  margin: 1.8rem 0 1.2rem;
+  font-weight: 600;
+}
+
+.terms-section p {
+  margin-bottom: 1.2rem;
+  line-height: 1.8;
+  color: #4b5563;
+  text-align: justify;
+  font-size: 1.05rem;
+}
+
+.terms-highlight {
+  color: #ea580c;
+  font-weight: 600;
+  background-color: rgba(255, 236, 179, 0.3);
+  padding: 0 0.3rem;
+  border-radius: 3px;
+}
+
+.terms-list {
+  padding-left: 2.5rem;
+  margin-bottom: 1.8rem;
+}
+
+.terms-list li {
+  margin-bottom: 1rem;
+  line-height: 1.7;
+  color: #4b5563;
+  font-size: 1.05rem;
+  position: relative;
+}
+
+.terms-list li::marker {
+  color: #ea580c;
+}
+
+@media (max-width: 992px) {
+  .terms-content {
+    max-width: 90%;
+    padding: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .terms-container {
+    padding: 2rem 0;
+  }
+  
+  .terms-content {
+    padding: 2rem;
+    margin: 0 1rem;
+  }
+  
+  .terms-title {
+    font-size: 2rem;
+  }
+  
+  .terms-section-title {
+    font-size: 1.5rem;
+  }
+  
+  .terms-subsection-title {
+    font-size: 1.3rem;
+  }
+  
+  .terms-section p,
+  .terms-list li {
+    font-size: 1rem;
+  }
+}
+
+.terms-footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed #e5e7eb;
+  text-align: center;
+  font-style: italic;
+  color: #6b7280;
+}
+
+.terms-link {
+  color: #ea580c;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-bottom: 1px dotted #ea580c;
+}
+
+.terms-link:hover {
+  color: #c2410c;
+  border-bottom: 1px solid #c2410c;
+}
+
+.terms-company-info {
+  background-color: rgba(255, 236, 179, 0.2);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #ffcc80;
+  margin: 1.5rem 0;
+}
+
+.terms-company-name {
+  font-size: 1.3rem;
+  color: #1f2937;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.terms-company-info p {
+  margin-bottom: 0.7rem;
+}
+
+.terms-company-info strong {
+  color: #ea580c;
+  font-weight: 600;
+}
+
+/* Membership Policy Styles */
+.membership-title {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  color: white;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.membership-title.bronze {
+  background: linear-gradient(135deg, #cd7f32, #a05a2c);
+  box-shadow: 0 4px 12px rgba(205, 127, 50, 0.3);
+}
+
+.membership-title.silver {
+  background: linear-gradient(135deg, #c0c0c0, #a8a8a8);
+  box-shadow: 0 4px 12px rgba(192, 192, 192, 0.3);
+}
+
+.membership-title.gold {
+  background: linear-gradient(135deg, #ffd700, #daa520);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .membership-title {
+    padding: 0.6rem 1rem;
+    font-size: 1.4rem;
+  }
+} 

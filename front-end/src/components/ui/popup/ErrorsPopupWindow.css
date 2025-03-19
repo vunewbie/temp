@@ -1,0 +1,96 @@
+.errors-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.errors-popup-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.errors-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.errors-popup-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #dc2626;
+    margin: 0;
+}
+
+.errors-popup-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.25rem;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.errors-popup-close:hover {
+    color: #dc2626;
+}
+
+.errors-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.error-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 0.75rem;
+    background-color: #fee2e2;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    color: #dc2626;
+    font-size: 0.9rem;
+}
+
+.error-item:last-child {
+    margin-bottom: 0;
+}
+
+.error-icon {
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+}
+
+.error-message {
+    flex-grow: 1;
+    line-height: 1.4;
+} 
