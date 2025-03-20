@@ -12,7 +12,7 @@ import verifyPicture1 from '../../../assets/auths/verify-picture1.jpg';
 import verifyPicture2 from '../../../assets/auths/verify-picture2.jpg';
 import verifyPicture3 from '../../../assets/auths/verify-picture3.jpg';
 // API
-import { registerVerifyOTP, resendRegisterOTP, forgotPasswordVerifyOTP, resendForgotPasswordOTP } from '../../../api/Auths';
+import { registerVerifyOTPAPI, resendRegisterOTPAPI, forgotPasswordVerifyOTPAPI, resendForgotPasswordOTPAPI } from '../../../api/AuthsAPI';
 // Utils
 import { translateErrorMessage } from '../../../utils/errorTranslator';
 
@@ -111,7 +111,7 @@ const VerifyOTP = () => {
 
       if (verifyType === 'register') {
         const hashedEmail = localStorage.getItem('hashedEmail');
-        response = await registerVerifyOTP(hashedEmail, otpCode);
+        response = await registerVerifyOTPAPI(hashedEmail, otpCode);
         
         localStorage.removeItem('hashedEmail');
         
@@ -122,7 +122,7 @@ const VerifyOTP = () => {
         }, 2000);
       } else {
         const username = localStorage.getItem('username');
-        response = await forgotPasswordVerifyOTP(username, otpCode);
+        response = await forgotPasswordVerifyOTPAPI(username, otpCode);
         
         localStorage.removeItem('username');
         localStorage.setItem('resetToken', response.data.reset_token);
@@ -163,10 +163,10 @@ const VerifyOTP = () => {
 
       if (verifyType === 'register') {
         const hashedEmail = localStorage.getItem('hashedEmail');
-        response = await resendRegisterOTP(hashedEmail);
+        response = await resendRegisterOTPAPI(hashedEmail);
       } else {
         const username = localStorage.getItem('username');
-        response = await resendForgotPasswordOTP(username);
+        response = await resendForgotPasswordOTPAPI(username);
       }
 
       setSuccessMessage(response.data.message || 'Đã gửi lại mã OTP. Vui lòng kiểm tra email của bạn.');

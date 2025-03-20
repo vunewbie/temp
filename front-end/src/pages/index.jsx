@@ -14,7 +14,6 @@ import MembershipPolicy from './terms/MembershipPolicy';
 import TermsOfUse from './terms/TermsOfUse';
 import PrivacyPolicy from './terms/PrivacyPolicy';
 import { GoogleCallback, FacebookCallback, GitHubCallback } from './auths/callbacks';
-import CustomerDashboard from './dashboard/customer/CustomerDashboard';
 
 export {
   Home,
@@ -34,6 +33,5 @@ export {
   PrivacyPolicy,
   GoogleCallback,
   FacebookCallback,
-  GitHubCallback,
-  CustomerDashboard
+  GitHubCallback
 }; 

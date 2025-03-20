@@ -19,7 +19,7 @@ import registerPicture1 from '../../../assets/auths/register-picture1.jpg';
 import registerPicture2 from '../../../assets/auths/register-picture2.jpg';
 import registerPicture3 from '../../../assets/auths/register-picture3.jpg';
 // API
-import { customerRegister } from '../../../api/Auths';
+import { customerRegisterAPI } from '../../../api/AuthsAPI';
 
 const Register = () => {
   const [authForm, setAuthForm] = useState({
@@ -122,7 +122,7 @@ const Register = () => {
 
     try {
       // API call
-      const response = await customerRegister(authForm.username, authForm.email, authForm.password);
+      const response = await customerRegisterAPI(authForm.username, authForm.email, authForm.password);
       
       // Save hashed email to localStorage
       localStorage.setItem('hashedEmail', response.data.hashed_email);

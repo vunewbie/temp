@@ -6,7 +6,8 @@ class IsOwner(BasePermission):
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False
-        
+        return True
+    
     def has_object_permission(self, request, view, obj):
         if isinstance(obj, User):
             return obj.id == request.user.id
@@ -36,12 +37,12 @@ class IsSameBranchManager(BasePermission):
             if manager.branch is None:
                 raise PermissionDenied('Bạn chưa được phân công chi nhánh')
             
-            request.branch = manager.branch
+            request.branch = manager.branch # request does not have branch attribute
             
             return True
         
         except Exception as e:
-            raise ValueError(f'Quyền truy cập bị từ chối: {str(e)}')
+            raise PermissionDenied(f'Quyền truy cập bị từ chối: {str(e)}')
         
     def has_object_permission(self, request, view, obj):
         if isinstance(obj, Employee):
@@ -73,7 +74,7 @@ class IsManager(BasePermission):
             return True
         
         except Exception as e:
-            raise ValueError(f'Quyền truy cập bị từ chối: {str(e)}')
+            raise PermissionDenied(f'Quyền truy cập bị từ chối: {str(e)}')
         
     def has_object_permission(self, request, view, obj):
         if isinstance(obj, Employee):
@@ -131,7 +132,7 @@ class IsEmployeeOrSameBranchManager(BasePermission):
         except Manager.DoesNotExist:
             raise PermissionDenied('Quản lý không tồn tại')
         except Exception as e:
-            raise ValueError(f'Quyền truy cập bị từ chối: {str(e)}')
+            raise PermissionDenied(f'Quyền truy cập bị từ chối: {str(e)}')
         
         return False
     

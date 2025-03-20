@@ -1,14 +1,14 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { checkAccessToken, getUserFromToken, setupAxiosInterceptors } from '../utils/tokenHelper';
+import { checkAccessToken, getUserFromToken } from '../utils/tokenHelper';
 import { 
-  normalLogin, 
+  normalLoginAPI, 
   logoutAPI, 
   refreshTokenAPI,
-  googleLogin,
-  facebookLogin,
-  gitHubLogin
-} from '../api/Auths';
+  googleLoginAPI,
+  facebookLoginAPI,
+  gitHubLoginAPI
+} from '../api/AuthsAPI';
 
 export const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
@@ -27,25 +27,19 @@ export const AuthProvider = ({ children }) => {
   
   const navigate = useNavigate();
 
-  // Thiết lập axios interceptors khi context được khởi tạo
-  useEffect(() => {
-    // Bỏ comment dòng dưới nếu bạn muốn di chuyển việc thiết lập interceptors từ main.jsx sang đây
-    // setupAxiosInterceptors(refreshToken);
-  }, []);
-
-  // Đăng nhập - quản lý API call và localStorage
+  // normal login api call and local storage
   const login = async (username, password) => {
     try {
-      const response = await normalLogin(username, password);
+      const response = await normalLoginAPI(username, password);
       
-      // Lưu token vào localStorage
+      // save token to local storage
       if (response.data) {
         localStorage.setItem('access_token', response.data.access);
         localStorage.setItem('refresh_token', response.data.refresh);
         localStorage.setItem('isLoggedIn', 'true');
       }
       
-      // Cập nhật trạng thái
+      // update state
       setIsAuthenticated(true);
       const userData = getUserFromToken();
       setUser(userData);
@@ -56,32 +50,31 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Đăng xuất - quản lý API call và localStorage
+  // logout - manage api call and local storage
   const logout = async () => {
     try {
       const refreshToken = localStorage.getItem('refresh_token');
       
-      // Chỉ gọi API logout nếu có refresh token
+      // only call logout api if there is refresh token
       if (refreshToken) {
         try {
           await logoutAPI(refreshToken);
         } catch (apiError) {
           console.error('Lỗi khi gọi API đăng xuất:', apiError);
-          // Tiếp tục thực hiện đăng xuất dù API có lỗi
         }
       }
     } catch (error) {
       console.error('Lỗi khi đăng xuất:', error);
     } finally {
-      // Luôn xóa dữ liệu đăng nhập khỏi localStorage, bất kể có lỗi hay không
+      // always clear login data from local storage, regardless of error
       clearAuthData();
       
-      // Chuyển hướng về trang đăng nhập
+      // redirect to login page
       navigate('/login');
     }
   };
 
-  // Làm mới token
+  // refresh token
   const refreshToken = async () => {
     try {
       const currentRefreshToken = localStorage.getItem('refresh_token');
@@ -91,18 +84,19 @@ export const AuthProvider = ({ children }) => {
       
       const response = await refreshTokenAPI(currentRefreshToken);
       
-      // Lưu token mới
+      // save new token
       localStorage.setItem('access_token', response.data.access);
       
       return response;
     } catch (error) {
-      // Xóa dữ liệu xác thực nếu không thể làm mới token
+      console.error("Lỗi khi làm mới token:", error);
+      // clear auth data if cannot refresh token
       clearAuthData();
       throw error;
     }
   };
 
-  // Hàm tiện ích để xóa dữ liệu xác thực
+  // clear auth data
   const clearAuthData = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
@@ -111,7 +105,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  // Cập nhật thông tin user
+  // update user info from token
   const updateUser = () => {
     const userData = getUserFromToken();
     if (userData) {
@@ -119,7 +113,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Lắng nghe sự kiện lỗi xác thực
+  // listen to auth error event
   useEffect(() => {
     const handleAuthError = () => {
       clearAuthData();
@@ -133,7 +127,7 @@ export const AuthProvider = ({ children }) => {
     };
   }, [navigate]);
 
-  // Kiểm tra token khi component mount
+  // check token when component mount
   useEffect(() => {
     const checkAuth = () => {
       const isValid = checkAccessToken();
@@ -147,19 +141,19 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  // Xử lý đăng nhập bằng Google OAuth2
+  // handle google login
   const handleGoogleLogin = async (code) => {
     try {
-      const response = await googleLogin(code);
+      const response = await googleLoginAPI(code);
       
-      // Lưu token vào localStorage
+      // save token to local storage
       if (response.data) {
         localStorage.setItem('access_token', response.data.access);
         localStorage.setItem('refresh_token', response.data.refresh);
         localStorage.setItem('isLoggedIn', 'true');
       }
       
-      // Cập nhật trạng thái
+      // update state
       setIsAuthenticated(true);
       const userData = getUserFromToken();
       setUser(userData);
@@ -170,19 +164,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Xử lý đăng nhập bằng Facebook OAuth2
+  // handle facebook login
   const handleFacebookLogin = async (code) => {
     try {
-      const response = await facebookLogin(code);
+      const response = await facebookLoginAPI(code);
       
-      // Lưu token vào localStorage
+      // save token to local storage
       if (response.data) {
         localStorage.setItem('access_token', response.data.access);
         localStorage.setItem('refresh_token', response.data.refresh);
         localStorage.setItem('isLoggedIn', 'true');
       }
       
-      // Cập nhật trạng thái
+      // update state
       setIsAuthenticated(true);
       const userData = getUserFromToken();
       setUser(userData);
@@ -193,12 +187,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Xử lý đăng nhập bằng GitHub OAuth2
+  // handle github login
   const handleGitHubLogin = async (code) => {
     try {
-      const response = await gitHubLogin(code);
+      const response = await gitHubLoginAPI(code);
       
-      // Lưu token vào localStorage
+      // save token to local storage
       if (response.data) {
         localStorage.setItem('access_token', response.data.access);
         localStorage.setItem('refresh_token', response.data.refresh);

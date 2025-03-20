@@ -1,7 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 
-// Biến để lưu trữ các interceptors ids
+// interceptors ids
 let requestInterceptorId = null;
 let responseInterceptorId = null;
 
@@ -45,7 +45,7 @@ export const getUserFromToken = () => {
     };
 };
 
-// Xóa các interceptors hiện tại nếu có
+// remove current interceptors if exist
 export const removeAxiosInterceptors = () => {
     if (requestInterceptorId !== null) {
         axios.interceptors.request.eject(requestInterceptorId);
@@ -59,15 +59,15 @@ export const removeAxiosInterceptors = () => {
 };
 
 export const setupAxiosInterceptors = (refreshTokenFn) => {
-    // Xóa các interceptors cũ trước khi thiết lập cái mới
+    // remove current interceptors before setting up new ones
     removeAxiosInterceptors();
     
-    // Kiểm tra nếu refreshTokenFn không phải là hàm
+    // check if refreshTokenFn is not a function
     if (typeof refreshTokenFn !== 'function') {
-        console.error('setupAxiosInterceptors: refreshTokenFn không phải là hàm. Interceptors sẽ không có khả năng refresh token.');
+        console.error('setupAxiosInterceptors: refreshTokenFn is not a function. Interceptors will not be able to refresh token.');
     }
     
-    // Request interceptor
+    // request interceptor
     requestInterceptorId = axios.interceptors.request.use(
         async (config) => {
             // these urls don't need to be intercepted
@@ -84,8 +84,15 @@ export const setupAxiosInterceptors = (refreshTokenFn) => {
                 const decoded = decodeToken(accessToken);
                 if (decoded && isExpiredToken(decoded) && typeof refreshTokenFn === 'function') {
                     try {
-                        const response = await refreshTokenFn();
+                        // use refresh token from localStorage to refresh token
+                        const refreshToken = localStorage.getItem("refresh_token");
+                        if (!refreshToken) {
+                            throw new Error('Không có refresh token trong localStorage');
+                        }
+                        
+                        const response = await refreshTokenFn(refreshToken);
                         accessToken = response.data.access;
+                        localStorage.setItem('access_token', accessToken);
                     } catch (error) {
                         console.error('Lỗi khi refresh token:', error);
                         window.dispatchEvent(new Event("auth_error"));
@@ -101,7 +108,7 @@ export const setupAxiosInterceptors = (refreshTokenFn) => {
         (error) => Promise.reject(error)
     );
     
-    // Response interceptor
+    // response interceptor
     responseInterceptorId = axios.interceptors.response.use(
         (response) => response,
         async (error) => {
@@ -112,9 +119,17 @@ export const setupAxiosInterceptors = (refreshTokenFn) => {
                 originalRequest._retry = true;
                 
                 try {
-                    const response = await refreshTokenFn();
+                    // use refresh token from localStorage to refresh token
+                    const refreshToken = localStorage.getItem("refresh_token");
+                    if (!refreshToken) {
+                        throw new Error('Không có refresh token trong localStorage');
+                    }
                     
-                    axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
+                    const response = await refreshTokenFn(refreshToken);
+                    
+                    const newAccessToken = response.data.access;
+                    localStorage.setItem('access_token', newAccessToken);
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
                     
                     return axios(originalRequest);
                 } catch (refreshError) {

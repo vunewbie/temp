@@ -1,10 +1,9 @@
 from establishments.models import Branch, Department
+from phonenumber_field.modelfields import PhoneNumberField
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.validators import MinValueValidator
-
-from phonenumber_field.modelfields import PhoneNumberField
 
 # custom user manager
 class CustomUserManager(BaseUserManager):
@@ -45,7 +44,7 @@ class User(AbstractUser):
     is_active = models.BooleanField(default=True)
     type = models.CharField(max_length=1, choices=[('A', 'Chủ sở hữu'), ('E', 'Nhân viên'), ('C', 'Khách hàng'), ('M', 'Quản lý')], default='C')
 
-    # removed fields
+    # removed default fields
     first_name = None
     last_name = None
 

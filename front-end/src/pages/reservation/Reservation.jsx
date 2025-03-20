@@ -24,11 +24,11 @@ const Reservation = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Ở đây sẽ gửi dữ liệu đến API
+    // set is submitted to true
     setIsSubmitted(true);
   };
 
-  // Tạo options cho số lượng khách
+  // create options for guest number
   const guestOptions = [];
   for (let i = 1; i <= 10; i++) {
     guestOptions.push(
@@ -37,7 +37,7 @@ const Reservation = () => {
   }
   guestOptions.push(<option key="more" value="more">Hơn 10 người</option>);
 
-  // Tạo options cho giờ đặt bàn
+  // create options for time
   const timeOptions = [];
   for (let hour = 10; hour <= 21; hour++) {
     timeOptions.push(
@@ -50,7 +50,7 @@ const Reservation = () => {
     }
   }
 
-  // Lấy ngày hiện tại để giới hạn ngày đặt bàn
+  // get today's date to limit booking date
   const today = new Date().toISOString().split('T')[0];
 
   return (

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
-import { getGoogleOAuth2Code, getFacebookOAuth2Code, getGitHubOAuth2Code } from "../../../api/Auths";
+import { getGoogleOAuth2CodeAPI, getFacebookOAuth2CodeAPI, getGitHubOAuth2CodeAPI } from "../../../api/AuthsAPI";
 import { useAuth } from '../../../context/AuthContext';
 import loginLogo from '../../../assets/logo.jpg';
 import usernameIcon from '../../../assets/auths/username-email-icon.svg';
@@ -91,15 +91,15 @@ const Login = () => {
   };
 
   const handleGoogleLoginClick = () => {
-    getGoogleOAuth2Code();
+    getGoogleOAuth2CodeAPI();
   };
 
   const handleFacebookLoginClick = () => {
-    getFacebookOAuth2Code();
+    getFacebookOAuth2CodeAPI();
   };
 
   const handleGitHubLoginClick = () => {
-    getGitHubOAuth2Code();
+    getGitHubOAuth2CodeAPI();
   };
 
   return (

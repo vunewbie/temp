@@ -12,6 +12,8 @@ import { Home, About, Menu, Reservation, Delivery, Promotions, Reviews, Login, C
 import { VerifyOTP, ForgotPassword, ResetPassword, GoogleCallback, FacebookCallback, GitHubCallback } from './pages';
 // Terms Pages
 import { TermsOfUse, PrivacyPolicy, MembershipPolicy } from './pages';
+// Dashboard Pages
+import CustomerDashboard from './pages/dashboard/customer/CustomerDashboard';
 // Auth Provider
 import { AuthProvider } from './context/AuthContext';
 // Scroll To Top
@@ -75,11 +77,11 @@ const App = () => {
                 } />
                 <Route path="/dashboard/customer" element={
                   <CustomerRoute>
-                    <div className="page-container">Bảng Điều Khiển Khách Hàng</div>
+                    <CustomerDashboard />
                   </CustomerRoute>
                 } />
                 
-                {/* Trang 404 */}
+                {/* 404 Page */}
                 <Route path="*" element={<div className="page-container text-center">Không tìm thấy trang</div>} />
               </Routes>
             </main>

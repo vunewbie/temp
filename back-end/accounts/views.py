@@ -65,6 +65,10 @@ class CustomerRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsOwner]
     authentication_classes = [CustomTokenAuthentication]
 
+    # put request is denied
+    def put(self, request, *args, **kwargs):
+        return Response({"detail": "Phương thức không được phép."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 # get all employees in the same branch as the manager and create new employee
 class EmployeeListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = EmployeeSerializer
@@ -130,6 +134,10 @@ class EmployeeRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView
     serializer_class = EmployeeSerializer
     permission_classes = [IsEmployeeOrSameBranchManager]
     authentication_classes = [CustomTokenAuthentication]
+
+    # put request is denied
+    def put(self, request, *args, **kwargs):
+        return Response({"detail": "Phương thức không được phép."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     
     # update employee information
     def patch(self, request, pk):
@@ -231,6 +239,10 @@ class ManagerRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView)
     serializer_class = ManagerSerializer
     permission_classes = [IsManagerOrAdmin]
     authentication_classes = [CustomTokenAuthentication]
+
+    # put request is denied
+    def put(self, request, *args, **kwargs):
+        return Response({"detail": "Phương thức không được phép."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     
     # update manager information
     def patch(self, request, pk):
@@ -420,8 +432,7 @@ class ResetPasswordAPIView(generics.GenericAPIView):
         if not reset_token or not new_password:
             return Response(
                 {"detail": "Vui lòng cung cấp token đặt lại mật khẩu và mật khẩu mới"}, 
-                status=status.HTTP_400_BAD_REQUEST
-            )
+                status=status.HTTP_400_BAD_REQUEST)
         
         try:
             # decode token without verifying signature
@@ -429,15 +440,13 @@ class ResetPasswordAPIView(generics.GenericAPIView):
                 reset_token,
                 settings.SECRET_KEY,
                 algorithms=["HS256"],
-                options={"verify_signature": True}
-            )
+                options={"verify_signature": True})
             
             # check token type
             if decoded_token.get('token_type') != 'password_reset':
                 return Response(
                     {"detail": "Token không hợp lệ cho việc đặt lại mật khẩu"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+                    status=status.HTTP_400_BAD_REQUEST)
             
             # get user_id from token
             user_id = decoded_token.get('user_id')
@@ -460,19 +469,16 @@ class ResetPasswordAPIView(generics.GenericAPIView):
             
             return Response({
                 "message": "Đặt lại mật khẩu thành công. Vui lòng đăng nhập với mật khẩu mới."
-                }, status=status.HTTP_200_OK
-            )
+                }, status=status.HTTP_200_OK)
             
         except (TokenError, jwt.PyJWTError) as e:
             return Response(
                 {"detail": f"Token không hợp lệ hoặc đã hết hạn: {str(e)}"}, 
-                status=status.HTTP_400_BAD_REQUEST
-            )
+                status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response(
                 {"detail": f"Lỗi khi đặt lại mật khẩu: {str(e)}"}, 
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # validate username -> send otp to email -> set new cache otp code
 class ResendForgotPasswordOTPAPIView(generics.GenericAPIView):
@@ -581,6 +587,7 @@ class GoogleLoginAPIView(generics.GenericAPIView):
         email = google_data.get("email")
         full_name = google_data.get("name")
         avatar_url = google_data.get("picture")
+        phone_number = google_data.get("phone_number")
 
         if not email:
             return Response({"error": "Không lấy được email"}, status=400)
@@ -598,8 +605,10 @@ class GoogleLoginAPIView(generics.GenericAPIView):
                 username=unique_username,
                 email=email,
                 full_name=full_name,
+                phone_number=phone_number,
                 password=None  # Social login users don't need a password
             )
+            customer = Customer.objects.create(user=user)
             created = True
 
         # set unusable password for social login and additional info
@@ -662,16 +671,15 @@ class FacebookLoginAPIView(generics.GenericAPIView):
         email = fb_data.get("email")
         full_name = fb_data.get("name")
         avatar_url = fb_data.get("picture", {}).get("data", {}).get("url")
+        phone_number = fb_data.get("phone_number")
 
         if not email:
             return Response({"error": "Không lấy được email"}, status=400)
 
-        # Check if user exists by email
         try:
             user = User.objects.get(email=email)
             created = False
         except User.DoesNotExist:
-            # Create a new user with a unique username
             base_username = email.split("@")[0]
             unique_username = generate_unique_username(base_username)
             
@@ -679,8 +687,10 @@ class FacebookLoginAPIView(generics.GenericAPIView):
                 username=unique_username,
                 email=email,
                 full_name=full_name,
-                password=None  # Social login users don't need a password
+                phone_number=phone_number,
+                password=None
             )
+            customer = Customer.objects.create(user=user)
             created = True
 
         if created:
@@ -772,6 +782,7 @@ class GitHubLoginAPIView(generics.GenericAPIView):
                 full_name=full_name,
                 password=None  # Social login users don't need a password
             )
+            customer = Customer.objects.create(user=user)
             created = True
 
         if created:

@@ -1,5 +1,5 @@
 from .models import *
-from .utils import validate_staff_info, hash_email, create_otp_code, register_data_cache, send_registration_otp_email
+from .utils import *
 
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -32,8 +32,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         username = attrs.get('username')
         password = attrs.get('password')
 
+        # check username and password
         self.user = self.authenticate_user(username, password)
-
         if not self.user:
             raise serializers.ValidationError('Tài khoản hoặc mật khẩu không đúng')
             
@@ -146,7 +146,8 @@ class UserSerializer(serializers.ModelSerializer):
     
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        
+
+        # Not display groups and user_permissions on admin page
         representation.pop('groups', None)
         representation.pop('user_permissions', None)
         
@@ -180,6 +181,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
         fields = ['user', 'resignation_date', 'address', 'department', 'branch']
 
     def validate(self, attrs):
+        # staff must have phone number,... while customer just needs email, username, password when registering
         if not self.partial:
             return validate_staff_info(attrs)
         

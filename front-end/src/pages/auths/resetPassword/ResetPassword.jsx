@@ -14,7 +14,7 @@ import resetPicture1 from '../../../assets/auths/reset-picture1.jpg';
 import resetPicture2 from '../../../assets/auths/reset-picture2.jpg';
 import resetPicture3 from '../../../assets/auths/reset-picture3.jpg';
 // API
-import { resetPassword } from '../../../api/Auths';
+import { resetPasswordAPI } from '../../../api/AuthsAPI';
 // Utils
 import { translateErrorMessage } from '../../../utils/errorTranslator';
 
@@ -116,7 +116,7 @@ const ResetPassword = () => {
 
     try {
       const resetToken = localStorage.getItem('resetToken');
-      const response = await resetPassword(resetToken, passwordForm.newPassword);
+      const response = await resetPasswordAPI(resetToken, passwordForm.newPassword);
 
       // Set success message
       setSuccessMessage(response.data.message || 'Mật khẩu đã được đặt lại thành công!');

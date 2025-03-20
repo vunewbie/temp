@@ -177,7 +177,7 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-# OAuth2 settings (Đã đổi tên từ SOCIAL_AUTH_ để phản ánh đúng hơn)
+# OAuth2 settings
 # google OAuth2 settings
 OAUTH2_GOOGLE_KEY = env("OAUTH2_GOOGLE_KEY")
 OAUTH2_GOOGLE_SECRET = env("OAUTH2_GOOGLE_SECRET")
@@ -204,14 +204,26 @@ OAUTH2_GITHUB_SCOPE = env.list("OAUTH2_GITHUB_SCOPE", default=[
 ])
 
 # CORS settings
-CORS_ALLOW_ALL_ORIGINS = True  # for development only
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = ["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"]
-CORS_ALLOW_HEADERS = ["*"]
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173", # React app
 ]
-# Cross-Origin-Opener-Policy (COOP) for cross-origin iframes
+"""
+COOP is a security policy that prevents documents from being embedded in other documents.
+We need to set it to None for OAuth2 to open popup windows.
+"""
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
 

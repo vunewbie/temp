@@ -9,7 +9,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from datetime import date, datetime, timedelta
 
-import hashlib, hmac, json, random, requests, os, uuid, time
+import hashlib, hmac, json, random, requests, uuid, time
 
 # staff must have full information
 def validate_staff_info(attrs):
@@ -26,7 +26,7 @@ def validate_staff_info(attrs):
     
     return attrs
 
-# hash email before storing in cache
+# hash email with secret key before storing in cache
 def hash_email(email):
     return hmac.new(settings.SECRET_KEY.encode(), email.encode(), hashlib.sha256).hexdigest()
 
@@ -36,7 +36,7 @@ def create_otp_code():
     otp = ''.join(random.choice(digits) for i in range(6))
     return otp
 
-# cache can not store datetime objects
+# cache can not store datetime objects -> turn datetime objects into string
 def convert_type(obj):
     if isinstance(obj, (date)):
         return obj.isoformat()
@@ -48,7 +48,11 @@ def register_data_cache(email, otp_code):
     cache_key = f"register_{hashed_email}"
     cache_data = {
         'otp_code': otp_code,
-        'email': email, # for resend email
+        """
+        if we don't store email in cache data, each time we resend otp code, 
+        we need to access database -> hash each email -> compare with hashed email in cache -> slow
+        """
+        'email': email,
         'last_sent': datetime.now().isoformat()
     }
 
@@ -130,7 +134,8 @@ def resend_registration_otp(hashed_email):
     cache_data = cache.get(cache_key)
 
     if not cache_data:
-        raise ValueError("Mã OTP không tồn tại hoặc đã hết hạn")
+        raise ValueError("Tài khoản không tồn tại hoặc quá trình xác thực đã quá 5 phút.\
+                         Vui lòng đăng nhập bằng tài khoản đã tạo để tiến hành xác thực.")
     
     cache_data = json.loads(cache_data)
     last_sent = datetime.fromisoformat(cache_data['last_sent'])
@@ -150,6 +155,10 @@ def resend_registration_otp(hashed_email):
 
 # store otp code for forgot password request in cache
 def forgot_password_data_cache(username, otp_code):
+    """
+    username does not need to be protected -> no need to hash it
+    do not need to use token because username is used for security
+    """
     cache_key = f"forgot_password_{username}"
     cache_data = {
         "otp_code": otp_code,
@@ -235,7 +244,8 @@ def resend_forgot_password_otp_email(username):
     print(cache_data)
 
     if not cache_data:
-        return ValueError("Mã OTP đã hết hạn hoặc không tồn tại")
+        raise ValueError("Tài khoản không tồn tại hoặc quá trình xác thực đã quá 5 phút.\
+                         Vui lòng về trang đăng nhập và chọn 'Quên mật khẩu' lần nữa.")
     
     cache_data = json.loads(cache_data)
     last_sent = datetime.fromisoformat(cache_data['last_sent'])
@@ -252,6 +262,7 @@ def resend_forgot_password_otp_email(username):
 
     cache.set(cache_key, json.dumps(cache_data, default=convert_type), timeout=300)
 
+    # username in cache is not hashed -> can compare directly -> can accept this approach
     user = User.objects.get(username=username)
     send_forgot_password_otp_email(username, user.email, new_otp_code)
 
@@ -273,8 +284,9 @@ def download_and_save_avatar(avatar_url, email):
 
             # generate unique filename and save avatar to media folder
             filename = f"{uuid.uuid4().hex}_{email.split('@')[0]}.{file_extension}"
-
-            file_path = os.path.join("avatars", filename)
+            
+            # use "/" directly
+            file_path = f"avatars/{filename}"
 
             image_content = ContentFile(response.content)
             default_storage.save(file_path, image_content)

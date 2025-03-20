@@ -3,10 +3,10 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { setupAxiosInterceptors } from './utils/tokenHelper'
-import { refreshTokenAPI } from './api/Auths'
+import { refreshTokenAPI } from './api/AuthsAPI'
 
-// Thiết lập axios interceptors khi ứng dụng khởi chạy
-// Truyền hàm refreshTokenAPI vào để có thể làm mới token khi cần
+// setup axios interceptors when app starts
+// pass refreshTokenAPI to be able to refresh token when needed
 setupAxiosInterceptors(refreshTokenAPI);
 
 createRoot(document.getElementById('root')).render(

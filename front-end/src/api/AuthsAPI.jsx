@@ -4,7 +4,7 @@ import { translateErrorMessage } from "../utils/errorTranslator";
 const API_URL = import.meta.env.VITE_BACKEND_API;
 
 // normal login
-export const normalLogin = async (username, password) => {
+export const normalLoginAPI = async (username, password) => {
     try {
         const response = await axios.post(`${API_URL}/accounts/token`, { username, password });
         return response;
@@ -14,10 +14,10 @@ export const normalLogin = async (username, password) => {
 };
 
 // Customer Register
-export const customerRegister = async (username, email, password) => {
+export const customerRegisterAPI = async (username, email, password) => {
     try {
         const response = await axios.post(`${API_URL}/accounts/customers`, {
-            user: {username, email, password}
+            user: { username, email, password }
         });
 
         return response;
@@ -51,15 +51,13 @@ export const customerRegister = async (username, email, password) => {
 };
 
 // Register Verify OTP
-export const registerVerifyOTP = async (hashedEmail, otpCode) => {
+export const registerVerifyOTPAPI = async (hashedEmail, otpCode) => {
   try {
     const response = await axios.post(
-      `${import.meta.env.VITE_BACKEND_API}/accounts/verify-otp/register`,
-      {
-        hashed_email: hashedEmail,
-        otp_code: otpCode
-      }
+      `${API_URL}/accounts/verify-otp/register`,
+       { hashed_email: hashedEmail, otp_code: otpCode }
     );
+
     return response;
   } catch (error) {
     throw error;
@@ -67,9 +65,13 @@ export const registerVerifyOTP = async (hashedEmail, otpCode) => {
 };
 
 // Resend Register OTP
-export const resendRegisterOTP = async (hashedEmail) => {
+export const resendRegisterOTPAPI = async (hashedEmail) => {
     try {
-        const response = await axios.post(`${API_URL}/accounts/resend-otp/register`, { hashed_email: hashedEmail });
+        const response = await axios.post(
+            `${API_URL}/accounts/resend-otp/register`,
+             { hashed_email: hashedEmail }
+        );
+
         return response;
     } catch (error) {
         throw error;
@@ -77,9 +79,13 @@ export const resendRegisterOTP = async (hashedEmail) => {
 };
 
 // Forgot Password
-export const forgotPassword = async (usernameOrEmail) => {
+export const forgotPasswordAPI = async (usernameOrEmail) => {
     try {
-        const response = await axios.post(`${API_URL}/accounts/forgot-password`, {username_or_email: usernameOrEmail});
+        const response = await axios.post(
+            `${API_URL}/accounts/forgot-password`,
+             { username_or_email: usernameOrEmail }
+        );
+
         return response;
     } catch (error) {
         throw error;
@@ -87,9 +93,13 @@ export const forgotPassword = async (usernameOrEmail) => {
 }
 
 // Forgot Password Verify OTP
-export const forgotPasswordVerifyOTP = async (username, otpCode) => {
+export const forgotPasswordVerifyOTPAPI = async (username, otpCode) => {
     try {
-        const response = await axios.post(`${API_URL}/accounts/verify-otp/forgot-password`, {username: username, otp_code: otpCode});
+        const response = await axios.post(
+            `${API_URL}/accounts/verify-otp/forgot-password`,
+             {username: username, otp_code: otpCode}
+        );
+
         return response;
     } catch (error) {
         throw error;
@@ -97,9 +107,13 @@ export const forgotPasswordVerifyOTP = async (username, otpCode) => {
 }
 
 // Resend Forgot Password OTP
-export const resendForgotPasswordOTP = async (username) => {
+export const resendForgotPasswordOTPAPI = async (username) => {
     try {
-        const response = await axios.post(`${API_URL}/accounts/resend-otp/forgot-password`, {username: username});
+        const response = await axios.post(
+            `${API_URL}/accounts/resend-otp/forgot-password`,
+             { username: username }
+        );
+
         return response;
     } catch (error) {
         throw error;
@@ -107,9 +121,13 @@ export const resendForgotPasswordOTP = async (username) => {
 }
 
 // Reset Password
-export const resetPassword = async (resetToken, newPassword) => {
+export const resetPasswordAPI = async (resetToken, newPassword) => {
     try {
-        const response = await axios.post(`${API_URL}/accounts/reset-password`, { reset_token: resetToken, new_password: newPassword });
+        const response = await axios.post(
+            `${API_URL}/accounts/reset-password`,
+             { reset_token: resetToken, new_password: newPassword }
+        );
+        
         return response;
     } catch (error) {
         throw error;
@@ -117,7 +135,7 @@ export const resetPassword = async (resetToken, newPassword) => {
 }
 
 // Google OAuth2
-export const getGoogleOAuth2Code = () => {
+export const getGoogleOAuth2CodeAPI = () => {
     try {
         const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
         const redirectUri = import.meta.env.VITE_GOOGLE_REDIRECT_URI;
@@ -130,7 +148,7 @@ export const getGoogleOAuth2Code = () => {
     }
 };
 
-export const googleLogin = async (code) => {
+export const googleLoginAPI = async (code) => {
   try {
     const response = await axios.post(`${API_URL}/accounts/auth/google/login/`, { code });
     return response;
@@ -140,7 +158,7 @@ export const googleLogin = async (code) => {
 };
 
 // Facebook OAuth2
-export const getFacebookOAuth2Code = () => {
+export const getFacebookOAuth2CodeAPI = () => {
     try {
         const clientId = import.meta.env.VITE_FACEBOOK_APP_ID;
         const redirectUri = import.meta.env.VITE_FACEBOOK_REDIRECT_URI;
@@ -153,7 +171,7 @@ export const getFacebookOAuth2Code = () => {
     }
 };
 
-export const facebookLogin = async (code) => {
+export const facebookLoginAPI = async (code) => {
   try {
     const response = await axios.post(`${API_URL}/accounts/auth/facebook/login/`, { code });
     return response;
@@ -163,7 +181,7 @@ export const facebookLogin = async (code) => {
 };
 
 // GitHub OAuth2
-export const getGitHubOAuth2Code = () => {
+export const getGitHubOAuth2CodeAPI = () => {
     try {
         const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
         const redirectUri = import.meta.env.VITE_GITHUB_REDIRECT_URI;
@@ -176,7 +194,7 @@ export const getGitHubOAuth2Code = () => {
     }
 };
 
-export const gitHubLogin = async (code) => {
+export const gitHubLoginAPI = async (code) => {
   try {
     const response = await axios.post(`${API_URL}/accounts/auth/github/login/`, { code });
     return response;
@@ -202,11 +220,28 @@ export const refreshTokenAPI = async (refreshToken) => {
     try {
         const response = await axios.post(`${API_URL}/accounts/token/refresh`, {
             refresh: refreshToken
+        }, {
+            withCredentials: true
         });
         return response;
     } catch (error) {
+        console.error("Lỗi khi refresh token:", error);
         throw error;
     }
 }
 
-
+// Change Password
+export const changePasswordAPI = async (oldPassword, newPassword) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/accounts/change-password/`,
+       { old_password: oldPassword, new_password: newPassword },
+       { headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}`}, 
+       withCredentials: true
+    });
+    
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}; 

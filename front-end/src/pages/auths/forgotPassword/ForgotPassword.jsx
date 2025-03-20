@@ -12,7 +12,7 @@ import forgotPicture1 from '../../../assets/auths/forgot-picture1.jpg';
 import forgotPicture2 from '../../../assets/auths/forgot-picture2.jpg';
 import forgotPicture3 from '../../../assets/auths/forgot-picture3.jpg';
 // API
-import { forgotPassword } from '../../../api/Auths';
+import { forgotPasswordAPI } from '../../../api/AuthsAPI';
 // Utils
 import { translateErrorMessage } from '../../../utils/errorTranslator';
 
@@ -63,7 +63,7 @@ const ForgotPassword = () => {
     setIsLoading(true);
 
     try {
-      const response = await forgotPassword(usernameOrEmail);
+      const response = await forgotPasswordAPI(usernameOrEmail);
 
       // Lưu thông tin username vào localStorage để sử dụng cho xác thực OTP
       if (response.data && response.data.username) {
