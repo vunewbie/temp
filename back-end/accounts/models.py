@@ -73,7 +73,7 @@ class Manager(models.Model):
 
     resignation_date = models.DateField(null=True, default=None)
     address = models.CharField(max_length=300)
-    year_of_experience = models.IntegerField(validators=[MinValueValidator(0)])
+    years_of_experience = models.IntegerField(validators=[MinValueValidator(0)])
     salary = models.IntegerField(validators=[MinValueValidator(0)])
 
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)

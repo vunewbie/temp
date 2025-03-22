@@ -83,6 +83,7 @@ const ForgotPassword = () => {
       if (error.response && error.response.data) {
         if (error.response.data.detail) {
           errorMessage = translateErrorMessage(error.response.data.detail);
+          console.log(errorMessage);
         } else if (error.response.data.message) {
           errorMessage = translateErrorMessage(error.response.data.message);
         }

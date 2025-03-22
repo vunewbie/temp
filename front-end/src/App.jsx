@@ -14,6 +14,9 @@ import { VerifyOTP, ForgotPassword, ResetPassword, GoogleCallback, FacebookCallb
 import { TermsOfUse, PrivacyPolicy, MembershipPolicy } from './pages';
 // Dashboard Pages
 import CustomerDashboard from './pages/dashboard/customer/CustomerDashboard';
+import ManagerDashboard from './pages/dashboard/manager/ManagerDashboard';
+import EmployeeDashboard from './pages/dashboard/employee/EmployeeDashboard';
+import AdminDashboard from './pages/dashboard/admin/AdminDashboard';
 // Auth Provider
 import { AuthProvider } from './context/AuthContext';
 // Scroll To Top
@@ -62,17 +65,17 @@ const App = () => {
                 {/* Dashboard Pages */}
                 <Route path="/dashboard/admin" element={
                   <AdminRoute>
-                    <div className="page-container">Bảng Điều Khiển Admin</div>
+                    <AdminDashboard />
                   </AdminRoute>
                 } />
                 <Route path="/dashboard/manager" element={
                   <ManagerRoute>
-                    <div className="page-container">Bảng Điều Khiển Quản Lý</div>
+                    <ManagerDashboard />
                   </ManagerRoute>
                 } />
                 <Route path="/dashboard/employee" element={
                   <EmployeeRoute>
-                    <div className="page-container">Bảng Điều Khiển Nhân Viên</div>
+                    <EmployeeDashboard />
                   </EmployeeRoute>
                 } />
                 <Route path="/dashboard/customer" element={

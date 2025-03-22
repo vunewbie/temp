@@ -5,16 +5,27 @@ import { translateErrorMessage } from '../../utils/errorTranslator';
 import './UserInfo.css';
 
 // Import icons
-import usernameIcon from '../../assets/dashboard/customer/username-icon.svg';
-import emailIcon from '../../assets/dashboard/customer/email-icon.svg';
-import phoneNumberIcon from '../../assets/dashboard/customer/phone-number-icon.svg';
-import citizenIdIcon from '../../assets/dashboard/customer/citizen-id-icon.svg';
-import fullnameIcon from '../../assets/dashboard/customer/fullname-icon.svg';
-import genderIcon from '../../assets/dashboard/customer/gender-icon.svg';
-import dateOfBirthIcon from '../../assets/dashboard/customer/date-of-birth-icon.svg';
-import dateJoinedIcon from '../../assets/dashboard/customer/date-joined-icon.svg';
+import usernameIcon from '../../assets/dashboard/username-icon.svg';
+import emailIcon from '../../assets/dashboard/email-icon.svg';
+import phoneNumberIcon from '../../assets/dashboard/phone-number-icon.svg';
+import citizenIdIcon from '../../assets/dashboard/citizen-id-icon.svg';
+import fullnameIcon from '../../assets/dashboard/fullname-icon.svg';
+import genderIcon from '../../assets/dashboard/gender-icon.svg';
+import dateOfBirthIcon from '../../assets/dashboard/date-of-birth-icon.svg';
+import dateJoinedIcon from '../../assets/dashboard/date-joined-icon.svg';
+
+// Customer-specific icons
 import cumulativePointIcon from '../../assets/dashboard/customer/cumulative-point-icon.svg';
 import tierIcon from '../../assets/dashboard/customer/tier-icon.svg';
+
+// Manager-specific icons
+import addressIcon from '../../assets/dashboard/manager/address-icon.svg';
+import branchIcon from '../../assets/dashboard/manager/branch-icon.svg';
+import yearsOfExperienceIcon from '../../assets/dashboard/manager/years-of-experience-icon.svg';
+import salaryIcon from '../../assets/dashboard/manager/salary-icon.svg';
+
+// Employee-specific icons
+import departmentIcon from '../../assets/dashboard/employee/department-icon.svg';
 
 const UserInfo = () => {
   const { user } = useAuth();
@@ -28,7 +39,11 @@ const UserInfo = () => {
     gender: 'M',
     date_of_birth: '',
     avatar: null,
-    joinDate: ''
+    joinDate: '',
+    address: '',
+    branch: '',
+    year_of_experience: '',
+    salary: ''
   });
   const [customerData, setCustomerData] = useState({
     cumulative_points: 0,
@@ -49,8 +64,13 @@ const UserInfo = () => {
     gender: 'M',
     date_of_birth: '',
     avatar: null,
-    joinDate: ''
+    joinDate: '',
+    address: '',
+    branch: '',
+    year_of_experience: '',
+    salary: ''
   });
+  const [branches, setBranches] = useState([]);
 
   // Format phone number for display
   const formatPhoneNumberForDisplay = (phoneNumber) => {
@@ -130,7 +150,11 @@ const UserInfo = () => {
                   new Date(userInfo.date_of_birth).toISOString().split('T')[0] : '',
                 avatar: userInfo.avatar || null,
                 joinDate: userInfo.date_joined ? 
-                  new Date(userInfo.date_joined).toISOString().split('T')[0] : ''
+                  new Date(userInfo.date_joined).toISOString().split('T')[0] : '',
+                address: userInfo.address || '',
+                branch: userInfo.branch || '',
+                year_of_experience: userInfo.year_of_experience || '',
+                salary: userInfo.salary || ''
               };
               
               setUserData(newUserData);
@@ -255,6 +279,54 @@ const UserInfo = () => {
         
         // Update initial data
         setInitialUserData(userData);
+      } else if (user && user.type === 'E') {
+        // If employee, call API to update employee info
+        const dataToUpdate = { user: {} };
+        
+        // Process phone number according to international format
+        if (userData.phone_number !== initialUserData.phone_number) {
+          const formattedPhoneNumber = formatPhoneNumberForAPI(userData.phone_number);
+          console.log('Số điện thoại sau khi format:', formattedPhoneNumber);
+          dataToUpdate.user.phone_number = formattedPhoneNumber;
+        }
+        
+        if (userData.citizen_id !== initialUserData.citizen_id) {
+          dataToUpdate.user.citizen_id = userData.citizen_id.trim() !== '' ? 
+            userData.citizen_id : null;
+        }
+        
+        if (userData.full_name !== initialUserData.full_name) {
+          dataToUpdate.user.full_name = userData.full_name.trim() !== '' ? 
+            userData.full_name : null;
+        }
+        
+        if (userData.gender !== initialUserData.gender) {
+          dataToUpdate.user.gender = userData.gender || null;
+        }
+        
+        if (userData.date_of_birth !== initialUserData.date_of_birth) {
+          dataToUpdate.user.date_of_birth = userData.date_of_birth || null;
+        }
+        
+        // Only update email if changed
+        if (userData.email !== initialUserData.email) {
+          dataToUpdate.user.email = userData.email || null;
+        }
+
+        // Check if there is any data to update (excluding avatar)
+        if (Object.keys(dataToUpdate.user).length > 0) {
+          // Call API to update info
+          await updateCustomerInfoAPI(user.id, dataToUpdate);
+        }
+
+        setSuccess('Cập nhật thông tin thành công!');
+        setIsEditing(false);
+        
+        // Update initial data
+        setInitialUserData(userData);
+      } else {
+        // Currently only supports customer and employee info
+        console.warn('UserInfo currently only supports customer and employee info');
       }
     } catch (error) {
       console.error('Lỗi khi cập nhật thông tin:', error);
@@ -298,7 +370,7 @@ const UserInfo = () => {
               </label>
               <input 
                 type="text" 
-                value={customerData.cumulative_points} 
+                value={customerData.cumulative_points || 0} 
                 disabled 
               />
             </div>
@@ -311,7 +383,9 @@ const UserInfo = () => {
               </label>
               <input 
                 type="text" 
-                value={getTierDisplayName(customerData.tier)} 
+                value={customerData.tier === 'B' ? 'Đồng' : 
+                       customerData.tier === 'S' ? 'Bạc' : 
+                       customerData.tier === 'G' ? 'Vàng' : ''} 
                 disabled 
               />
             </div>
@@ -322,23 +396,39 @@ const UserInfo = () => {
           <>
             <div className="form-row">
               <div className="form-group">
-                <label>Chi nhánh:</label>
+                <label>
+                  <span className="form-icon-wrapper">
+                    <img src={branchIcon} alt="Chi nhánh" className="form-field-icon" />
+                    Chi nhánh:
+                  </span>
+                </label>
                 <input type="text" value="Chi nhánh Hà Nội" disabled />
               </div>
               <div className="form-group">
-                <label>Phòng ban:</label>
+                <label>
+                  <span className="form-icon-wrapper">
+                    <img src={departmentIcon} alt="Phòng ban" className="form-field-icon" />
+                    Phòng ban:
+                  </span>
+                </label>
                 <input type="text" value="Nhân viên phục vụ" disabled />
               </div>
             </div>
             <div className="form-row">
               <div className="form-group full-width">
-                <label>Địa chỉ:</label>
+                <label>
+                  <span className="form-icon-wrapper">
+                    <img src={addressIcon} alt="Địa chỉ" className="form-field-icon" />
+                    Địa chỉ:
+                  </span>
+                </label>
                 <input 
                   type="text" 
                   name="address" 
                   value={userData.address || ''} 
                   onChange={handleChange}
                   disabled={!isEditing}
+                  placeholder="Nhập địa chỉ"
                 />
               </div>
             </div>
@@ -349,29 +439,65 @@ const UserInfo = () => {
           <>
             <div className="form-row">
               <div className="form-group">
-                <label>Chi nhánh quản lý:</label>
-                <input type="text" value="Chi nhánh Hà Nội" disabled />
-              </div>
-              <div className="form-group">
-                <label>Năm kinh nghiệm:</label>
-                <input 
-                  type="number" 
-                  name="year_of_experience" 
-                  value={userData.year_of_experience || ''} 
+                <label>
+                  <span className="form-icon-wrapper">
+                    <img src={addressIcon} alt="Địa chỉ" className="form-field-icon" />
+                    Địa chỉ:
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  name="address"
+                  value={userData.address || ''}
                   onChange={handleChange}
                   disabled={!isEditing}
+                  placeholder="Nhập địa chỉ"
+                />
+              </div>
+              <div className="form-group">
+                <label>
+                  <span className="form-icon-wrapper">
+                    <img src={branchIcon} alt="Chi nhánh" className="form-field-icon" />
+                    Chi nhánh:
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  value={branches.find(b => b.id === userData.branch)?.name || 'Chưa có chi nhánh'}
+                  disabled
                 />
               </div>
             </div>
+            
             <div className="form-row">
-              <div className="form-group full-width">
-                <label>Địa chỉ:</label>
-                <input 
-                  type="text" 
-                  name="address" 
-                  value={userData.address || ''} 
+              <div className="form-group">
+                <label>
+                  <span className="form-icon-wrapper">
+                    <img src={yearsOfExperienceIcon} alt="Năm kinh nghiệm" className="form-field-icon" />
+                    Năm kinh nghiệm:
+                  </span>
+                </label>
+                <input
+                  type="number"
+                  name="year_of_experience"
+                  value={userData.year_of_experience || 0}
                   onChange={handleChange}
                   disabled={!isEditing}
+                  min="0"
+                  placeholder="Nhập số năm kinh nghiệm"
+                />
+              </div>
+              <div className="form-group">
+                <label>
+                  <span className="form-icon-wrapper">
+                    <img src={salaryIcon} alt="Lương" className="form-field-icon" />
+                    Lương:
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  value={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(userData.salary || 0)}
+                  disabled
                 />
               </div>
             </div>

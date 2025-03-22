@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './ChangePassword.css';
-import eyeOffIcon from '../../assets/dashboard/customer/eye-off-icon.svg';
-import eyeOnIcon from '../../assets/dashboard/customer/eye-on-icon.svg';
+import eyeOffIcon from '../../assets/dashboard/eye-off-icon.svg';
+import eyeOnIcon from '../../assets/dashboard/eye-on-icon.svg';
 import { changePasswordAPI } from '../../api/AuthsAPI';
 import { translateErrorMessage } from '../../utils/errorTranslator';
 

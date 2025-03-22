@@ -485,7 +485,8 @@
 .form-group input:disabled,
 .form-group select:disabled {
   background-color: #f3f4f6;
-  color: #9ca3af;
+  color: #4b5563;
+  opacity: 0.85;
   cursor: not-allowed;
   border-color: #e5e7eb;
 }

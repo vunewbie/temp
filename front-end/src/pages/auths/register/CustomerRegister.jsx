@@ -20,6 +20,7 @@ import registerPicture2 from '../../../assets/auths/register-picture2.jpg';
 import registerPicture3 from '../../../assets/auths/register-picture3.jpg';
 // API
 import { customerRegisterAPI } from '../../../api/AuthsAPI';
+import { getGoogleOAuth2CodeAPI, getFacebookOAuth2CodeAPI, getGitHubOAuth2CodeAPI } from "../../../api/AuthsAPI";
 
 const Register = () => {
   const [authForm, setAuthForm] = useState({
@@ -152,6 +153,18 @@ const Register = () => {
     navigate('/login');
   };
 
+  const handleGoogleLoginClick = () => {
+    getGoogleOAuth2CodeAPI();
+  };
+
+  const handleFacebookLoginClick = () => {
+    getFacebookOAuth2CodeAPI();
+  };
+
+  const handleGitHubLoginClick = () => {
+    getGitHubOAuth2CodeAPI();
+  };
+
   return (
     <div className="auth-register-container">
       <div className="auth-register-wrapper">
@@ -253,17 +266,17 @@ const Register = () => {
             </div>
             
             <div className="auth-social-login">
-              <button type="button" className="auth-social-button">
+              <button type="button" className="auth-social-button" onClick={handleGoogleLoginClick}>
                 <img src={googleIcon} alt="Google" className="auth-social-icon" />
                 <span>Google</span>
               </button>
               
-              <button type="button" className="auth-social-button">
+              <button type="button" className="auth-social-button" onClick={handleFacebookLoginClick}>
                 <img src={facebookIcon} alt="Facebook" className="auth-social-icon" />
                 <span>Facebook</span>
               </button>
               
-              <button type="button" className="auth-social-button">
+              <button type="button" className="auth-social-button" onClick={handleGitHubLoginClick}>
                 <img src={githubIcon} alt="GitHub" className="auth-social-icon" />
                 <span>GitHub</span>
               </button>
