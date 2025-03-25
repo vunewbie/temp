@@ -1,33 +1,27 @@
-// Libraries
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-// CSS
 import './ForgotPassword.css';
-// Components
 import { ErrorsPopupWindow, SuccessfulPopupWindow } from '../../../components';
-// Assets
-import loginLogo from '../../../assets/logo.jpg';
-import emailIcon from '../../../assets/auths/username-email-icon.svg';
-import forgotPicture1 from '../../../assets/auths/forgot-picture1.jpg';
-import forgotPicture2 from '../../../assets/auths/forgot-picture2.jpg';
-import forgotPicture3 from '../../../assets/auths/forgot-picture3.jpg';
-// API
-import { forgotPasswordAPI } from '../../../api/AuthsAPI';
-// Utils
-import { translateErrorMessage } from '../../../utils/errorTranslator';
+import { 
+  logo, 
+  authUsernameEmailIcon, 
+  forgotPicture1, 
+  forgotPicture2, 
+  forgotPicture3 
+} from '../../../assets';
+import { forgotPasswordAPI } from '../../../api';
+import { translateErrorMessage } from '../../../utils';
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
-  const [usernameOrEmail, setUsernameOrEmail] = useState(''); // username hoặc email
+  const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState([]);
   const [successMessage, setSuccessMessage] = useState('');
   const [currentPicture, setCurrentPicture] = useState(0);
   
-  // Các hình nền
   const pictures = [forgotPicture1, forgotPicture2, forgotPicture3];
 
-  // Slideshow effect
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentPicture((prev) => (prev + 1) % pictures.length);
@@ -35,7 +29,6 @@ const ForgotPassword = () => {
     return () => clearInterval(interval);
   }, [pictures.length]);
 
-  // Validate usernameOrEmail
   const validateInput = () => {
     const newErrors = [];
     
@@ -51,11 +44,9 @@ const ForgotPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Clear former errors
     setErrors([]);
     setSuccessMessage('');
     
-    // Check input
     if (!validateInput()) {
       return;
     }
@@ -65,15 +56,12 @@ const ForgotPassword = () => {
     try {
       const response = await forgotPasswordAPI(usernameOrEmail);
 
-      // Lưu thông tin username vào localStorage để sử dụng cho xác thực OTP
       if (response.data && response.data.username) {
         localStorage.setItem('username', response.data.username);
       }
 
-      // Set success message
       setSuccessMessage(response.data.message);
 
-      // Chuyển hướng sau 2 giây
       setTimeout(() => {
         navigate('/verify-otp?type=forgot_password');
       }, 2000);
@@ -110,7 +98,7 @@ const ForgotPassword = () => {
       <div className="auth-forgot-password-wrapper">
         <div className="auth-forgot-password-form-container">
           <div className="auth-forgot-password-logo">
-            <img src={loginLogo} alt="Logo" className="auth-forgot-password-logo-img" />
+            <img src={logo} alt="Logo" className="auth-forgot-password-logo-img" />
           </div>
           
           <h1 className="auth-forgot-password-title">Quên Mật Khẩu</h1>
@@ -119,7 +107,7 @@ const ForgotPassword = () => {
           <form className="auth-forgot-password-form" onSubmit={handleSubmit}>
             <div className="auth-form-group">
               <div className="auth-input-container">
-                <img src={emailIcon} alt="Email" className="auth-input-icon" />
+                <img src={authUsernameEmailIcon} alt="Email" className="auth-input-icon" />
                 <input
                   type="text"
                   id="usernameOrEmail"

@@ -1,14 +1,13 @@
-// Libraries
 import React from 'react';
 import { Link } from 'react-router-dom';
-// Styles
 import './Footer.css';
-// Icons
-import facebookIcon from '../../../assets/footer/facebook-icon.svg';
-import instagramIcon from '../../../assets/footer/instagram-icon.svg';
-import tiktokIcon from '../../../assets/footer/tiktok-icon.svg';
-import youtubeIcon from '../../../assets/footer/youtube-icon.svg';
-import boCongThuongIcon from '../../../assets/footer/bo-cong-thuong-icon.png';
+import { 
+  footerFacebookIcon, 
+  footerInstagramIcon, 
+  footerTiktokIcon, 
+  footerYoutubeIcon, 
+  boCongThuongIcon 
+} from '../../../assets';
 
 const Footer = () => {
   return (
@@ -74,7 +73,7 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 className="footer-social-link"
               >
-                <img src={facebookIcon} alt="Facebook" className="footer-social-icon" />
+                <img src={footerFacebookIcon} alt="Facebook" className="footer-social-icon" />
               </a>
               <a 
                 href="https://www.instagram.com/_nhv_04/" 
@@ -82,7 +81,7 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 className="footer-social-link"
               >
-                <img src={instagramIcon} alt="Instagram" className="footer-social-icon" />
+                <img src={footerInstagramIcon} alt="Instagram" className="footer-social-icon" />
               </a>
             </div>
             <div className="footer-social-row">
@@ -92,7 +91,7 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 className="footer-social-link"
               >
-                <img src={tiktokIcon} alt="TikTok" className="footer-social-icon" />
+                <img src={footerTiktokIcon} alt="TikTok" className="footer-social-icon" />
               </a>
               <a 
                 href="https://www.youtube.com/@vunguyenhoang7831" 
@@ -100,7 +99,7 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 className="footer-social-link"
               >
-                <img src={youtubeIcon} alt="YouTube" className="footer-social-icon" />
+                <img src={footerYoutubeIcon} alt="YouTube" className="footer-social-icon" />
               </a>
             </div>
             <div className="footer-social-row">

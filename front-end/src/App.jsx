@@ -25,7 +25,7 @@ import { ScrollToTop } from './components';
 const App = () => {
   return (
     <>
-      {/* Nút cuộn lên đầu trang - đặt ở ngoài Router */}
+      {/* scroll to top */}
       <ScrollToTop />
       
       <Router>
@@ -35,7 +35,7 @@ const App = () => {
             
             <main className="main-content">
               <Routes>
-                {/* Main Pages */}
+                {/* main pages */}
                 <Route path="/" element={<Home />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/menu" element={<Menu />} />
@@ -46,23 +46,23 @@ const App = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<CustomerRegister />} />
 
-                {/* Auth Pages */}
+                {/* auth pages */}
                 <Route path="/verify-otp" element={<VerifyOTP />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/unauthorized" element={<div className="page-container text-center">Bạn không có quyền truy cập trang này</div>} />
                 
-                {/* OAuth Callback Routes */}
+                {/* oauth callback routes */}
                 <Route path="/auth/google/callback" element={<GoogleCallback />} />
                 <Route path="/auth/facebook/callback" element={<FacebookCallback />} />
                 <Route path="/auth/github/callback" element={<GitHubCallback />} />
 
-                {/* Terms Pages */}
+                {/* terms pages */}
                 <Route path="/terms/use" element={<TermsOfUse />} />
                 <Route path="/terms/privacy" element={<PrivacyPolicy />} />
                 <Route path="/terms/membership" element={<MembershipPolicy />} />
 
-                {/* Dashboard Pages */}
+                {/* dashboard pages */}
                 <Route path="/dashboard/admin" element={
                   <AdminRoute>
                     <AdminDashboard />
@@ -84,7 +84,7 @@ const App = () => {
                   </CustomerRoute>
                 } />
                 
-                {/* 404 Page */}
+                {/* 404 page */}
                 <Route path="*" element={<div className="page-container text-center">Không tìm thấy trang</div>} />
               </Routes>
             </main>

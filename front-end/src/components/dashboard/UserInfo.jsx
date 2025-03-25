@@ -1,35 +1,30 @@
-import React, { useState, useEffect } from 'react';
+// libraries
+import React, { useState, useEffect, useCallback } from 'react';
+// context
 import { useAuth } from '../../context/AuthContext';
-import { retrieveCustomerInfoAPI, updateCustomerInfoAPI } from '../../api/CustomerAPI';
-import { translateErrorMessage } from '../../utils/errorTranslator';
+// api
+import { 
+  retrieveCustomerInfoAPI, updateCustomerInfoAPI,
+  retrieveAdminInfoAPI, updateAdminInfoAPI,
+  retrieveManagerInfoAPI, updateManagerInfoAPI,
+  retrieveEmployeeInfoAPI, updateEmployeeInfoAPI
+} from '../../api';
+// utils
+import { formatPhoneNumberForDisplay, formatPhoneNumberForAPI } from '../../utils';
+// styles
 import './UserInfo.css';
-
-// Import icons
-import usernameIcon from '../../assets/dashboard/username-icon.svg';
-import emailIcon from '../../assets/dashboard/email-icon.svg';
-import phoneNumberIcon from '../../assets/dashboard/phone-number-icon.svg';
-import citizenIdIcon from '../../assets/dashboard/citizen-id-icon.svg';
-import fullnameIcon from '../../assets/dashboard/fullname-icon.svg';
-import genderIcon from '../../assets/dashboard/gender-icon.svg';
-import dateOfBirthIcon from '../../assets/dashboard/date-of-birth-icon.svg';
-import dateJoinedIcon from '../../assets/dashboard/date-joined-icon.svg';
-
-// Customer-specific icons
-import cumulativePointIcon from '../../assets/dashboard/customer/cumulative-point-icon.svg';
-import tierIcon from '../../assets/dashboard/customer/tier-icon.svg';
-
-// Manager-specific icons
-import addressIcon from '../../assets/dashboard/manager/address-icon.svg';
-import branchIcon from '../../assets/dashboard/manager/branch-icon.svg';
-import yearsOfExperienceIcon from '../../assets/dashboard/manager/years-of-experience-icon.svg';
-import salaryIcon from '../../assets/dashboard/manager/salary-icon.svg';
-
-// Employee-specific icons
-import departmentIcon from '../../assets/dashboard/employee/department-icon.svg';
+// all icons from assets
+import { 
+  usernameIcon, emailIcon, phoneNumberIcon, citizenIdIcon, fullnameIcon,
+  genderIcon, dateOfBirthIcon, dateJoinedIcon, cumulativePointIcon,
+  tierIcon, addressIcon, branchIcon, yearsOfExperienceIcon, salaryIcon,
+  departmentIcon
+} from '../../assets';
 
 const UserInfo = () => {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  // user data
   const [userData, setUserData] = useState({
     username: '',
     email: '',
@@ -40,20 +35,35 @@ const UserInfo = () => {
     date_of_birth: '',
     avatar: null,
     joinDate: '',
-    address: '',
-    branch: '',
-    year_of_experience: '',
-    salary: ''
   });
+  // customer data
   const [customerData, setCustomerData] = useState({
     cumulative_points: 0,
     total_points: 0,
     tier: 'B',
     last_tier_update: '',
   });
+  // manager data
+  const [managerData, setManagerData] = useState({
+    address: '',
+    years_of_experience: 0,
+    salary: 0,
+    branch: null
+  });
+  // employee data
+  const [employeeData, setEmployeeData] = useState({
+    address: '',
+    department: null,
+    branch: null,
+    salary: 100000 // default value
+  });
+  // avatar preview
   const [avatarPreview, setAvatarPreview] = useState('');
+  // loading state
   const [isLoading, setIsLoading] = useState(false);
+  // error state
   const [error, setError] = useState('');
+  // success state
   const [success, setSuccess] = useState('');
   const [initialUserData, setInitialUserData] = useState({
     username: '',
@@ -65,56 +75,25 @@ const UserInfo = () => {
     date_of_birth: '',
     avatar: null,
     joinDate: '',
+  });
+  // manager data
+  const [initialManagerData, setInitialManagerData] = useState({
     address: '',
-    branch: '',
-    year_of_experience: '',
-    salary: ''
+    years_of_experience: 0,
+    salary: 0,
+    branch: null
+  });
+  // employee data
+  const [initialEmployeeData, setInitialEmployeeData] = useState({
+    address: '',
+    department: null,
+    branch: null,
+    salary: 100000
   });
   const [branches, setBranches] = useState([]);
+  const [dataFetched, setDataFetched] = useState(false);
 
-  // Format phone number for display
-  const formatPhoneNumberForDisplay = (phoneNumber) => {
-    if (!phoneNumber) return '';
-    
-    // Remove all non-numeric characters
-    const cleanedNumber = phoneNumber.replace(/\D/g, '');
-    
-    // If phone number starts with 84, convert to domestic format
-    if (cleanedNumber.startsWith('84')) {
-      return '0' + cleanedNumber.substring(2);
-    }
-    
-    // If phone number starts with 0, keep it
-    if (cleanedNumber.startsWith('0')) {
-      return cleanedNumber;
-    }
-    
-    // If phone number doesn't start with 0, add 0 in front
-    return '0' + cleanedNumber;
-  };
-  
-  // Format phone number for API
-  const formatPhoneNumberForAPI = (phoneNumber) => {
-    if (!phoneNumber) return null;
-    
-    // Remove all non-numeric characters
-    const cleanedNumber = phoneNumber.replace(/\D/g, '');
-    
-    // If phone number starts with 0, replace with +84
-    if (cleanedNumber.startsWith('0')) {
-      return '+84' + cleanedNumber.substring(1);
-    }
-    
-    // If phone number doesn't start with 84, add +84
-    if (!cleanedNumber.startsWith('84')) {
-      return '+84' + cleanedNumber;
-    }
-    
-    // If phone number already has country code 84, add +
-    return '+' + cleanedNumber;
-  };
-
-  // Convert tier code to display name
+  // convert tier code to display name
   const getTierDisplayName = (tierCode) => {
     switch (tierCode) {
       case 'B': return 'Đồng';
@@ -124,76 +103,141 @@ const UserInfo = () => {
     }
   };
 
-  // Fetch user data from API
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (user && user.id) {
-        setIsLoading(true);
-        setError('');
-        
-        try {
-          if (user.type === 'C') {
-            // If customer, call API to get customer info
-            const data = await retrieveCustomerInfoAPI(user.id);
-            
-            if (data) {
-              // Update user info
-              const userInfo = data.user || {};
-              const newUserData = {
-                username: userInfo.username || '',
-                email: userInfo.email || '',
-                phone_number: formatPhoneNumberForDisplay(userInfo.phone_number) || '',
-                citizen_id: userInfo.citizen_id || '',
-                full_name: userInfo.full_name || '',
-                gender: userInfo.gender || 'M',
-                date_of_birth: userInfo.date_of_birth ? 
-                  new Date(userInfo.date_of_birth).toISOString().split('T')[0] : '',
-                avatar: userInfo.avatar || null,
-                joinDate: userInfo.date_joined ? 
-                  new Date(userInfo.date_joined).toISOString().split('T')[0] : '',
-                address: userInfo.address || '',
-                branch: userInfo.branch || '',
-                year_of_experience: userInfo.year_of_experience || '',
-                salary: userInfo.salary || ''
-              };
-              
-              setUserData(newUserData);
-              // Save initial data for comparison when updating
-              setInitialUserData(newUserData);
-              
-              // Update customer info
-              setCustomerData({
-                cumulative_points: data.cumulative_points || 0,
-                total_points: data.total_points || 0,
-                tier: data.tier || 'B',
-                last_tier_update: data.last_tier_update ? 
-                  new Date(data.last_tier_update).toISOString().split('T')[0] : ''
-              });
-              
-              // Update avatar preview if available
-              if (userInfo.avatar) {
-                setAvatarPreview(userInfo.avatar);
-              }
-            }
-          } else {
-            // Currently only supports customer info
-            console.warn('UserInfo currently only supports customer info');
-          }
-        } catch (err) {
-          console.error('Lỗi khi lấy thông tin người dùng:', err);
-          setError('Không thể lấy thông tin người dùng. Vui lòng thử lại sau.');
-        } finally {
-          setIsLoading(false);
-        }
+  // fetch user data from api - convert to useCallback to avoid recreating function
+  const fetchUserData = useCallback(async () => {
+    if (!user || !user.id || dataFetched) return;
+    
+    setIsLoading(true);
+    setError('');
+    
+    try {
+      let data = null;
+      
+      // different api call based on user type
+      if (user.type === 'C') {
+        data = await retrieveCustomerInfoAPI(user.id);
+      } else if (user.type === 'A') {
+        data = await retrieveAdminInfoAPI(user.id);
+      } else if (user.type === 'M') {
+        data = await retrieveManagerInfoAPI(user.id);
+      } else if (user.type === 'E') {
+        data = await retrieveEmployeeInfoAPI(user.id);
+      } else {
+        console.warn('UserInfo không hỗ trợ loại người dùng này');
+        setIsLoading(false);
+        return;
       }
-    };
+      
+      if (!data) {
+        console.error('Không nhận được dữ liệu từ API');
+        setIsLoading(false);
+        return;
+      }
+      
+      // process common user info
+      const userInfo = user.type === 'A' ? data : data.user || {};
+      const newUserData = {
+        username: userInfo.username || '',
+        email: userInfo.email || '',
+        phone_number: formatPhoneNumberForDisplay(userInfo.phone_number) || '',
+        citizen_id: userInfo.citizen_id || '',
+        full_name: userInfo.full_name || '',
+        gender: userInfo.gender || 'M',
+        date_of_birth: userInfo.date_of_birth ? 
+          new Date(userInfo.date_of_birth).toISOString().split('T')[0] : '',
+        avatar: userInfo.avatar || null,
+        joinDate: userInfo.date_joined ? 
+          new Date(userInfo.date_joined).toISOString().split('T')[0] : '',
+      };
+      
+      // add additional fields based on user type
+      if (user.type === 'M') {
+        // update manager-specific data
+        const newManagerData = {
+          address: data.address || '',
+          years_of_experience: data.years_of_experience || 0,
+          salary: data.salary || 0,
+          branch: data.branch || null
+        };
+        setManagerData(newManagerData);
+        setInitialManagerData(newManagerData);
+      } else if (user.type === 'E') {
+        // update employee-specific data
+        const newEmployeeData = {
+          address: data.address || '',
+          department: data.department || null,
+          branch: data.branch || null,
+          salary: 100000 // default value
+        };
+        setEmployeeData(newEmployeeData);
+        setInitialEmployeeData(newEmployeeData);
+      } else if (user.type === 'C') {
+        // update customer-specific data
+        setCustomerData({
+          cumulative_points: data.cumulative_points || 0,
+          total_points: data.total_points || 0,
+          tier: data.tier || 'B',
+          last_tier_update: data.last_tier_update ? 
+            new Date(data.last_tier_update).toISOString().split('T')[0] : ''
+        });
+      }
+      
+      // set user data
+      setUserData(newUserData);
+      setInitialUserData(newUserData);
+      
+      // update avatar preview if available
+      if (userInfo.avatar) {
+        setAvatarPreview(userInfo.avatar);
+      }
+      
+      // mark as fetched to prevent duplicate calls
+      setDataFetched(true);
+    } catch (err) {
+      console.error('Lỗi khi lấy thông tin người dùng:', err);
+      setError('Không thể lấy thông tin người dùng. Vui lòng thử lại sau.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user, dataFetched]);
 
-    fetchUserData();
-  }, [user]);
+  // use effect with proper dependencies
+  useEffect(() => {
+    if (!dataFetched) {
+      fetchUserData();
+    }
+  }, [fetchUserData, dataFetched]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUserData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
+    
+    setUserData({
+      ...userData,
+      [name]: newValue
+    });
+  };
+
+  const handleManagerChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : 
+                     type === 'number' ? parseFloat(value) : value;
+    
+    setManagerData({
+      ...managerData,
+      [name]: newValue
+    });
+  };
+
+  const handleEmployeeChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : 
+                     type === 'number' ? parseFloat(value) : value;
+    
+    setEmployeeData({
+      ...employeeData,
+      [name]: newValue
+    });
   };
 
   const handleAvatarChange = (e) => {
@@ -201,7 +245,7 @@ const UserInfo = () => {
     if (file) {
       setUserData(prev => ({ ...prev, avatar: file }));
       
-      // Create preview for avatar
+      // create preview for avatar
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatarPreview(reader.result);
@@ -217,149 +261,233 @@ const UserInfo = () => {
     setSuccess('');
 
     try {
-      if (user && user.id && user.type === 'C') {
-        // If new avatar, handle avatar upload first
-        if (userData.avatar instanceof File) {
-          const formData = new FormData();
-          formData.append('user.avatar', userData.avatar);
+      // check if anything has changed in common userData
+      const userDataChanged = Object.keys(userData).some(
+        key => userData[key] !== initialUserData[key]
+      );
+      
+      // check if anything has changed in specific user type data
+      let specificDataChanged = false;
+      
+      if (user.type === 'M') {
+        specificDataChanged = Object.keys(managerData).some(
+          key => managerData[key] !== initialManagerData[key]
+        );
+      } else if (user.type === 'E') {
+        specificDataChanged = Object.keys(employeeData).some(
+          key => employeeData[key] !== initialEmployeeData[key]
+        );
+      }
+      
+      const hasChanged = userDataChanged || specificDataChanged;
+
+      if (!hasChanged) {
+        setSuccess('Không có thông tin nào được thay đổi.');
+        setIsLoading(false);
+        setIsEditing(false);
+        return;
+      }
+
+      // prepare data to update
+      let updateData = {};
+      
+      if (user.type === 'A') {
+        // for admin, use flat structure
+        if (userData.phone_number !== initialUserData.phone_number) {
+          updateData.phone_number = formatPhoneNumberForAPI(userData.phone_number);
+        }
+        
+        if (userData.citizen_id !== initialUserData.citizen_id) {
+          updateData.citizen_id = userData.citizen_id.trim() || null;
+        }
+        
+        if (userData.full_name !== initialUserData.full_name) {
+          updateData.full_name = userData.full_name.trim() || null;
+        }
+        
+        if (userData.gender !== initialUserData.gender) {
+          updateData.gender = userData.gender;
+        }
+        
+        if (userData.date_of_birth !== initialUserData.date_of_birth) {
+          updateData.date_of_birth = userData.date_of_birth || null;
+        }
+        
+        if (userData.email !== initialUserData.email) {
+          updateData.email = userData.email.trim() || null;
+        }
+      } else {
+        // for other users, use nested structure
+        // check each field to update in userData
+        if (userData.phone_number !== initialUserData.phone_number) {
+          if (!updateData.user) updateData.user = {};
+          updateData.user.phone_number = formatPhoneNumberForAPI(userData.phone_number);
+        }
+        
+        if (userData.citizen_id !== initialUserData.citizen_id) {
+          if (!updateData.user) updateData.user = {};
+          updateData.user.citizen_id = userData.citizen_id.trim() || null;
+        }
+        
+        if (userData.full_name !== initialUserData.full_name) {
+          if (!updateData.user) updateData.user = {};
+          updateData.user.full_name = userData.full_name.trim() || null;
+        }
+        
+        if (userData.gender !== initialUserData.gender) {
+          if (!updateData.user) updateData.user = {};
+          updateData.user.gender = userData.gender;
+        }
+        
+        if (userData.date_of_birth !== initialUserData.date_of_birth) {
+          if (!updateData.user) updateData.user = {};
+          updateData.user.date_of_birth = userData.date_of_birth || null;
+        }
+        
+        if (userData.email !== initialUserData.email) {
+          if (!updateData.user) updateData.user = {};
+          updateData.user.email = userData.email.trim() || null;
+        }
+        
+        // handle specific fields for Employee and Manager
+        if (user.type === 'M') {
+          if (managerData.address !== initialManagerData.address) {
+            updateData.address = managerData.address.trim() || null;
+          }
           
-          try {
-            // Upload avatar
-            await updateCustomerInfoAPI(user.id, formData);
-            console.log('Upload avatar thành công');
-          } catch (error) {
-            console.error('Lỗi khi upload avatar:', error);
-            setError('Không thể upload ảnh đại diện. Vui lòng thử lại.');
-            setIsLoading(false);
-            return;
+          if (managerData.years_of_experience !== initialManagerData.years_of_experience) {
+            updateData.years_of_experience = managerData.years_of_experience;
+          }
+        } else if (user.type === 'E') {
+          if (employeeData.address !== initialEmployeeData.address) {
+            updateData.address = employeeData.address.trim() || null;
           }
         }
-
-        // Prepare data to update other info
-        const dataToUpdate = { user: {} };
-        
-        // Process phone number according to international format
-        if (userData.phone_number !== initialUserData.phone_number) {
-          const formattedPhoneNumber = formatPhoneNumberForAPI(userData.phone_number);
-          console.log('Số điện thoại sau khi format:', formattedPhoneNumber);
-          dataToUpdate.user.phone_number = formattedPhoneNumber;
-        }
-        
-        if (userData.citizen_id !== initialUserData.citizen_id) {
-          dataToUpdate.user.citizen_id = userData.citizen_id.trim() !== '' ? 
-            userData.citizen_id : null;
-        }
-        
-        if (userData.full_name !== initialUserData.full_name) {
-          dataToUpdate.user.full_name = userData.full_name.trim() !== '' ? 
-            userData.full_name : null;
-        }
-        
-        if (userData.gender !== initialUserData.gender) {
-          dataToUpdate.user.gender = userData.gender || null;
-        }
-        
-        if (userData.date_of_birth !== initialUserData.date_of_birth) {
-          dataToUpdate.user.date_of_birth = userData.date_of_birth || null;
-        }
-        
-        // Only update email if changed
-        if (userData.email !== initialUserData.email) {
-          dataToUpdate.user.email = userData.email || null;
-        }
-
-        // Check if there is any data to update (excluding avatar)
-        if (Object.keys(dataToUpdate.user).length > 0) {
-          // Call API to update info
-          await updateCustomerInfoAPI(user.id, dataToUpdate);
-        }
-
-        setSuccess('Cập nhật thông tin thành công!');
-        setIsEditing(false);
-        
-        // Update initial data
-        setInitialUserData(userData);
-      } else if (user && user.type === 'E') {
-        // If employee, call API to update employee info
-        const dataToUpdate = { user: {} };
-        
-        // Process phone number according to international format
-        if (userData.phone_number !== initialUserData.phone_number) {
-          const formattedPhoneNumber = formatPhoneNumberForAPI(userData.phone_number);
-          console.log('Số điện thoại sau khi format:', formattedPhoneNumber);
-          dataToUpdate.user.phone_number = formattedPhoneNumber;
-        }
-        
-        if (userData.citizen_id !== initialUserData.citizen_id) {
-          dataToUpdate.user.citizen_id = userData.citizen_id.trim() !== '' ? 
-            userData.citizen_id : null;
-        }
-        
-        if (userData.full_name !== initialUserData.full_name) {
-          dataToUpdate.user.full_name = userData.full_name.trim() !== '' ? 
-            userData.full_name : null;
-        }
-        
-        if (userData.gender !== initialUserData.gender) {
-          dataToUpdate.user.gender = userData.gender || null;
-        }
-        
-        if (userData.date_of_birth !== initialUserData.date_of_birth) {
-          dataToUpdate.user.date_of_birth = userData.date_of_birth || null;
-        }
-        
-        // Only update email if changed
-        if (userData.email !== initialUserData.email) {
-          dataToUpdate.user.email = userData.email || null;
-        }
-
-        // Check if there is any data to update (excluding avatar)
-        if (Object.keys(dataToUpdate.user).length > 0) {
-          // Call API to update info
-          await updateCustomerInfoAPI(user.id, dataToUpdate);
-        }
-
-        setSuccess('Cập nhật thông tin thành công!');
-        setIsEditing(false);
-        
-        // Update initial data
-        setInitialUserData(userData);
-      } else {
-        // Currently only supports customer and employee info
-        console.warn('UserInfo currently only supports customer and employee info');
       }
-    } catch (error) {
-      console.error('Lỗi khi cập nhật thông tin:', error);
-      
-      if (error.response) {
-        const errorData = error.response.data;
-        let errorMessage = 'Có lỗi xảy ra khi cập nhật thông tin.';
+
+      // create FormData if there is an avatar to upload
+      let formData = null;
+      if (userData.avatar instanceof File) {
+        formData = new FormData();
         
-        if (errorData.user) {
-          const errors = Object.entries(errorData.user)
-            .map(([field, messages]) => {
-              const translatedMessages = messages.map(msg => translateErrorMessage(msg));
-              return `${field}: ${translatedMessages.join(', ')}`;
+        if (user.type === 'A') {
+          // for admin, use flat structure for FormData
+          formData.append('avatar', userData.avatar);
+          
+          // add other fields to FormData
+          if (Object.keys(updateData).length > 0) {
+            Object.keys(updateData).forEach(key => {
+              formData.append(key, updateData[key]);
             });
-          errorMessage = errors.join('\n');
+          }
+        } else {
+          // for other users, use nested structure for FormData
+          formData.append('user.avatar', userData.avatar);
+          
+          // add other fields to FormData
+          if (Object.keys(updateData).length > 0) {
+            Object.keys(updateData).forEach(key => {
+              if (key === 'user') {
+                Object.keys(updateData.user).forEach(userKey => {
+                  formData.append(`user.${userKey}`, updateData.user[userKey]);
+                });
+              } else {
+                formData.append(key, updateData[key]);
+              }
+            });
+          }
         }
+      }
+      
+      // only call API if there is data to update
+      if (Object.keys(updateData).length > 0 || formData) {
+        console.log('data to send:', formData || updateData);
         
-        setError(errorMessage);
+        let response;
+        if (user.type === 'C') {
+          response = await updateCustomerInfoAPI(user.id, formData || updateData);
+        } else if (user.type === 'A') {
+          response = await updateAdminInfoAPI(user.id, formData || updateData);
+        } else if (user.type === 'M') {
+          response = await updateManagerInfoAPI(user.id, formData || updateData);
+        } else if (user.type === 'E') {
+          response = await updateEmployeeInfoAPI(user.id, formData || updateData);
+        }
+
+        // update state directly from response instead of calling GET API
+        const userInfo = user.type === 'A' ? response : response.user || {};
+        const newUserData = {
+          username: userInfo.username || '',
+          email: userInfo.email || '',
+          phone_number: formatPhoneNumberForDisplay(userInfo.phone_number) || '',
+          citizen_id: userInfo.citizen_id || '',
+          full_name: userInfo.full_name || '',
+          gender: userInfo.gender || 'M',
+          date_of_birth: userInfo.date_of_birth ? 
+            new Date(userInfo.date_of_birth).toISOString().split('T')[0] : '',
+          avatar: userInfo.avatar || null,
+          joinDate: userInfo.date_joined ? 
+            new Date(userInfo.date_joined).toISOString().split('T')[0] : '',
+        };
+
+        if (user.type === 'M') {
+          const newManagerData = {
+            address: response.address || '',
+            years_of_experience: response.years_of_experience || 0,
+            salary: response.salary || 0,
+            branch: response.branch || null
+          };
+          setManagerData(newManagerData);
+          setInitialManagerData(newManagerData);
+        } else if (user.type === 'E') {
+          const newEmployeeData = {
+            address: response.address || '',
+            department: response.department || null,
+            branch: response.branch || null,
+            salary: 100000 // default value
+          };
+          setEmployeeData(newEmployeeData);
+          setInitialEmployeeData(newEmployeeData);
+        }
+
+        setUserData(newUserData);
+        setInitialUserData(newUserData);
+        if (userInfo.avatar) {
+          setAvatarPreview(userInfo.avatar);
+        }
+      }
+
+      // update state
+      setSuccess('Thông tin đã được cập nhật thành công.');
+      setIsEditing(false);
+      
+      // automatically reload page after 1 second
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (err) {
+      console.error('Lỗi khi cập nhật thông tin:', err);
+      console.error('Chi tiết lỗi:', err.response?.data);
+      
+      if (err.response && err.response.data) {
+        // get first error from response data
+        const firstErrorField = Object.keys(err.response.data)[0];
+        const firstError = err.response.data[firstErrorField][0];
+        setError(firstError);
       } else {
-        setError('Không thể kết nối đến server. Vui lòng thử lại sau.');
+        // general error
+        setError('Có lỗi xảy ra khi cập nhật thông tin. Vui lòng thử lại sau.');
       }
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Display different fields based on user type
+  // display different fields based on user type
   const renderUserTypeSpecificFields = () => {
-    if (!user) return null;
-
-    switch (user.type) {
-      case 'C': // Customer
-        return (
+    if (user.type === 'C') {
+      return (
+        <div className="user-type-specific-fields">
           <div className="form-row">
             <div className="form-group">
               <label>
@@ -377,135 +505,158 @@ const UserInfo = () => {
             <div className="form-group">
               <label>
                 <span className="form-icon-wrapper">
-                  <img src={tierIcon} alt="Hạng thành viên" className="form-field-icon" />
-                  Hạng thành viên:
+                  <img src={tierIcon} alt="Cấp bậc" className="form-field-icon" />
+                  Cấp bậc:
                 </span>
               </label>
               <input 
                 type="text" 
-                value={customerData.tier === 'B' ? 'Đồng' : 
-                       customerData.tier === 'S' ? 'Bạc' : 
-                       customerData.tier === 'G' ? 'Vàng' : ''} 
+                value={getTierDisplayName(customerData.tier) || 'Đồng'} 
                 disabled 
               />
             </div>
           </div>
-        );
-      case 'E': // Employee
-        return (
-          <>
-            <div className="form-row">
-              <div className="form-group">
-                <label>
-                  <span className="form-icon-wrapper">
-                    <img src={branchIcon} alt="Chi nhánh" className="form-field-icon" />
-                    Chi nhánh:
-                  </span>
-                </label>
-                <input type="text" value="Chi nhánh Hà Nội" disabled />
-              </div>
-              <div className="form-group">
-                <label>
-                  <span className="form-icon-wrapper">
-                    <img src={departmentIcon} alt="Phòng ban" className="form-field-icon" />
-                    Phòng ban:
-                  </span>
-                </label>
-                <input type="text" value="Nhân viên phục vụ" disabled />
-              </div>
+        </div>
+      );
+    } else if (user.type === 'M') {
+      return (
+        <div className="user-type-specific-fields">
+          <div className="form-row">
+            <div className="form-group">
+              <label>
+                <span className="form-icon-wrapper">
+                  <img src={addressIcon} alt="Địa chỉ" className="form-field-icon" />
+                  Địa chỉ:
+                </span>
+              </label>
+              <input
+                type="text"
+                name="address"
+                placeholder="Nhập địa chỉ"
+                value={managerData.address || ''}
+                onChange={handleManagerChange}
+                disabled={!isEditing}
+              />
             </div>
-            <div className="form-row">
-              <div className="form-group full-width">
-                <label>
-                  <span className="form-icon-wrapper">
-                    <img src={addressIcon} alt="Địa chỉ" className="form-field-icon" />
-                    Địa chỉ:
-                  </span>
-                </label>
-                <input 
-                  type="text" 
-                  name="address" 
-                  value={userData.address || ''} 
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  placeholder="Nhập địa chỉ"
-                />
-              </div>
+            <div className="form-group">
+              <label>
+                <span className="form-icon-wrapper">
+                  <img src={yearsOfExperienceIcon} alt="Năm kinh nghiệm" className="form-field-icon" />
+                  Năm kinh nghiệm:
+                </span>
+              </label>
+              <input
+                type="number"
+                name="years_of_experience"
+                placeholder="Nhập số năm kinh nghiệm"
+                value={managerData.years_of_experience || 0}
+                onChange={handleManagerChange}
+                disabled={!isEditing}
+                min="0"
+              />
             </div>
-          </>
-        );
-      case 'M': // Manager
-        return (
-          <>
-            <div className="form-row">
-              <div className="form-group">
-                <label>
-                  <span className="form-icon-wrapper">
-                    <img src={addressIcon} alt="Địa chỉ" className="form-field-icon" />
-                    Địa chỉ:
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  name="address"
-                  value={userData.address || ''}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  placeholder="Nhập địa chỉ"
-                />
-              </div>
-              <div className="form-group">
-                <label>
-                  <span className="form-icon-wrapper">
-                    <img src={branchIcon} alt="Chi nhánh" className="form-field-icon" />
-                    Chi nhánh:
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  value={branches.find(b => b.id === userData.branch)?.name || 'Chưa có chi nhánh'}
-                  disabled
-                />
-              </div>
+          </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label>
+                <span className="form-icon-wrapper">
+                  <img src={salaryIcon} alt="Lương" className="form-field-icon" />
+                  Lương:
+                </span>
+              </label>
+              <input
+                type="number"
+                name="salary"
+                placeholder="Nhập lương"
+                value={managerData.salary || 0}
+                onChange={handleManagerChange}
+                disabled={!isEditing}
+                min="0"
+                step="100000"
+              />
             </div>
-            
-            <div className="form-row">
-              <div className="form-group">
-                <label>
-                  <span className="form-icon-wrapper">
-                    <img src={yearsOfExperienceIcon} alt="Năm kinh nghiệm" className="form-field-icon" />
-                    Năm kinh nghiệm:
-                  </span>
-                </label>
-                <input
-                  type="number"
-                  name="year_of_experience"
-                  value={userData.year_of_experience || 0}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  min="0"
-                  placeholder="Nhập số năm kinh nghiệm"
-                />
-              </div>
-              <div className="form-group">
-                <label>
-                  <span className="form-icon-wrapper">
-                    <img src={salaryIcon} alt="Lương" className="form-field-icon" />
-                    Lương:
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  value={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(userData.salary || 0)}
-                  disabled
-                />
-              </div>
+            <div className="form-group">
+              <label>
+                <span className="form-icon-wrapper">
+                  <img src={branchIcon} alt="Chi nhánh" className="form-field-icon" />
+                  Chi nhánh:
+                </span>
+              </label>
+              <input
+                type="text"
+                value={branches.find(b => b.id === managerData.branch)?.name || 'Chưa có chi nhánh'}
+                disabled
+              />
             </div>
-          </>
-        );
-      default:
-        return null;
+          </div>
+        </div>
+      );
+    } else if (user.type === 'E') {
+      return (
+        <div className="user-type-specific-fields">
+          <div className="form-row">
+            <div className="form-group">
+              <label>
+                <span className="form-icon-wrapper">
+                  <img src={addressIcon} alt="Địa chỉ" className="form-field-icon" />
+                  Địa chỉ:
+                </span>
+              </label>
+              <input
+                type="text"
+                name="address"
+                placeholder="Nhập địa chỉ"
+                value={employeeData.address || ''}
+                onChange={handleEmployeeChange}
+                disabled={!isEditing}
+              />
+            </div>
+            <div className="form-group">
+              <label>
+                <span className="form-icon-wrapper">
+                  <img src={departmentIcon} alt="Bộ phận" className="form-field-icon" />
+                  Bộ phận:
+                </span>
+              </label>
+              <input 
+                type="text" 
+                value={employeeData.department?.name || 'Chưa có bộ phận'} 
+                disabled 
+              />
+            </div>
+          </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label>
+                <span className="form-icon-wrapper">
+                  <img src={salaryIcon} alt="Lương" className="form-field-icon" />
+                  Lương:
+                </span>
+              </label>
+              <input
+                type="number"
+                value={employeeData.salary || 100000}
+                disabled
+              />
+            </div>
+            <div className="form-group">
+              <label>
+                <span className="form-icon-wrapper">
+                  <img src={branchIcon} alt="Chi nhánh" className="form-field-icon" />
+                  Chi nhánh:
+                </span>
+              </label>
+              <input 
+                type="text" 
+                value={branches.find(b => b.id === employeeData.branch)?.name || 'Chưa có chi nhánh'} 
+                disabled 
+              />
+            </div>
+          </div>
+        </div>
+      );
     }
+    return null;
   };
 
   return (
@@ -553,7 +704,11 @@ const UserInfo = () => {
                 <button 
                   type="button" 
                   className="cancel-button"
-                  onClick={() => setIsEditing(false)}
+                  onClick={() => {
+                    setIsEditing(false);
+                    setUserData(initialUserData);
+                    setAvatarPreview(userData.avatar);
+                  }}
                 >
                   Hủy
                 </button>

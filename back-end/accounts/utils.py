@@ -11,6 +11,21 @@ from datetime import date, datetime, timedelta
 
 import hashlib, hmac, json, random, requests, uuid, time
 
+# validate password strength
+def validate_password_strength(password):
+    if not password:
+        raise serializers.ValidationError("Mật khẩu không được để trống.")
+    if len(password) < 8:
+        raise serializers.ValidationError("Mật khẩu phải có ít nhất 8 ký tự.")
+    if not any(char.isupper() for char in password):
+        raise serializers.ValidationError("Mật khẩu phải chứa ít nhất một chữ cái hoa.")
+    if not any(char.islower() for char in password):
+        raise serializers.ValidationError("Mật khẩu phải chứa ít nhất một chữ cái thường.")
+    if not any(char.isdigit() for char in password):
+        raise serializers.ValidationError("Mật khẩu phải chứa ít nhất một chữ số.")
+    if not any(char in '!@#$%^&*()_+-=[]{}|;:,.<>?' for char in password):
+        raise serializers.ValidationError("Mật khẩu phải chứa ít nhất một ký tự đặc biệt.")
+
 # staff must have full information
 def validate_staff_info(attrs):
     user_data = attrs.get('user', {})
@@ -34,12 +49,14 @@ def hash_email(email):
 def create_otp_code():
     digits = "0123456789"
     otp = ''.join(random.choice(digits) for i in range(6))
+
     return otp
 
 # cache can not store datetime objects -> turn datetime objects into string
 def convert_type(obj):
     if isinstance(obj, (date)):
         return obj.isoformat()
+    
     raise TypeError(f"Object of type '{type(obj).__name__}' is not JSON serializable")
 
 # cache for 5 minutes
@@ -48,11 +65,7 @@ def register_data_cache(email, otp_code):
     cache_key = f"register_{hashed_email}"
     cache_data = {
         'otp_code': otp_code,
-        """
-        if we don't store email in cache data, each time we resend otp code, 
-        we need to access database -> hash each email -> compare with hashed email in cache -> slow
-        """
-        'email': email,
+        'email': email, # better for resend otp
         'last_sent': datetime.now().isoformat()
     }
 
@@ -241,8 +254,7 @@ def send_forgot_password_otp_email(username, email, otp_code):
 def resend_forgot_password_otp_email(username):
     cache_key = f"forgot_password_{username}"
     cache_data = cache.get(cache_key)
-    print(cache_data)
-
+    
     if not cache_data:
         raise ValueError("Tài khoản không tồn tại hoặc quá trình xác thực đã quá 5 phút.\
                          Vui lòng về trang đăng nhập và chọn 'Quên mật khẩu' lần nữa.")
@@ -299,13 +311,13 @@ def download_and_save_avatar(avatar_url, email):
         print(f"Lỗi khi tải ảnh đại diện: {e}")
         return None
 
+"""
+Create a unique username by using UUID and timestamp
+- base_username: base username (usually the part before @ of email)
+- if username already exists, add an underscore and a string of UUID + timestamp to ensure uniqueness
+- UUID is shortened to avoid being too long
+"""
 def generate_unique_username(base_username):
-    """
-    Create a unique username by using UUID and timestamp
-    - base_username: base username (usually the part before @ of email)
-    - if username already exists, add an underscore and a string of UUID + timestamp to ensure uniqueness
-    - UUID is shortened to avoid being too long
-    """
     # check if base username already exists
     if not User.objects.filter(username=base_username).exists():
         return base_username
@@ -318,7 +330,7 @@ def generate_unique_username(base_username):
     new_username = f"{base_username}_{unique_suffix}"
     
     # ensure username is not too long
-    max_length = 150
+    max_length = 50
     if len(new_username) > max_length:
         # cut base_username if needed
         available_length = max_length - len(unique_suffix) - 1 # -1 for underscore

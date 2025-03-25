@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { checkAccessToken, getUserFromToken } from '../utils/tokenHelper';
+import { checkAccessToken, getUserFromToken } from '../utils';
 import { 
   normalLoginAPI, 
   logoutAPI, 
@@ -8,7 +8,7 @@ import {
   googleLoginAPI,
   facebookLoginAPI,
   gitHubLoginAPI
-} from '../api/AuthsAPI';
+} from '../api';
 
 export const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);

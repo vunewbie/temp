@@ -65,10 +65,39 @@ class CustomerRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsOwner]
     authentication_classes = [CustomTokenAuthentication]
 
-    # put request is denied
     def put(self, request, *args, **kwargs):
         return Response({"detail": "Phương thức không được phép."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    
+    def patch(self, request, *args, **kwargs):
+        if request.data.get("user.password"):
+            response = {
+                "detail": "Không được phép đổi mật khẩu thông qua phương thức này."
+            }
 
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        
+        return super().patch(request, *args, **kwargs)
+    
+# retrieve and update admin information
+class AdminRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
+    queryset = User.objects.filter(type='A')
+    serializer_class = UserSerializer
+    permission_classes = [IsOwner]
+    authentication_classes = [CustomTokenAuthentication]
+    
+    def put(self, request, *args, **kwargs):
+        return Response({"detail": "Phương thức không được phép."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    
+    def patch(self, request, *args, **kwargs):
+        if request.data.get("password"):
+            response = {
+                "detail": "Không được phép đổi mật khẩu thông qua phương thức này."
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        
+        return super().patch(request, *args, **kwargs)
+                
+    
 # get all employees in the same branch as the manager and create new employee
 class EmployeeListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = EmployeeSerializer
@@ -109,9 +138,7 @@ class EmployeeListCreateAPIView(generics.ListCreateAPIView):
             
             # remove user data from employee data
             employee_data = {k: v for k, v in data.items() if k != 'user'}
-        
             employee = Employee.objects.create(user=user, **employee_data)
-            
             otp_code = create_otp_code()
             email = data['user']['email']
             hashed_email = hash_email(email)
@@ -160,7 +187,7 @@ class EmployeeRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView
         user_data = {}
         employee_data = {}
 
-        # split user and employee data
+        # handle all both json and formdata data
         for key, value in request.data.items():
             if key.startswith("user."):
                 user_field = key.split(".", 1)[1]

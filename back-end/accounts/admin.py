@@ -4,7 +4,7 @@ from django.contrib import admin
 # custom display for User in admin panel
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email', 'phone_number', 'citizen_id', 'full_name', 'is_active', 'type')
+    list_display = ('id', 'username', 'email', 'phone_number', 'citizen_id', 'full_name', 'is_active', 'type')
                     
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):

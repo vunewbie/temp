@@ -1,22 +1,21 @@
-// Libraries
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-// CSS
 import './ResetPassword.css';
-// Components
 import { ErrorsPopupWindow, SuccessfulPopupWindow } from '../../../components';
-// Assets
-import loginLogo from '../../../assets/logo.jpg';
-import passwordIcon from '../../../assets/auths/password-icon.svg';
-import eyeOffIcon from '../../../assets/auths/eye-off-icon.svg';
-import eyeOnIcon from '../../../assets/auths/eye-on-icon.svg';
-import resetPicture1 from '../../../assets/auths/reset-picture1.jpg';
-import resetPicture2 from '../../../assets/auths/reset-picture2.jpg';
-import resetPicture3 from '../../../assets/auths/reset-picture3.jpg';
-// API
-import { resetPasswordAPI } from '../../../api/AuthsAPI';
-// Utils
-import { translateErrorMessage } from '../../../utils/errorTranslator';
+// assets
+import { 
+  logo, 
+  authPasswordIcon, 
+  authEyeOffIcon, 
+  authEyeOnIcon, 
+  resetPicture1, 
+  resetPicture2, 
+  resetPicture3 
+} from '../../../assets';
+// api
+import { resetPasswordAPI } from '../../../api';
+// utils
+import { translateErrorMessage, validatePasswordWithConfirmation } from '../../../utils';
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -33,10 +32,10 @@ const ResetPassword = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [currentPicture, setCurrentPicture] = useState(0);
   
-  // Các hình nền
+  // pictures
   const pictures = [resetPicture1, resetPicture2, resetPicture3];
 
-  // Slideshow effect
+  // slideshow effect
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentPicture((prev) => (prev + 1) % pictures.length);
@@ -44,7 +43,7 @@ const ResetPassword = () => {
     return () => clearInterval(interval);
   }, [pictures.length]);
 
-  // Kiểm tra resetToken trong localStorage
+  // check resetToken in localStorage
   useEffect(() => {
     const resetToken = localStorage.getItem('resetToken');
     if (!resetToken) {
@@ -52,7 +51,7 @@ const ResetPassword = () => {
     }
   }, [navigate]);
 
-  // Xử lý thay đổi input
+  // handle change input
   const handleChange = (e) => {
     const { name, value } = e.target;
     setPasswordForm(prev => ({
@@ -61,7 +60,7 @@ const ResetPassword = () => {
     }));
   };
 
-  // Xử lý hiển thị/ẩn mật khẩu
+  // handle toggle password visibility
   const togglePasswordVisibility = (field) => {
     setShowPassword(prev => ({
       ...prev,
@@ -69,45 +68,22 @@ const ResetPassword = () => {
     }));
   };
 
-  // Validate mật khẩu
+  // validate password using the utility function
   const validatePasswordForm = () => {
-    const newErrors = [];
-    
-    // Kiểm tra mật khẩu mới
-    if (!passwordForm.newPassword) {
-      newErrors.push('Vui lòng nhập mật khẩu mới');
-    } else if (passwordForm.newPassword.length < 8) {
-      newErrors.push('Mật khẩu phải có ít nhất 8 ký tự');
-    } else if (!/[A-Z]/.test(passwordForm.newPassword)) {
-      newErrors.push('Mật khẩu phải có ít nhất 1 chữ cái viết hoa');
-    } else if (!/[a-z]/.test(passwordForm.newPassword)) {
-      newErrors.push('Mật khẩu phải có ít nhất 1 chữ cái viết thường');
-    } else if (!/[0-9]/.test(passwordForm.newPassword)) {
-      newErrors.push('Mật khẩu phải có ít nhất 1 chữ số');
-    } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(passwordForm.newPassword)) {
-      newErrors.push('Mật khẩu phải có ít nhất 1 ký tự đặc biệt');
-    }
-    
-    // Kiểm tra xác nhận mật khẩu
-    if (!passwordForm.confirmPassword) {
-      newErrors.push('Vui lòng xác nhận mật khẩu mới');
-    } else if (passwordForm.confirmPassword !== passwordForm.newPassword) {
-      newErrors.push('Xác nhận mật khẩu không khớp');
-    }
-
-    setErrors(newErrors);
-    return newErrors.length === 0;
+    const validation = validatePasswordWithConfirmation(passwordForm.newPassword, passwordForm.confirmPassword);
+    setErrors(validation.errors);
+    return validation.isValid;
   };
 
-  // Handle submit
+  // handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Clear former errors
+    // clear former errors
     setErrors([]);
     setSuccessMessage('');
     
-    // Validate form
+    // validate form
     if (!validatePasswordForm()) {
       return;
     }
@@ -118,13 +94,13 @@ const ResetPassword = () => {
       const resetToken = localStorage.getItem('resetToken');
       const response = await resetPasswordAPI(resetToken, passwordForm.newPassword);
 
-      // Set success message
+      // set success message
       setSuccessMessage(response.data.message || 'Mật khẩu đã được đặt lại thành công!');
       
-      // Xóa resetToken khỏi localStorage
+      // remove resetToken from localStorage
       localStorage.removeItem('resetToken');
 
-      // Chuyển hướng sau 2 giây
+      // redirect to login page after 2 seconds
       setTimeout(() => {
         navigate('/login');
       }, 2000);
@@ -145,12 +121,12 @@ const ResetPassword = () => {
     }
   };
 
-  // Close errors popup
+  // close errors popup
   const handleCloseErrors = () => {
     setErrors([]);
   };
 
-  // Close success popup
+  // close success popup
   const handleCloseSuccess = () => {
     setSuccessMessage('');
   };
@@ -160,7 +136,7 @@ const ResetPassword = () => {
       <div className="auth-reset-password-wrapper">
         <div className="auth-reset-password-form-container">
           <div className="auth-reset-password-logo">
-            <img src={loginLogo} alt="Logo" className="auth-reset-password-logo-img" />
+            <img src={logo} alt="Logo" className="auth-reset-password-logo-img" />
           </div>
           
           <h1 className="auth-reset-password-title">Đặt Lại Mật Khẩu</h1>
@@ -169,7 +145,7 @@ const ResetPassword = () => {
           <form className="auth-reset-password-form" onSubmit={handleSubmit}>
             <div className="auth-form-group">
               <div className="auth-input-container">
-                <img src={passwordIcon} alt="Password" className="auth-input-icon" />
+                <img src={authPasswordIcon} alt="Password" className="auth-input-icon" />
                 <input
                   type={showPassword.newPassword ? "text" : "password"}
                   id="newPassword"
@@ -180,7 +156,7 @@ const ResetPassword = () => {
                   className={`auth-input ${errors.length > 0 ? 'error' : ''}`}
                 />
                 <img 
-                  src={showPassword.newPassword ? eyeOnIcon : eyeOffIcon} 
+                  src={showPassword.newPassword ? authEyeOnIcon : authEyeOffIcon} 
                   alt="Toggle password" 
                   className="auth-password-toggle"
                   onClick={() => togglePasswordVisibility('newPassword')}
@@ -190,7 +166,7 @@ const ResetPassword = () => {
 
             <div className="auth-form-group">
               <div className="auth-input-container">
-                <img src={passwordIcon} alt="Password" className="auth-input-icon" />
+                <img src={authPasswordIcon} alt="Password" className="auth-input-icon" />
                 <input
                   type={showPassword.confirmPassword ? "text" : "password"}
                   id="confirmPassword"
@@ -201,7 +177,7 @@ const ResetPassword = () => {
                   className={`auth-input ${errors.length > 0 ? 'error' : ''}`}
                 />
                 <img 
-                  src={showPassword.confirmPassword ? eyeOnIcon : eyeOffIcon} 
+                  src={showPassword.confirmPassword ? authEyeOnIcon : authEyeOffIcon} 
                   alt="Toggle password" 
                   className="auth-password-toggle"
                   onClick={() => togglePasswordVisibility('confirmPassword')}

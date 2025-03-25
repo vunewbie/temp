@@ -1,37 +1,38 @@
+// libraries
 import React, { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { FaTimes, FaBars } from 'react-icons/fa';
 import { MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from 'react-icons/md';
+// context
+import { useAuth } from '../../context/AuthContext';
+// styles
 import './SideBar.css';
-
-import accountIcon from '../../assets/dashboard/account-icon.svg';
-import passwordIcon from '../../assets/dashboard/password-icon.svg';
+// common icons
+import accountIcon from '../../assets/dashboard/general/account-icon.svg';
+import passwordIcon from '../../assets/dashboard/general/password-icon.svg';
+// customer icons
 import purchaseIcon from '../../assets/dashboard/customer/purchase-icon.svg';
 import pointIcon from '../../assets/dashboard/customer/point-icon.svg';
-
-// Import manager icons
+// manager icons
 import employeeManagementIcon from '../../assets/dashboard/manager/employee-management-icon.svg';
 import recruitmentIcon from '../../assets/dashboard/manager/recruitment-icon.svg';
 import menuManagementIcon from '../../assets/dashboard/manager/menu-management-icon.svg';
 import newDishIcon from '../../assets/dashboard/manager/new-dish-icon.svg';
 import tableManagementIcon from '../../assets/dashboard/manager/table-management-icon.svg';
 import newTableIcon from '../../assets/dashboard/manager/new-table-icon.svg';
-
-// Import employee icons
+// employee icons
 import serveIcon from '../../assets/dashboard/employee/serve-icon.svg';
 import reservationIcon from '../../assets/dashboard/employee/reservation-icon.svg';
 import deliveryIcon from '../../assets/dashboard/employee/delivery-icon.svg';
-
-// Import admin icons
+// admin icons
 import areaIcon from '../../assets/dashboard/admin/area-icon.svg';
 import newAreaIcon from '../../assets/dashboard/admin/new-area-icon.svg';
-import branchIcon from '../../assets/dashboard/admin/branch-icon.svg';
+import branchIcon from '../../assets/dashboard/general/branch-icon.svg';
 import newBranchIcon from '../../assets/dashboard/admin/new-branch-icon.svg';
 import dishIcon from '../../assets/dashboard/admin/dish-icon.svg';
 import newDishAdminIcon from '../../assets/dashboard/admin/new-dish-icon.svg';
 import categoryIcon from '../../assets/dashboard/admin/category-icon.svg';
 import newCategoryIcon from '../../assets/dashboard/admin/new-category-icon.svg';
-import departmentIcon from '../../assets/dashboard/admin/department-icon.svg';
+import departmentIcon from '../../assets/dashboard/general/department-icon.svg';
 import newDepartmentIcon from '../../assets/dashboard/admin/new-department-icon.svg';
 import branchManagerIcon from '../../assets/dashboard/admin/branch-manager-icon.svg';
 import newBranchManagerIcon from '../../assets/dashboard/admin/new-branch-manager-icon.svg';
@@ -47,13 +48,13 @@ const SideBar = ({ activeMenu, setActiveMenu }) => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  // Common menu items for all user types
+  // common menu items for all user types
   const commonMenuItems = [
     { id: 'user-info', label: 'Thông tin tài khoản', icon: accountIcon },
     { id: 'change-password', label: 'Đổi mật khẩu', icon: passwordIcon }
   ];
 
-  // Menu items for each user type
+  // menu items for each user type
   const customerMenuItems = [
     { id: 'purchase-history', label: 'Lịch sử mua hàng', icon: purchaseIcon },
     { id: 'points-history', label: 'Lịch sử điểm thưởng', icon: pointIcon }
@@ -92,7 +93,7 @@ const SideBar = ({ activeMenu, setActiveMenu }) => {
     { id: 'statistics', label: 'Thống kê', icon: statisticsIcon }
   ];
 
-  // Select menu items based on user type
+  // select menu items based on user type
   let specificMenuItems = [];
   switch (user?.type) {
     case 'C':
@@ -111,7 +112,7 @@ const SideBar = ({ activeMenu, setActiveMenu }) => {
       specificMenuItems = [];
   }
 
-  // Combine common and specific menu items
+  // combine common and specific menu items
   const menuItems = [...commonMenuItems, ...specificMenuItems];
 
   return (

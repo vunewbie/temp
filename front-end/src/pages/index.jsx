@@ -13,7 +13,9 @@ import ResetPassword from './auths/resetPassword/ResetPassword';
 import MembershipPolicy from './terms/MembershipPolicy';
 import TermsOfUse from './terms/TermsOfUse';
 import PrivacyPolicy from './terms/PrivacyPolicy';
-import { GoogleCallback, FacebookCallback, GitHubCallback } from './auths/callbacks';
+import GoogleCallback  from './auths/callbacks/GoogleCallback';
+import FacebookCallback from './auths/callbacks/FacebookCallback';
+import GitHubCallback from './auths/callbacks/GitHubCallback';
 
 export {
   Home,

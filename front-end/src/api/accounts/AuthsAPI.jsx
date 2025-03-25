@@ -1,5 +1,5 @@
 import axios from "axios";
-import { translateErrorMessage } from "../utils/errorTranslator";
+import { translateErrorMessage } from "../../utils";
 
 const API_URL = import.meta.env.VITE_BACKEND_API;
 
@@ -13,7 +13,7 @@ export const normalLoginAPI = async (username, password) => {
     }
 };
 
-// Customer Register
+// customer register
 export const customerRegisterAPI = async (username, email, password) => {
     try {
         const response = await axios.post(`${API_URL}/accounts/customers`, {
@@ -23,7 +23,6 @@ export const customerRegisterAPI = async (username, email, password) => {
         return response;
     } catch (error) {
         if (error.response) {
-            // server error
             const serverError = error.response.data;
             let errorMessage = 'Đã xảy ra lỗi khi đăng ký';
             
@@ -42,15 +41,11 @@ export const customerRegisterAPI = async (username, email, password) => {
             }
             
             throw new Error(errorMessage);
-        } else if (error.request) {
-            throw new Error(translateErrorMessage('Unable to connect to server'));
-        } else {
-            throw new Error(translateErrorMessage('An error occurred during registration'));
-        }
+        } 
     }
 };
 
-// Register Verify OTP
+// register verify otp
 export const registerVerifyOTPAPI = async (hashedEmail, otpCode) => {
   try {
     const response = await axios.post(
@@ -64,7 +59,7 @@ export const registerVerifyOTPAPI = async (hashedEmail, otpCode) => {
   }
 };
 
-// Resend Register OTP
+// resend register otp
 export const resendRegisterOTPAPI = async (hashedEmail) => {
     try {
         const response = await axios.post(
@@ -78,7 +73,7 @@ export const resendRegisterOTPAPI = async (hashedEmail) => {
     }
 };
 
-// Forgot Password
+// forgot password
 export const forgotPasswordAPI = async (usernameOrEmail) => {
     try {
         const response = await axios.post(
@@ -92,7 +87,7 @@ export const forgotPasswordAPI = async (usernameOrEmail) => {
     }
 }
 
-// Forgot Password Verify OTP
+// forgot password verify otp
 export const forgotPasswordVerifyOTPAPI = async (username, otpCode) => {
     try {
         const response = await axios.post(
@@ -106,7 +101,7 @@ export const forgotPasswordVerifyOTPAPI = async (username, otpCode) => {
     }
 }
 
-// Resend Forgot Password OTP
+// resend forgot password otp
 export const resendForgotPasswordOTPAPI = async (username) => {
     try {
         const response = await axios.post(
@@ -120,7 +115,7 @@ export const resendForgotPasswordOTPAPI = async (username) => {
     }
 }
 
-// Reset Password
+// reset password
 export const resetPasswordAPI = async (resetToken, newPassword) => {
     try {
         const response = await axios.post(
@@ -134,7 +129,7 @@ export const resetPasswordAPI = async (resetToken, newPassword) => {
     }
 }
 
-// Google OAuth2
+// google oauth2
 export const getGoogleOAuth2CodeAPI = () => {
     try {
         const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -157,7 +152,7 @@ export const googleLoginAPI = async (code) => {
   }
 };
 
-// Facebook OAuth2
+// facebook oauth2
 export const getFacebookOAuth2CodeAPI = () => {
     try {
         const clientId = import.meta.env.VITE_FACEBOOK_APP_ID;
@@ -180,7 +175,7 @@ export const facebookLoginAPI = async (code) => {
   }
 };
 
-// GitHub OAuth2
+// github oauth2
 export const getGitHubOAuth2CodeAPI = () => {
     try {
         const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
@@ -203,7 +198,7 @@ export const gitHubLoginAPI = async (code) => {
   }
 };
 
-// Logout
+// logout
 export const logoutAPI = async (refreshToken) => {
     try {
         const response = await axios.post(`${API_URL}/accounts/log-out`, {
@@ -215,13 +210,11 @@ export const logoutAPI = async (refreshToken) => {
     }
 };
 
-// Refresh Token
+// refresh token
 export const refreshTokenAPI = async (refreshToken) => {
     try {
         const response = await axios.post(`${API_URL}/accounts/token/refresh`, {
             refresh: refreshToken
-        }, {
-            withCredentials: true
         });
         return response;
     } catch (error) {
@@ -230,14 +223,13 @@ export const refreshTokenAPI = async (refreshToken) => {
     }
 }
 
-// Change Password
+// change password
 export const changePasswordAPI = async (oldPassword, newPassword) => {
   try {
     const response = await axios.post(
       `${API_URL}/accounts/change-password/`,
        { old_password: oldPassword, new_password: newPassword },
-       { headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}`}, 
-       withCredentials: true
+       { headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}`}
     });
     
     return response;

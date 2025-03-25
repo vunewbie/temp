@@ -1,17 +1,15 @@
 import axios from "axios";
-import { translateErrorMessage } from '../utils/errorTranslator';
+import { translateErrorMessage } from '../../utils';
 
 const API_URL = import.meta.env.VITE_BACKEND_API;
 
-// Retrieve customer info
+// retrieve customer info
 export const retrieveCustomerInfoAPI = async (customerId) => {
   try {
     const response = await axios.get(`${API_URL}/accounts/customers/${customerId}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('access_token')}`
-      },
-      /* CORS settings */
-      withCredentials: true
+      }
     });
     return response.data;
   } catch (error) {
@@ -20,24 +18,21 @@ export const retrieveCustomerInfoAPI = async (customerId) => {
   }
 };
 
-// Update customer info
+// update customer info
 export const updateCustomerInfoAPI = async (customerId, customerData) => {  
   try {
     let response;
-    // Formdata is less efficient than JSON, so we use JSON when there is no file upload
+
     if (customerData instanceof FormData) {
       response = await axios.patch(`${API_URL}/accounts/customers/${customerId}`, customerData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
           'Content-Type': 'multipart/form-data'
-        },
-        withCredentials: true
+        }
       });
     } else {      
-      // Process data before sending, ensure empty strings ('') are converted to null
       const processedData = JSON.parse(JSON.stringify(customerData));
       
-      // data is nested("user" : {...}) -> turn fields into null if its value is ''
       const processNestedObject = (obj) => {
         if (!obj || typeof obj !== 'object') return;
         
@@ -56,8 +51,7 @@ export const updateCustomerInfoAPI = async (customerId, customerData) => {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
           'Content-Type': 'application/json'
-        },
-        withCredentials: true
+        }
       });
     }
     
@@ -74,14 +68,15 @@ export const updateCustomerInfoAPI = async (customerId, customerData) => {
         if (errorData.user) {
           // errorData.user is an object, so we need to iterate over its keys
           Object.keys(errorData.user).forEach(field => {
-            const translatedErrors = errorData.user[field].map(err => translateErrorMessage(err));
-            console.error(`Lỗi ${field}:`, translatedErrors);
+            errorData.user[field] = errorData.user[field].map(err => translateErrorMessage(err));
+            console.error(`Lỗi ${field}:`, errorData.user[field]);
           });
         } else {
+          // errors that are not user info errors
           Object.keys(errorData).forEach(field => {
             if (Array.isArray(errorData[field])) {
-              const translatedErrors = errorData[field].map(err => translateErrorMessage(err));
-              console.error(`Lỗi ${field}:`, translatedErrors);
+              errorData[field] = errorData[field].map(err => translateErrorMessage(err));
+              console.error(`Lỗi ${field}:`, errorData[field]);
             }
           });
         }
@@ -90,12 +85,9 @@ export const updateCustomerInfoAPI = async (customerId, customerData) => {
       if (error.response.status === 401) {
         console.error("Token hết hạn hoặc không hợp lệ");
       }
-    } else if (error.request) {
-      console.error("Không nhận được phản hồi từ server:", error.request);
-    } else {
-      console.error("Lỗi khi thiết lập request:", error.message);
     }
     
     throw error;
   }
 }; 
+

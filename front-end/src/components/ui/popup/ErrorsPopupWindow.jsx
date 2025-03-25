@@ -1,6 +1,6 @@
 import React from 'react';
 import './ErrorsPopupWindow.css';
-import errorIcon from '../../../assets/icons/error-icon.svg';
+import { errorIcon } from '../../../assets';
 
 const ErrorsPopupWindow = ({ errors, onClose }) => {
     if (!errors || errors.length === 0) return null;

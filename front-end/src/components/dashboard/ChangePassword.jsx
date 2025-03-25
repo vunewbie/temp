@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import './ChangePassword.css';
-import eyeOffIcon from '../../assets/dashboard/eye-off-icon.svg';
-import eyeOnIcon from '../../assets/dashboard/eye-on-icon.svg';
-import { changePasswordAPI } from '../../api/AuthsAPI';
-import { translateErrorMessage } from '../../utils/errorTranslator';
+import { eyeOffIcon, eyeOnIcon } from '../../assets';
+import { changePasswordAPI } from '../../api';
+import { translateErrorMessage, validatePassword, validateConfirmPassword } from '../../utils';
 
 const ChangePassword = () => {
   const [passwordData, setPasswordData] = useState({
@@ -35,7 +34,7 @@ const ChangePassword = () => {
       [name]: value
     });
 
-    // Clear validation error when user starts typing again
+    // clear validation error when user starts typing again
     if (validationErrors[name]) {
       setValidationErrors({
         ...validationErrors,
@@ -47,31 +46,21 @@ const ChangePassword = () => {
   const validateForm = () => {
     const errors = {};
     
-    // Check current password
+    // check current password
     if (!passwordData.currentPassword.trim()) {
       errors.currentPassword = 'Vui lòng nhập mật khẩu hiện tại';
     }
     
-    // Check new password
-    if (!passwordData.newPassword.trim()) {
-      errors.newPassword = 'Vui lòng nhập mật khẩu mới';
-    } else if (passwordData.newPassword.length < 8) {
-      errors.newPassword = 'Mật khẩu mới phải có ít nhất 8 ký tự';
-    } else if (!/[A-Z]/.test(passwordData.newPassword)) {
-      errors.newPassword = 'Mật khẩu mới phải có ít nhất 1 ký tự hoa';
-    } else if (!/[a-z]/.test(passwordData.newPassword)) {
-      errors.newPassword = 'Mật khẩu mới phải có ít nhất 1 ký tự thường';
-    } else if (!/[0-9]/.test(passwordData.newPassword)) {
-      errors.newPassword = 'Mật khẩu mới phải có ít nhất 1 chữ số';
-    } else if (!/[^A-Za-z0-9]/.test(passwordData.newPassword)) {
-      errors.newPassword = 'Mật khẩu mới phải có ít nhất 1 ký tự đặc biệt';
+    // check new password using the utility function
+    const passwordResult = validatePassword(passwordData.newPassword);
+    if (!passwordResult.isValid) {
+      errors.newPassword = passwordResult.errors[0]; // Get the first error
     }
     
-    // Check confirm password
-    if (!passwordData.confirmPassword.trim()) {
-      errors.confirmPassword = 'Vui lòng xác nhận mật khẩu mới';
-    } else if (passwordData.confirmPassword !== passwordData.newPassword) {
-      errors.confirmPassword = 'Xác nhận mật khẩu không khớp';
+    // check confirm password using the utility function
+    const confirmResult = validateConfirmPassword(passwordData.newPassword, passwordData.confirmPassword);
+    if (!confirmResult.isValid) {
+      errors.confirmPassword = confirmResult.error;
     }
     
     return errors;
@@ -80,7 +69,7 @@ const ChangePassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Check validation
+    // check validation
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
@@ -104,7 +93,7 @@ const ChangePassword = () => {
         confirmPassword: ''
       });
       
-      // Reset password visibility
+      // reset password visibility
       setPasswordVisibility({
         currentPassword: false,
         newPassword: false,

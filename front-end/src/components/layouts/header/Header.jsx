@@ -1,18 +1,12 @@
-// Libraries
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-// Auth Context
 import { useAuth } from '../../../context/AuthContext';
-// Icons
 import { FaSignOutAlt, FaTachometerAlt, FaUser, FaCaretDown } from 'react-icons/fa';
-// Assets 
-import logo from '../../../assets/logo.jpg';
-// Styles
+import { logo } from '../../../assets';
 import './Header.css';
 
 const Header = () => {
   const { isAuthenticated, user, logout } = useAuth();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -42,11 +36,6 @@ const Header = () => {
     } catch (error) {
       console.error('Lỗi khi đăng xuất:', error);
     }
-  };
-
-  // handle dropdown
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
   };
 
   // handle get dashboard link
@@ -159,10 +148,7 @@ const Header = () => {
         <div className="auth-container">
           {isAuthenticated && user ? (
             <div className="user-dropdown">
-              <div 
-                className="user-info"
-                onClick={toggleDropdown}
-              >
+              <div className="user-info">
                 <div className="user-avatar">
                   <FaUser />
                 </div>
@@ -174,52 +160,49 @@ const Header = () => {
                 <FaCaretDown className="dropdown-icon" />
               </div>
               
-              {/* Dropdown menu */}
-              {dropdownOpen && (
-                <div className="dropdown-menu">
-                  <div className="dropdown-header">
-                    <div className="dropdown-avatar">
-                      <FaUser />
-                    </div>
-                    <div className="dropdown-user-info">
-                      {user.username && user.username.length > 10 ? (
-                        <span className="dropdown-username">{user.username.slice(0, 10)}...</span>
-                      ) : (
-                        <span className="dropdown-username">{user.username}</span>
-                      )}
-                      <span className="dropdown-usertype">
-                        {user.type === 'A' && 'Chủ sở hữu'}
-                        {user.type === 'M' && 'Quản lý'}
-                        {user.type === 'E' && 'Nhân viên'}
-                        {user.type === 'C' && 'Khách hàng'}
-                      </span>
-                    </div>
+              <div className="dropdown-menu">
+                <div className="dropdown-header">
+                  <div className="dropdown-avatar">
+                    <FaUser />
                   </div>
-                  <Link 
-                    to={getDashboardLink()}
-                    className="dropdown-item"
-                  >
-                    <div className="dropdown-item-content">
-                      <FaTachometerAlt className="dropdown-item-icon" />
-                      <span>
-                        {user.type === 'A' && 'Quản Trị Công Ty'}
-                        {user.type === 'M' && 'Quản Lý Nhà Hàng'}
-                        {user.type === 'E' && 'Trang Nhân Viên'}
-                        {user.type === 'C' && 'Tài Khoản'}
-                      </span>
-                    </div>
-                  </Link>
-                  <button 
-                    onClick={handleLogout}
-                    className="dropdown-item"
-                  >
-                    <div className="dropdown-item-content">
-                      <FaSignOutAlt className="dropdown-item-icon" />
-                      <span>Đăng Xuất</span>
-                    </div>
-                  </button>
+                  <div className="dropdown-user-info">
+                    {user.username && user.username.length > 10 ? (
+                      <span className="dropdown-username">{user.username.slice(0, 10)}...</span>
+                    ) : (
+                      <span className="dropdown-username">{user.username}</span>
+                    )}
+                    <span className="dropdown-usertype">
+                      {user.type === 'A' && 'Chủ sở hữu'}
+                      {user.type === 'M' && 'Quản lý'}
+                      {user.type === 'E' && 'Nhân viên'}
+                      {user.type === 'C' && 'Khách hàng'}
+                    </span>
+                  </div>
                 </div>
-              )}
+                <Link 
+                  to={getDashboardLink()}
+                  className="dropdown-item"
+                >
+                  <div className="dropdown-item-content">
+                    <FaTachometerAlt className="dropdown-item-icon" />
+                    <span>
+                      {user.type === 'A' && 'Quản Trị Công Ty'}
+                      {user.type === 'M' && 'Quản Lý Nhà Hàng'}
+                      {user.type === 'E' && 'Trang Nhân Viên'}
+                      {user.type === 'C' && 'Tài Khoản'}
+                    </span>
+                  </div>
+                </Link>
+                <button 
+                  onClick={handleLogout}
+                  className="dropdown-item"
+                >
+                  <div className="dropdown-item-content">
+                    <FaSignOutAlt className="dropdown-item-icon" />
+                    <span>Đăng Xuất</span>
+                  </div>
+                </button>
+              </div>
             </div>
           ) : (
             <>

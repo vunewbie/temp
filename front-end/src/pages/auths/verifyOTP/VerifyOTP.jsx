@@ -1,20 +1,10 @@
-// Libraries
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-// CSS
 import './VerifyOTP.css';
-// Components
 import { ErrorsPopupWindow, SuccessfulPopupWindow } from '../../../components';
-// Assets
-import loginLogo from '../../../assets/logo.jpg';
-import otpIcon from '../../../assets/auths/otp-icon.svg';
-import verifyPicture1 from '../../../assets/auths/verify-picture1.jpg';
-import verifyPicture2 from '../../../assets/auths/verify-picture2.jpg';
-import verifyPicture3 from '../../../assets/auths/verify-picture3.jpg';
-// API
-import { registerVerifyOTPAPI, resendRegisterOTPAPI, forgotPasswordVerifyOTPAPI, resendForgotPasswordOTPAPI } from '../../../api/AuthsAPI';
-// Utils
-import { translateErrorMessage } from '../../../utils/errorTranslator';
+import { logo, otpIcon, verifyPicture1, verifyPicture2, verifyPicture3 } from '../../../assets';
+import { registerVerifyOTPAPI, resendRegisterOTPAPI, forgotPasswordVerifyOTPAPI, resendForgotPasswordOTPAPI } from '../../../api';
+import { translateErrorMessage } from '../../../utils';
 
 const VerifyOTP = () => {
   const navigate = useNavigate();
@@ -28,10 +18,10 @@ const VerifyOTP = () => {
   const [verifyType, setVerifyType] = useState(null); // 'register' hoặc 'forgot_password'
   const [currentPicture, setCurrentPicture] = useState(0);
   
-  // Các hình nền
+  // pictures
   const pictures = [verifyPicture1, verifyPicture2, verifyPicture3];
 
-  // Slideshow effect
+  // slideshow effect
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentPicture((prev) => (prev + 1) % pictures.length);
@@ -39,7 +29,7 @@ const VerifyOTP = () => {
     return () => clearInterval(interval);
   }, [pictures.length]);
 
-  // Lấy verifyType từ URL query params
+  // get verifyType from URL query params
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const type = params.get('type');
@@ -50,7 +40,7 @@ const VerifyOTP = () => {
     }
   }, [location, navigate]);
 
-  // Kiểm tra hashed_email trong localStorage
+  // check hashed_email in localStorage
   useEffect(() => {
     const hashedEmail = localStorage.getItem('hashedEmail');
     if (!hashedEmail) {
@@ -58,7 +48,7 @@ const VerifyOTP = () => {
     }
   }, [navigate]);
 
-  // Xử lý đếm ngược cho nút gửi lại OTP
+  // handle countdown for resend OTP button
   useEffect(() => {
     let timer;
     if (countdown > 0) {
@@ -72,12 +62,12 @@ const VerifyOTP = () => {
     return () => clearInterval(timer);
   }, [countdown]);
 
-  // Set resendDisabled to true when component mounts
+  // set resendDisabled to true when component mounts
   useEffect(() => {
     setResendDisabled(true);
   }, []);
 
-  // Validate OTP
+  // validate OTP
   const validateOTP = () => {
     const newErrors = [];
     
@@ -91,15 +81,15 @@ const VerifyOTP = () => {
     return newErrors.length === 0;
   };
 
-  // Handle submit
+  // handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Clear former errors
+    // clear former errors
     setErrors([]);
     setSuccessMessage('');
     
-    // Check OTP
+    // check OTP
     if (!validateOTP()) {
       return;
     }
@@ -151,7 +141,7 @@ const VerifyOTP = () => {
     }
   };
 
-  // Handle resend OTP
+  // handle resend OTP
   const handleResendOTP = async () => {
     if (resendDisabled) return;
     
@@ -188,17 +178,17 @@ const VerifyOTP = () => {
     }
   };
 
-  // Close errors popup
+  // close errors popup
   const handleCloseErrors = () => {
     setErrors([]);
   };
 
-  // Close success popup
+  // close success popup
   const handleCloseSuccess = () => {
     setSuccessMessage('');
   };
 
-  // Tiêu đề và mô tả dựa trên loại xác thực
+  // title and description based on verify type
   const getPageContent = () => {
     if (verifyType === 'register') {
       return {
@@ -220,7 +210,7 @@ const VerifyOTP = () => {
       <div className="auth-verify-otp-wrapper">
         <div className="auth-verify-otp-form-container">
           <div className="auth-verify-otp-logo">
-            <img src={loginLogo} alt="Logo" className="auth-verify-otp-logo-img" />
+            <img src={logo} alt="Logo" className="auth-verify-otp-logo-img" />
           </div>
           
           <h1 className="auth-verify-otp-title">{pageContent.title}</h1>

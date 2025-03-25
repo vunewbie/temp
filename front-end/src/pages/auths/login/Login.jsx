@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
-import { getGoogleOAuth2CodeAPI, getFacebookOAuth2CodeAPI, getGitHubOAuth2CodeAPI } from "../../../api/AuthsAPI";
+import { getGoogleOAuth2CodeAPI, getFacebookOAuth2CodeAPI, getGitHubOAuth2CodeAPI } from "../../../api";
 import { useAuth } from '../../../context/AuthContext';
-import loginLogo from '../../../assets/logo.jpg';
-import usernameIcon from '../../../assets/auths/username-email-icon.svg';
-import passwordIcon from '../../../assets/auths/password-icon.svg';
-import eyeOffIcon from '../../../assets/auths/eye-off-icon.svg';
-import eyeOnIcon from '../../../assets/auths/eye-on-icon.svg';
-import googleIcon from '../../../assets/auths/google-icon.svg';
-import facebookIcon from '../../../assets/auths/facebook-icon.svg';
-import githubIcon from '../../../assets/auths/github-icon.svg';
-import loginPicture1 from '../../../assets/auths/login-picture1.jpg';
-import loginPicture2 from '../../../assets/auths/login-picture2.jpg';
-import loginPicture3 from '../../../assets/auths/login-picture3.jpg';
+// assets
+import { 
+  logo as loginLogo,
+  authUsernameEmailIcon as usernameIcon,
+  authPasswordIcon as passwordIcon,
+  authEyeOffIcon as eyeOffIcon,
+  authEyeOnIcon as eyeOnIcon,
+  googleIcon,
+  facebookIcon,
+  githubIcon,
+  loginPicture1,
+  loginPicture2,
+  loginPicture3
+} from '../../../assets';
 
 const Login = () => {
   const { login } = useAuth();
@@ -57,23 +60,23 @@ const Login = () => {
     setError('');
 
     try {
-      // Sử dụng login từ AuthContext
+      // login
       await login(authForm.username, authForm.password);
       navigate('/');
     } catch (error) {
       if (error.response && error.response.data) {
-        // Check if the account is not verified
+        // check if the account is not verified
         if (error.response.data.require_verification && 
             error.response.data.require_verification.includes('True') && 
             error.response.data.hashed_email) {
           
-          // Save hashed email to localStorage
+          // save hashed email to localStorage
           localStorage.setItem('hashedEmail', error.response.data.hashed_email[0]);
           
-          // Show error message
+          // show error message
           setError('Tài khoản chưa được xác thực. Đang chuyển hướng đến trang xác thực OTP...');
           
-          // Redirect to OTP verification page after 2 seconds
+          // redirect to OTP verification page after 2 seconds
           setTimeout(() => {
             navigate('/verify-otp?type=register');
           }, 2000);

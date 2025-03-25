@@ -6,6 +6,8 @@ urlpatterns = [
     path('customers', CustomerCreateAPIView.as_view(), name='customer-create'),
     path('customers/<int:pk>', CustomerRetrieveUpdateAPIView.as_view(), name='customer-detail'),
 
+    path('admins/<int:pk>', AdminRetrieveUpdateAPIView.as_view(), name='admin-detail'),
+
     path('managers', ManagerListCreateAPIView.as_view(), name='manager-list-create'),
     path('managers/<int:pk>', ManagerRetrieveUpdateDestroyAPIView.as_view(), name='manager-detail'),
 

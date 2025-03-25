@@ -1,12 +1,54 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaArrowLeft, FaArrowRight, FaTimes } from 'react-icons/fa';
-import { introImages, branchImages, branchInfo } from '../../utils/imageLoader';
+import { 
+  intro1, intro2, intro3, intro4, intro5, intro6,
+  hn1, hn2, hn3, hn4, hn5, hn6,
+  dn1, dn2, dn3, dn4, dn5, dn6,
+  hcm1, hcm2, hcm3, hcm4, hcm5, hcm6
+} from '../../assets';
 import './Home.css';
 
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedImage, setSelectedImage] = useState(null);
+
+  // Tạo mảng introImages từ các ảnh đã import
+  const introImages = [intro1, intro2, intro3, intro4, intro5, intro6];
+
+  // Các thông tin chi nhánh
+  const branchImages = {
+    hanoi: [hn1, hn2, hn3, hn4, hn5, hn6],
+    danang: [dn1, dn2, dn3, dn4, dn5, dn6],
+    hochiminh: [hcm1, hcm2, hcm3, hcm4, hcm5, hcm6]
+  };
+
+  const branchInfo = {
+    hanoi: [
+      { title: 'Hadu Sushi - Đống Đa', description: 'Số 27 Thái Thịnh, Đống Đa, Hà Nội' },
+      { title: 'Kiraku Japanese Restaurant - Hai Bà Trưng', description: '57 Trần Nhật Duật, Hai Bà Trưng, Hà Nội' },
+      { title: 'Sushi Bar - Xuân Diệu', description: '5 Xuân Diệu, Tây Hồ, Hà Nội' },
+      { title: 'Sushi Kei - Long Biên', description: 'Tầng 3, AEON Mall Long Biên, Long Biên, Hà Nội' },
+      { title: 'Sushi Lab - Hoàn Kiếm', description: '34 Lò Sũ, Hoàn Kiếm, Hà Nội' },
+      { title: 'Tokyo Deli - Hoàng Đạo Thúy', description: '17T4 Hoàng Đạo Thúy, Cầu Giấy, Hà Nội' }
+    ],
+    danang: [
+      { title: 'Akataiyo Sushi - Hải Châu', description: '12 Bạch Đằng, Hải Châu, Đà Nẵng' },
+      { title: 'Chen Sushi - Cẩm Lệ', description: '75 Ông Ích Khiêm, Cẩm Lệ, Đà Nẵng' },
+      { title: 'Dasushi - Thanh Khê', description: '83 Nguyễn Văn Linh, Thanh Khê, Đà Nẵng' },
+      { title: 'Issun Boshi - Ngũ Hành Sơn', description: 'Lô A5-10 Trần Hưng Đạo, Ngũ Hành Sơn, Đà Nẵng' },
+      { title: 'Kyoto Sushi Japanese - Sơn Trà', description: '29 An Dương Vương, Sơn Trà, Đà Nẵng' },
+      { title: 'Little Tokyo - Ngũ Hành Sơn', description: 'Lô 2 Đường Võ Nguyên Giáp, Ngũ Hành Sơn, Đà Nẵng' }
+    ],
+    hochiminh: [
+      { title: 'Kyo Sushi - Quận 8', description: '436 Âu Dương Lân, Phường 3, Quận 8, TP HCM' },
+      { title: 'La Phong Sushi House - Quận 1', description: '121 Lý Tự Trọng, Bến Thành, Quận 1, TP HCM' },
+      { title: 'Sorae Sushi - Quận 1', description: 'Tầng 24-25, AB Tower, 76A Lê Lai, Quận 1, TP HCM' },
+      { title: 'Sushi Tei - Quận 3', description: '97 Võ Văn Tần, Phường 6, Quận 3, TP HCM' },
+      { title: 'Sushiway - Thủ Đức', description: 'Lầu 3, Vincom Thủ Đức, 216 Võ Văn Ngân, TP Thủ Đức, TP HCM' },
+      { title: 'Takashi Sushi - Bình Chánh', description: '23 Nguyễn Hữu Trí, Bình Chánh, TP HCM' }
+    ]
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {

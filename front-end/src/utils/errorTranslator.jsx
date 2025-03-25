@@ -11,13 +11,6 @@ export const translateErrorMessage = (errorMessage) => {
         "Email is required.": "Vui lòng nhập email.",
         "Enter a valid email address.": "Email không hợp lệ.",
         
-        // Password
-        "Password is required.": "Vui lòng nhập mật khẩu.",
-        "Password must be at least 8 characters long.": "Mật khẩu phải có ít nhất 8 ký tự.",
-        "Password is too common.": "Mật khẩu quá đơn giản.",
-        "This password is too short. It must contain at least 8 characters.": "Mật khẩu quá ngắn. Mật khẩu phải có ít nhất 8 ký tự.",
-        "Password is entirely numeric.": "Mật khẩu không được chỉ chứa số.",
-        
         // Phone Number
         "Enter a valid phone number.": "Vui lòng nhập số điện thoại hợp lệ.",
         "The phone number entered is not valid.": "Số điện thoại nhập vào không hợp lệ.",

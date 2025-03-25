@@ -1,7 +1,6 @@
 from .models import *
 from .utils import *
 
-from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.db.models import Q
@@ -126,7 +125,7 @@ class UserSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs.get('password'):
             try:
-                validate_password(attrs['password'])
+                validate_password_strength(attrs['password'])
             except ValidationError as e:
                 raise serializers.ValidationError({'password': list(e.messages)})
     
@@ -134,11 +133,12 @@ class UserSerializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
-        
+
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         
         if password:
+
             instance.set_password(password)
         instance.save()
         

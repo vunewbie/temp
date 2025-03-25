@@ -1,5 +1,6 @@
 from pathlib import Path
 import environ
+from datetime import timedelta
 
 # path to root directory and read environment variables
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -170,6 +171,14 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+}
+
+# simple jwt settings
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Thời gian sống của refresh token
+    'ROTATE_REFRESH_TOKENS': True,  # Tự động tạo refresh token mới khi refresh
+    'BLACKLIST_AFTER_ROTATION': True,  # Đưa refresh token cũ vào blacklist
 }
 
 # authentication backends

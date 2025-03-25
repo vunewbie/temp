@@ -1,26 +1,26 @@
-// Libraries
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// CSS
 import './CustomerRegister.css';
-// Components
 import { ErrorsPopupWindow, SuccessfulPopupWindow } from '../../../components';
-// Assets
-import loginLogo from '../../../assets/logo.jpg';
-import usernameIcon from '../../../assets/auths/username-email-icon.svg';
-import emailIcon from '../../../assets/auths/email-icon.svg';
-import passwordIcon from '../../../assets/auths/password-icon.svg';
-import eyeOffIcon from '../../../assets/auths/eye-off-icon.svg';
-import eyeOnIcon from '../../../assets/auths/eye-on-icon.svg';
-import googleIcon from '../../../assets/auths/google-icon.svg';
-import facebookIcon from '../../../assets/auths/facebook-icon.svg';
-import githubIcon from '../../../assets/auths/github-icon.svg';
-import registerPicture1 from '../../../assets/auths/register-picture1.jpg';
-import registerPicture2 from '../../../assets/auths/register-picture2.jpg';
-import registerPicture3 from '../../../assets/auths/register-picture3.jpg';
-// API
-import { customerRegisterAPI } from '../../../api/AuthsAPI';
-import { getGoogleOAuth2CodeAPI, getFacebookOAuth2CodeAPI, getGitHubOAuth2CodeAPI } from "../../../api/AuthsAPI";
+// assets
+import { 
+  logo as loginLogo,
+  authUsernameEmailIcon as usernameIcon,
+  authEmailIcon as emailIcon,
+  authPasswordIcon as passwordIcon,
+  authEyeOffIcon as eyeOffIcon,
+  authEyeOnIcon as eyeOnIcon,
+  googleIcon,
+  facebookIcon,
+  githubIcon,
+  registerPicture1,
+  registerPicture2,
+  registerPicture3
+} from '../../../assets';
+// api
+import { customerRegisterAPI, getGoogleOAuth2CodeAPI, getFacebookOAuth2CodeAPI, getGitHubOAuth2CodeAPI } from "../../../api";
+// utils
+import { validatePasswordWithConfirmation } from '../../../utils';
 
 const Register = () => {
   const [authForm, setAuthForm] = useState({
@@ -39,7 +39,7 @@ const Register = () => {
   const navigate = useNavigate();
   const pictures = [registerPicture1, registerPicture2, registerPicture3];
 
-  // Slideshow effect
+  // slideshow effect
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentPicture((prev) => (prev + 1) % pictures.length);
@@ -47,7 +47,7 @@ const Register = () => {
     return () => clearInterval(interval);
   }, [pictures.length]);
 
-  // Handle change
+  // handle change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setAuthForm(prevState => ({
@@ -55,7 +55,7 @@ const Register = () => {
       [name]: value
     }));
 
-    // Check password and confirm password
+    // check password and confirm password
     if (name === 'confirmPassword' || name === 'password') {
       if (name === 'password' && authForm.confirmPassword && value !== authForm.confirmPassword) {
         setPasswordError('Mật khẩu nhập lại không khớp');
@@ -67,54 +67,50 @@ const Register = () => {
     }
   };
 
-  // Display password
+  // display password
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
   
-  // Display confirm password 
+  // display confirm password 
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
-  // Validate form
+  // validate form
   const validateForm = () => {
     const newErrors = [];
     
-    // Check username
+    // check username
     if (authForm.username.length < 3) {
       newErrors.push('Tên đăng nhập phải có ít nhất 3 ký tự');
     }
 
-    // Check email
+    // check email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(authForm.email)) {
       newErrors.push('Email không hợp lệ');
     }
 
-    // Check password
-    if (authForm.password.length < 6) {
-      newErrors.push('Mật khẩu phải có ít nhất 6 ký tự');
-    }
-
-    // Check confirm password
-    if (authForm.password !== authForm.confirmPassword) {
-      newErrors.push('Mật khẩu nhập lại không khớp');
+    // check password and confirm password using the utility function
+    const passwordValidation = validatePasswordWithConfirmation(authForm.password, authForm.confirmPassword);
+    if (!passwordValidation.isValid) {
+      newErrors.push(...passwordValidation.errors);
     }
 
     setErrors(newErrors);
     return newErrors.length === 0;
   };
 
-  // Handle submit
+  // handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Clear former errors
+    // clear former errors
     setErrors([]);
     setSuccessMessage('');
     
-    // Check form
+    // check form
     if (!validateForm()) {
       return;
     }
@@ -122,15 +118,15 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      // API call
+      // API   call
       const response = await customerRegisterAPI(authForm.username, authForm.email, authForm.password);
       
-      // Save hashed email to localStorage
+      // save hashed email to localStorage
       localStorage.setItem('hashedEmail', response.data.hashed_email);
-      // Set success message for popup window
+      // set success message for popup window
       setSuccessMessage(response.data.message);
       
-      // Redirect to verify OTP page after 2 seconds
+      // redirect to verify OTP page after 2 seconds
       setTimeout(() => {
         navigate('/verify-otp?type=register');
       }, 2000);
@@ -142,12 +138,12 @@ const Register = () => {
     }
   };
 
-  // Close errors popup
+  // close errors popup
   const handleCloseErrors = () => {
     setErrors([]);
   };
 
-  // Close success popup
+  // close success popup
   const handleCloseSuccess = () => {
     setSuccessMessage('');
     navigate('/login');
