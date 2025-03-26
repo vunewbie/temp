@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import SideBar from '../../../components/dashboard/SideBar';
-import UserInfo from '../../../components/dashboard/UserInfo';
-import ChangePassword from '../../../components/dashboard/ChangePassword';
-import Serve from '../../../components/dashboard/employee/Serve';
-import Reservation from '../../../components/dashboard/employee/Reservation';
-import Delivery from '../../../components/dashboard/employee/Delivery';
+import { SideBar, UserInfo, ChangePassword, Serve, Reservation, Delivery } from '../../../components';
 import './EmployeeDashboard.css';
 
 const EmployeeDashboard = () => {

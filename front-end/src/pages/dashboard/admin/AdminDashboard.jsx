@@ -1,25 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import SideBar from '../../../components/dashboard/SideBar';
-import UserInfo from '../../../components/dashboard/UserInfo';
-import ChangePassword from '../../../components/dashboard/ChangePassword';
-
-// Import admin-specific components
-import Area from '../../../components/dashboard/admin/Area';
-import NewArea from '../../../components/dashboard/admin/NewArea';
-import Branch from '../../../components/dashboard/admin/Branch';
-import NewBranch from '../../../components/dashboard/admin/NewBranch';
-import Dish from '../../../components/dashboard/admin/Dish';
-import NewDish from '../../../components/dashboard/admin/NewDish';
-import Category from '../../../components/dashboard/admin/Category';
-import NewCategory from '../../../components/dashboard/admin/NewCategory';
-import Department from '../../../components/dashboard/admin/Department';
-import NewDepartment from '../../../components/dashboard/admin/NewDepartment';
-import BranchManager from '../../../components/dashboard/admin/BranchManager';
-import NewBranchManager from '../../../components/dashboard/admin/NewBranchManager';
-import Promotion from '../../../components/dashboard/admin/Promotion';
-import NewPromotion from '../../../components/dashboard/admin/NewPromotion';
-import Statistics from '../../../components/dashboard/admin/Statistics';
+import { SideBar, UserInfo, ChangePassword, Area, NewArea, Branch, NewBranch,
+         Dish, NewDish, Category, NewCategory, Department, NewDepartment, BranchManager,
+         NewBranchManager, Promotion, NewPromotion, Statistics } from '../../../components';
 
 import './AdminDashboard.css';
 

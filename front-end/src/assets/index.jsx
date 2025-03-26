@@ -251,7 +251,7 @@ export {
   intro5,
   intro6,
   
-  // Home/Hà Nội
+  // Home/HN
   hn1,
   hn2,
   hn3,
@@ -259,7 +259,7 @@ export {
   hn5,
   hn6,
   
-  // Home/Đà Nẵng
+  // Home/DN
   dn1,
   dn2,
   dn3,
@@ -267,7 +267,7 @@ export {
   dn5,
   dn6,
   
-  // Home/Hồ Chí Minh
+  // Home/HCM
   hcm1,
   hcm2,
   hcm3,

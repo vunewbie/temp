@@ -1,10 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import SideBar from '../../../components/dashboard/SideBar';
-import UserInfo from '../../../components/dashboard/UserInfo';
-import ChangePassword from '../../../components/dashboard/ChangePassword';
-import PurchaseHistory from '../../../components/dashboard/customer/PurchaseHistory';
-import CumulativePointsHistory from '../../../components/dashboard/customer/CumulativePointsHistory';
+import { SideBar, UserInfo, ChangePassword, PurchaseHistory, CumulativePointsHistory } from '../../../components';
 import './CustomerDashboard.css';
 
 const CustomerDashboard = () => {

@@ -11,6 +11,7 @@ export const retrieveEmployeeInfoAPI = async (employeeId) => {
         Authorization: `Bearer ${localStorage.getItem('access_token')}`
       }
     });
+    
     return response.data;
   } catch (error) {
     console.error("Lỗi khi lấy thông tin nhân viên:", error);

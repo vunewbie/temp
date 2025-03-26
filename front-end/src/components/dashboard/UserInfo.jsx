@@ -48,13 +48,13 @@ const UserInfo = () => {
     address: '',
     years_of_experience: 0,
     salary: 0,
-    branch: null
+    branch: ''
   });
   // employee data
   const [employeeData, setEmployeeData] = useState({
     address: '',
-    department: null,
-    branch: null,
+    department: '',
+    branch: '',
     salary: 100000 // default value
   });
   // avatar preview
@@ -90,7 +90,6 @@ const UserInfo = () => {
     branch: null,
     salary: 100000
   });
-  const [branches, setBranches] = useState([]);
   const [dataFetched, setDataFetched] = useState(false);
 
   // convert tier code to display name
@@ -551,7 +550,7 @@ const UserInfo = () => {
                 placeholder="Nhập số năm kinh nghiệm"
                 value={managerData.years_of_experience || 0}
                 onChange={handleManagerChange}
-                disabled={!isEditing}
+                disabled
                 min="0"
               />
             </div>
@@ -584,7 +583,7 @@ const UserInfo = () => {
               </label>
               <input
                 type="text"
-                value={branches.find(b => b.id === managerData.branch)?.name || 'Chưa có chi nhánh'}
+                value={managerData.branch}
                 disabled
               />
             </div>
@@ -620,7 +619,7 @@ const UserInfo = () => {
               </label>
               <input 
                 type="text" 
-                value={employeeData.department?.name || 'Chưa có bộ phận'} 
+                value={employeeData.department} 
                 disabled 
               />
             </div>
@@ -648,7 +647,7 @@ const UserInfo = () => {
               </label>
               <input 
                 type="text" 
-                value={branches.find(b => b.id === employeeData.branch)?.name || 'Chưa có chi nhánh'} 
+                value={employeeData.branch} 
                 disabled 
               />
             </div>

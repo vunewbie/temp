@@ -1,14 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import SideBar from '../../../components/dashboard/SideBar';
-import UserInfo from '../../../components/dashboard/UserInfo';
-import ChangePassword from '../../../components/dashboard/ChangePassword';
-import EmployeeManagement from '../../../components/dashboard/manager/EmployeeManagement';
-import Recruitment from '../../../components/dashboard/manager/Recruitment';
-import MenuManagement from '../../../components/dashboard/manager/MenuManagement';
-import NewDish from '../../../components/dashboard/manager/NewDish';
-import TableManagement from '../../../components/dashboard/manager/TableManagement';
-import NewTable from '../../../components/dashboard/manager/NewTable';
+import { SideBar, UserInfo, ChangePassword, EmployeeManagement, Recruitment,
+         MenuManagement, TableManagement, NewTable, ManagerNewDish as NewDish
+} from '../../../components';
 import './ManagerDashboard.css';
 
 const ManagerDashboard = () => {

@@ -2,8 +2,7 @@
   position: fixed;
   bottom: 40px;
   right: 40px;
-  z-index: 9999; /* Z-index cao hơn mọi thành phần khác */
-  display: block !important; /* Luôn hiển thị container */
+  z-index: 99999; /* Z-index cao nhất để hiển thị trên cùng */
 }
 
 .scroll-to-top {
@@ -19,33 +18,37 @@
   align-items: center;
   justify-content: center;
   font-size: 18px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
-  opacity: 0.95;
-  animation: fadeIn 0.3s ease-in-out;
+  opacity: 0.9;
 }
 
 .scroll-to-top:hover {
   opacity: 1;
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.35);
+  background-color: #ea580c;
 }
 
 .scroll-to-top:active {
   transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
 .scroll-to-top:focus {
   outline: none;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
+/* Responsive styling */
+@media (max-width: 768px) {
+  .scroll-to-top-container {
+    bottom: 25px;
+    right: 25px;
   }
-  to {
-    opacity: 0.95;
-    transform: translateY(0);
+  
+  .scroll-to-top {
+    width: 45px;
+    height: 45px;
+    font-size: 16px;
   }
 }

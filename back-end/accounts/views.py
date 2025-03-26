@@ -162,6 +162,20 @@ class EmployeeRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView
     permission_classes = [IsEmployeeOrSameBranchManager]
     authentication_classes = [CustomTokenAuthentication]
 
+    # retrieve employee information with additional branch and department names
+    def retrieve(self, request, *args, **kwargs):
+        employee = self.get_object()
+        serializer = self.get_serializer(employee)
+        data = serializer.data
+
+        if employee.branch:
+            data["branch"] = employee.branch.name
+        if employee.department:
+            data["department"] = employee.department.name
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
     # put request is denied
     def put(self, request, *args, **kwargs):
         return Response({"detail": "Phương thức không được phép."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -266,6 +280,18 @@ class ManagerRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView)
     serializer_class = ManagerSerializer
     permission_classes = [IsManagerOrAdmin]
     authentication_classes = [CustomTokenAuthentication]
+
+    # retrieve manager information with additional branch name
+    def retrieve(self, request, *args, **kwargs):
+        manager = self.get_object()
+        serializer = self.get_serializer(manager)
+        data = serializer.data
+        
+        # Add branch name for frontend convenience
+        if manager.branch:
+            data['branch'] = manager.branch.name
+
+        return Response(data, status=status.HTTP_200_OK)
 
     # put request is denied
     def put(self, request, *args, **kwargs):
