@@ -34,7 +34,9 @@ import {
 // EmployeeAPI
 import {
     retrieveEmployeeInfoAPI,
-    updateEmployeeInfoAPI
+    updateEmployeeInfoAPI,
+    fireEmployeeAPI,
+    listEmployeeInfoAPI
 } from './accounts/EmployeeAPI';
 
 // ManagerAPI
@@ -74,6 +76,8 @@ export {
     // EmployeeAPI
     retrieveEmployeeInfoAPI,
     updateEmployeeInfoAPI,
+    fireEmployeeAPI,
+    listEmployeeInfoAPI,
     
     // ManagerAPI
     retrieveManagerInfoAPI,

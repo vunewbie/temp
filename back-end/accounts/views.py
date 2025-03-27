@@ -84,6 +84,17 @@ class AdminRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsOwner]
     authentication_classes = [CustomTokenAuthentication]
+
+    def retrieve(self, request, *args, **kwargs):
+        admin = self.get_object()
+        serializer = self.get_serializer(admin)
+        data = serializer.data
+
+        response = {
+            "user" : data
+        }
+
+        return Response(response, status=status.HTTP_200_OK)
     
     def put(self, request, *args, **kwargs):
         return Response({"detail": "Phương thức không được phép."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -116,8 +127,21 @@ class EmployeeListCreateAPIView(generics.ListCreateAPIView):
     def get(self, request):
         employees = self.get_queryset()
         serializer = self.serializer_class(employees, many=True)
+        data = serializer.data
+
+        for employee in data:
+            if employee.get('department'):
+                department_id = employee['department']
+                try:
+                    department = Department.objects.get(id=department_id)
+                    employee['department_name'] = department.name
+                except Department.DoesNotExist:
+                    employee['department_name'] = 'Không tìm thấy bộ phận'
+
+            employee.pop('salary', None)
+            employee.pop('branch', None)
         
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(data, status=status.HTTP_200_OK)
 
     # create new employee
     def post(self, request):
@@ -169,9 +193,10 @@ class EmployeeRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView
         data = serializer.data
 
         if employee.branch:
-            data["branch"] = employee.branch.name
+            data["branch_name"] = employee.branch.name
         if employee.department:
-            data["department"] = employee.department.name
+            data["department_name"] = employee.department.name
+            data["salary"] = employee.department.salary
 
         return Response(data, status=status.HTTP_200_OK)
 
@@ -289,7 +314,7 @@ class ManagerRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView)
         
         # Add branch name for frontend convenience
         if manager.branch:
-            data['branch'] = manager.branch.name
+            data['branch_name'] = manager.branch.name
 
         return Response(data, status=status.HTTP_200_OK)
 

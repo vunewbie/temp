@@ -97,3 +97,4 @@ export const updateManagerInfoAPI = async (managerId, managerData) => {
     throw error;
   }
 };
+

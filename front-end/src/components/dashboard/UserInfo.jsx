@@ -28,33 +28,33 @@ const UserInfo = () => {
   const [userData, setUserData] = useState({
     username: '',
     email: '',
-    phone_number: '',
-    citizen_id: '',
-    full_name: '',
+    phoneNumber: '',
+    citizenId: '',
+    fullName: '',
     gender: 'M',
-    date_of_birth: '',
+    dateOfBirth: '',
     avatar: null,
     joinDate: '',
   });
   // customer data
   const [customerData, setCustomerData] = useState({
-    cumulative_points: 0,
-    total_points: 0,
+    cumulativePoints: 0,
+    totalPoints: 0,
     tier: 'B',
-    last_tier_update: '',
+    lastTierUpdate: '',
   });
   // manager data
   const [managerData, setManagerData] = useState({
     address: '',
-    years_of_experience: 0,
+    yearsOfExperience: 0,
     salary: 0,
-    branch: ''
+    branchName: ''
   });
   // employee data
   const [employeeData, setEmployeeData] = useState({
     address: '',
-    department: '',
-    branch: '',
+    departmentName: '',
+    branchName: '',
     salary: 100000 // default value
   });
   // avatar preview
@@ -68,27 +68,27 @@ const UserInfo = () => {
   const [initialUserData, setInitialUserData] = useState({
     username: '',
     email: '',
-    phone_number: '',
-    citizen_id: '',
-    full_name: '',
+    phoneNumber: '',
+    citizenId: '',
+    fullName: '',
     gender: 'M',
-    date_of_birth: '',
+    dateOfBirth: '',
     avatar: null,
     joinDate: '',
   });
   // manager data
   const [initialManagerData, setInitialManagerData] = useState({
     address: '',
-    years_of_experience: 0,
+    yearsOfExperience: 0,
     salary: 0,
-    branch: null
+    branchName: ''
   });
   // employee data
   const [initialEmployeeData, setInitialEmployeeData] = useState({
     address: '',
-    department: null,
-    branch: null,
-    salary: 100000
+    departmentName: '',
+    branchName: '',
+    salary: 0
   });
   const [dataFetched, setDataFetched] = useState(false);
 
@@ -133,16 +133,17 @@ const UserInfo = () => {
         return;
       }
       
-      // process common user info
-      const userInfo = user.type === 'A' ? data : data.user || {};
+      // get user info from data
+      const userInfo = data.user || {};
+      
       const newUserData = {
         username: userInfo.username || '',
         email: userInfo.email || '',
-        phone_number: formatPhoneNumberForDisplay(userInfo.phone_number) || '',
-        citizen_id: userInfo.citizen_id || '',
-        full_name: userInfo.full_name || '',
+        phoneNumber: formatPhoneNumberForDisplay(userInfo.phone_number) || '',
+        citizenId: userInfo.citizen_id || '',
+        fullName: userInfo.full_name || '',
         gender: userInfo.gender || 'M',
-        date_of_birth: userInfo.date_of_birth ? 
+        dateOfBirth: userInfo.date_of_birth ? 
           new Date(userInfo.date_of_birth).toISOString().split('T')[0] : '',
         avatar: userInfo.avatar || null,
         joinDate: userInfo.date_joined ? 
@@ -154,9 +155,9 @@ const UserInfo = () => {
         // update manager-specific data
         const newManagerData = {
           address: data.address || '',
-          years_of_experience: data.years_of_experience || 0,
+          yearsOfExperience: data.years_of_experience || 0,
           salary: data.salary || 0,
-          branch: data.branch || null
+          branchName: data.branch_name || 'Chưa có chi nhánh'
         };
         setManagerData(newManagerData);
         setInitialManagerData(newManagerData);
@@ -164,19 +165,19 @@ const UserInfo = () => {
         // update employee-specific data
         const newEmployeeData = {
           address: data.address || '',
-          department: data.department || null,
-          branch: data.branch || null,
-          salary: 100000 // default value
+          departmentName: data.department_name || 'Chưa có bộ phận',
+          branchName: data.branch_name || 'Chưa có chi nhánh',
+          salary: data.salary || 100000
         };
         setEmployeeData(newEmployeeData);
         setInitialEmployeeData(newEmployeeData);
       } else if (user.type === 'C') {
         // update customer-specific data
         setCustomerData({
-          cumulative_points: data.cumulative_points || 0,
-          total_points: data.total_points || 0,
+          cumulativePoints: data.cumulative_points || 0,
+          totalPoints: data.total_points || 0,
           tier: data.tier || 'B',
-          last_tier_update: data.last_tier_update ? 
+          lastTierUpdate: data.last_tier_update ? 
             new Date(data.last_tier_update).toISOString().split('T')[0] : ''
         });
       }
@@ -211,9 +212,15 @@ const UserInfo = () => {
     const { name, value, type, checked } = e.target;
     const newValue = type === 'checkbox' ? checked : value;
     
+    // convert field name from snake_case to camelCase if needed
+    const fieldName = name === 'phone_number' ? 'phoneNumber' : 
+                     name === 'citizen_id' ? 'citizenId' : 
+                     name === 'full_name' ? 'fullName' : 
+                     name === 'date_of_birth' ? 'dateOfBirth' : name;
+    
     setUserData({
       ...userData,
-      [name]: newValue
+      [fieldName]: newValue
     });
   };
 
@@ -290,78 +297,48 @@ const UserInfo = () => {
       // prepare data to update
       let updateData = {};
       
-      if (user.type === 'A') {
-        // for admin, use flat structure
-        if (userData.phone_number !== initialUserData.phone_number) {
-          updateData.phone_number = formatPhoneNumberForAPI(userData.phone_number);
+      // add user field for all account types (including Admin)
+      if (!updateData.user) updateData.user = {};
+      
+      // process common user info
+      if (userData.phoneNumber !== initialUserData.phoneNumber) {
+        updateData.user.phone_number = formatPhoneNumberForAPI(userData.phoneNumber);
+      }
+      
+      if (userData.citizenId !== initialUserData.citizenId) {
+        updateData.user.citizen_id = userData.citizenId.trim() || null;
+      }
+      
+      if (userData.fullName !== initialUserData.fullName) {
+        updateData.user.full_name = userData.fullName.trim() || null;
+      }
+      
+      if (userData.gender !== initialUserData.gender) {
+        updateData.user.gender = userData.gender;
+      }
+      
+      if (userData.dateOfBirth !== initialUserData.dateOfBirth) {
+        updateData.user.date_of_birth = userData.dateOfBirth || null;
+      }
+      
+      if (userData.email !== initialUserData.email) {
+        updateData.user.email = userData.email.trim() || null;
+      }
+      
+      // only process specific fields for Manager and Employee
+      if (user.type === 'M') {
+        if (managerData.address !== initialManagerData.address) {
+          updateData.address = managerData.address.trim() || null;
         }
-        
-        if (userData.citizen_id !== initialUserData.citizen_id) {
-          updateData.citizen_id = userData.citizen_id.trim() || null;
+      } else if (user.type === 'E') {
+        if (employeeData.address !== initialEmployeeData.address) {
+          updateData.address = employeeData.address.trim() || null;
         }
-        
-        if (userData.full_name !== initialUserData.full_name) {
-          updateData.full_name = userData.full_name.trim() || null;
-        }
-        
-        if (userData.gender !== initialUserData.gender) {
-          updateData.gender = userData.gender;
-        }
-        
-        if (userData.date_of_birth !== initialUserData.date_of_birth) {
-          updateData.date_of_birth = userData.date_of_birth || null;
-        }
-        
-        if (userData.email !== initialUserData.email) {
-          updateData.email = userData.email.trim() || null;
-        }
-      } else {
-        // for other users, use nested structure
-        // check each field to update in userData
-        if (userData.phone_number !== initialUserData.phone_number) {
-          if (!updateData.user) updateData.user = {};
-          updateData.user.phone_number = formatPhoneNumberForAPI(userData.phone_number);
-        }
-        
-        if (userData.citizen_id !== initialUserData.citizen_id) {
-          if (!updateData.user) updateData.user = {};
-          updateData.user.citizen_id = userData.citizen_id.trim() || null;
-        }
-        
-        if (userData.full_name !== initialUserData.full_name) {
-          if (!updateData.user) updateData.user = {};
-          updateData.user.full_name = userData.full_name.trim() || null;
-        }
-        
-        if (userData.gender !== initialUserData.gender) {
-          if (!updateData.user) updateData.user = {};
-          updateData.user.gender = userData.gender;
-        }
-        
-        if (userData.date_of_birth !== initialUserData.date_of_birth) {
-          if (!updateData.user) updateData.user = {};
-          updateData.user.date_of_birth = userData.date_of_birth || null;
-        }
-        
-        if (userData.email !== initialUserData.email) {
-          if (!updateData.user) updateData.user = {};
-          updateData.user.email = userData.email.trim() || null;
-        }
-        
-        // handle specific fields for Employee and Manager
-        if (user.type === 'M') {
-          if (managerData.address !== initialManagerData.address) {
-            updateData.address = managerData.address.trim() || null;
-          }
-          
-          if (managerData.years_of_experience !== initialManagerData.years_of_experience) {
-            updateData.years_of_experience = managerData.years_of_experience;
-          }
-        } else if (user.type === 'E') {
-          if (employeeData.address !== initialEmployeeData.address) {
-            updateData.address = employeeData.address.trim() || null;
-          }
-        }
+      }
+
+      // if no user data has changed, remove user field from updateData
+      if (Object.keys(updateData.user).length === 0) {
+        delete updateData.user;
       }
 
       // create FormData if there is an avatar to upload
@@ -369,38 +346,26 @@ const UserInfo = () => {
       if (userData.avatar instanceof File) {
         formData = new FormData();
         
-        if (user.type === 'A') {
-          // for admin, use flat structure for FormData
-          formData.append('avatar', userData.avatar);
-          
-          // add other fields to FormData
-          if (Object.keys(updateData).length > 0) {
-            Object.keys(updateData).forEach(key => {
+        // use user.avatar for all account types
+        formData.append('user.avatar', userData.avatar);
+        
+        // add other fields to FormData
+        if (Object.keys(updateData).length > 0) {
+          Object.keys(updateData).forEach(key => {
+            if (key === 'user') {
+              Object.keys(updateData.user).forEach(userKey => {
+                formData.append(`user.${userKey}`, updateData.user[userKey]);
+              });
+            } else {
               formData.append(key, updateData[key]);
-            });
-          }
-        } else {
-          // for other users, use nested structure for FormData
-          formData.append('user.avatar', userData.avatar);
-          
-          // add other fields to FormData
-          if (Object.keys(updateData).length > 0) {
-            Object.keys(updateData).forEach(key => {
-              if (key === 'user') {
-                Object.keys(updateData.user).forEach(userKey => {
-                  formData.append(`user.${userKey}`, updateData.user[userKey]);
-                });
-              } else {
-                formData.append(key, updateData[key]);
-              }
-            });
-          }
+            }
+          });
         }
       }
       
       // only call API if there is data to update
       if (Object.keys(updateData).length > 0 || formData) {
-        console.log('data to send:', formData || updateData);
+        console.log('Dữ liệu gửi đi:', formData || updateData);
         
         let response;
         if (user.type === 'C') {
@@ -412,55 +377,13 @@ const UserInfo = () => {
         } else if (user.type === 'E') {
           response = await updateEmployeeInfoAPI(user.id, formData || updateData);
         }
-
-        // update state directly from response instead of calling GET API
-        const userInfo = user.type === 'A' ? response : response.user || {};
-        const newUserData = {
-          username: userInfo.username || '',
-          email: userInfo.email || '',
-          phone_number: formatPhoneNumberForDisplay(userInfo.phone_number) || '',
-          citizen_id: userInfo.citizen_id || '',
-          full_name: userInfo.full_name || '',
-          gender: userInfo.gender || 'M',
-          date_of_birth: userInfo.date_of_birth ? 
-            new Date(userInfo.date_of_birth).toISOString().split('T')[0] : '',
-          avatar: userInfo.avatar || null,
-          joinDate: userInfo.date_joined ? 
-            new Date(userInfo.date_joined).toISOString().split('T')[0] : '',
-        };
-
-        if (user.type === 'M') {
-          const newManagerData = {
-            address: response.address || '',
-            years_of_experience: response.years_of_experience || 0,
-            salary: response.salary || 0,
-            branch: response.branch || null
-          };
-          setManagerData(newManagerData);
-          setInitialManagerData(newManagerData);
-        } else if (user.type === 'E') {
-          const newEmployeeData = {
-            address: response.address || '',
-            department: response.department || null,
-            branch: response.branch || null,
-            salary: 100000 // default value
-          };
-          setEmployeeData(newEmployeeData);
-          setInitialEmployeeData(newEmployeeData);
-        }
-
-        setUserData(newUserData);
-        setInitialUserData(newUserData);
-        if (userInfo.avatar) {
-          setAvatarPreview(userInfo.avatar);
-        }
       }
 
       // update state
       setSuccess('Thông tin đã được cập nhật thành công.');
       setIsEditing(false);
       
-      // automatically reload page after 1 second
+      // automatically reload page after 1 second to get updated data
       setTimeout(() => {
         window.location.reload();
       }, 1000);
@@ -497,7 +420,7 @@ const UserInfo = () => {
               </label>
               <input 
                 type="text" 
-                value={customerData.cumulative_points || 0} 
+                value={customerData.cumulativePoints || 0} 
                 disabled 
               />
             </div>
@@ -548,7 +471,7 @@ const UserInfo = () => {
                 type="number"
                 name="years_of_experience"
                 placeholder="Nhập số năm kinh nghiệm"
-                value={managerData.years_of_experience || 0}
+                value={managerData.yearsOfExperience || 0}
                 onChange={handleManagerChange}
                 disabled
                 min="0"
@@ -569,7 +492,7 @@ const UserInfo = () => {
                 placeholder="Nhập lương"
                 value={managerData.salary || 0}
                 onChange={handleManagerChange}
-                disabled={!isEditing}
+                disabled
                 min="0"
                 step="100000"
               />
@@ -583,7 +506,7 @@ const UserInfo = () => {
               </label>
               <input
                 type="text"
-                value={managerData.branch}
+                value={managerData.branchName}
                 disabled
               />
             </div>
@@ -619,7 +542,7 @@ const UserInfo = () => {
               </label>
               <input 
                 type="text" 
-                value={employeeData.department} 
+                value={employeeData.departmentName} 
                 disabled 
               />
             </div>
@@ -647,7 +570,7 @@ const UserInfo = () => {
               </label>
               <input 
                 type="text" 
-                value={employeeData.branch} 
+                value={employeeData.branchName} 
                 disabled 
               />
             </div>
@@ -764,8 +687,8 @@ const UserInfo = () => {
             </label>
             <input
               type="tel"
-              name="phone_number"
-              value={userData.phone_number}
+              name="phoneNumber"
+              value={userData.phoneNumber}
               onChange={handleChange}
               disabled={!isEditing}
             />
@@ -779,8 +702,8 @@ const UserInfo = () => {
             </label>
             <input
               type="text"
-              name="citizen_id"
-              value={userData.citizen_id}
+              name="citizenId"
+              value={userData.citizenId}
               onChange={handleChange}
               disabled={!isEditing}
             />
@@ -797,8 +720,8 @@ const UserInfo = () => {
             </label>
             <input
               type="text"
-              name="full_name"
-              value={userData.full_name}
+              name="fullName"
+              value={userData.fullName}
               onChange={handleChange}
               disabled={!isEditing}
             />
@@ -832,8 +755,8 @@ const UserInfo = () => {
             </label>
             <input
               type="date"
-              name="date_of_birth"
-              value={userData.date_of_birth}
+              name="dateOfBirth"
+              value={userData.dateOfBirth}
               onChange={handleChange}
               disabled={!isEditing}
             />

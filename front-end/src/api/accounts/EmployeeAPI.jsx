@@ -98,3 +98,35 @@ export const updateEmployeeInfoAPI = async (employeeId, employeeData) => {
     throw error;
   }
 };
+
+// list employee info
+export const listEmployeeInfoAPI = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/accounts/employees`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`
+      }
+    });
+    
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách nhân viên:", error);
+    throw error;
+  }
+};
+
+// fire employee
+export const fireEmployeeAPI = async (employeeId) => {
+  try {
+    const response = await axios.delete(`${API_URL}/accounts/employees/${employeeId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi sa thải nhân viên:", error);
+    throw error;
+  }
+};

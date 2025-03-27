@@ -20,6 +20,8 @@ import addressIcon from './dashboard/general/address-icon.svg';
 import branchIcon from './dashboard/general/branch-icon.svg';
 import departmentIcon from './dashboard/general/department-icon.svg';
 import salaryIcon from './dashboard/general/salary-icon.svg';
+import updateIcon from './dashboard/general/update-icon.svg';
+import deleteIcon from './dashboard/general/delete-icon.svg';
 
 // Customer-specific icons
 import cumulativePointIcon from './dashboard/customer/cumulative-point-icon.svg';
@@ -170,6 +172,8 @@ export {
   branchIcon,
   departmentIcon,
   salaryIcon,
+  updateIcon,
+  deleteIcon,
   
   // Customer-specific icons
   cumulativePointIcon,
