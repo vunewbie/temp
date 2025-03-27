@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { SideBar, UserInfo, ChangePassword, Area, NewArea, Branch, NewBranch,
-         Dish, NewDish, Category, NewCategory, Department, NewDepartment, BranchManager,
-         NewBranchManager, Promotion, NewPromotion, Statistics } from '../../../components';
+         Dish, NewDish, Category, NewCategory, Department, NewDepartment, ManagerManagement,
+         NewManager, Promotion, NewPromotion, Statistics } from '../../../components';
 
 import './AdminDashboard.css';
 
@@ -55,10 +55,10 @@ const AdminDashboard = () => {
         return <Department />;
       case 'new-department':
         return <NewDepartment />;
-      case 'branch-manager':
-        return <BranchManager />;
-      case 'new-branch-manager':
-        return <NewBranchManager />;
+      case 'manager-management':
+        return <ManagerManagement />;
+      case 'new-manager':
+        return <NewManager />;
       case 'promotion':
         return <Promotion />;
       case 'new-promotion':

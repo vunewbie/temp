@@ -3,6 +3,7 @@ import Footer from './layouts/footer/Footer';
 import SuccessfulPopupWindow from './ui/popup/SuccessfulPopupWindow';
 import ErrorsPopupWindow from './ui/popup/ErrorsPopupWindow';
 import StaffPopupWindow from './ui/popup/StaffPopupWindow';
+import ManagerPopupWindow from './ui/popup/ManagerPopupWindow';
 import ScrollToTop from './ui/scrollToTop/ScrollToTop';
 
 // Dashboard components
@@ -21,8 +22,8 @@ import Category from './dashboard/admin/Category';
 import NewCategory from './dashboard/admin/NewCategory';
 import Department from './dashboard/admin/Department';
 import NewDepartment from './dashboard/admin/NewDepartment';
-import BranchManager from './dashboard/admin/BranchManager';
-import NewBranchManager from './dashboard/admin/NewBranchManager';
+import ManagerManagement from './dashboard/admin/ManagerManagement';
+import NewManager from './dashboard/admin/NewManager';
 import Promotion from './dashboard/admin/Promotion';
 import NewPromotion from './dashboard/admin/NewPromotion';
 import Statistics from './dashboard/admin/Statistics';
@@ -50,6 +51,7 @@ export {
   SuccessfulPopupWindow,
   ErrorsPopupWindow,
   StaffPopupWindow,
+  ManagerPopupWindow,
   ScrollToTop,
   ChangePassword,
   SideBar,
@@ -64,8 +66,8 @@ export {
   NewCategory,
   Department,
   NewDepartment,
-  BranchManager,
-  NewBranchManager,
+  ManagerManagement,
+  NewManager,
   Promotion,
   NewPromotion,
   Statistics,

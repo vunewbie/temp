@@ -269,6 +269,23 @@ class ManagerListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = ManagerSerializer
     permission_classes = [IsAdmin]
     authentication_classes = [CustomTokenAuthentication]
+
+    def get(self, request):
+        managers = self.get_queryset()
+        serializer = self.serializer_class(managers, many=True)
+        data = serializer.data
+
+        for manager in data:
+            if manager.get('branch'):
+                branch_id = manager['branch']
+                try:
+                    branch = Branch.objects.get(id=branch_id)
+                    manager['branch_name'] = branch.name
+                except Branch.DoesNotExist:
+                    manager['branch_name'] = 'Không tìm thấy chi nhánh'
+                    
+
+        return Response(data, status=status.HTTP_200_OK)
     
     # validate manager registration data -> save OTP and data to cache -> send OTP to email
     def post(self, request):

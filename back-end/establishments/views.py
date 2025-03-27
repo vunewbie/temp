@@ -36,6 +36,20 @@ class DepartmentRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIVi
     permission_classes = [IsManagerOrAdmin]
     authentication_classes = [CustomTokenAuthentication]
 
+class BranchListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Branch.objects.all()
+    serializer_class = BranchSerializer
+    permission_classes = [IsManagerOrAdmin]
+    authentication_classes = [CustomTokenAuthentication]
+
+class BranchRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Branch.objects.all()
+    serializer_class = BranchSerializer
+    permission_classes = [IsManagerOrAdmin]
+    authentication_classes = [CustomTokenAuthentication]
+    
+    
+    
     
     
     

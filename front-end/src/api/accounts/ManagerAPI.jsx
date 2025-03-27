@@ -98,3 +98,34 @@ export const updateManagerInfoAPI = async (managerId, managerData) => {
   }
 };
 
+// list manager info
+export const ListManagerInfoAPI = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/accounts/managers`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách quản lý:", error);
+    throw error;
+  }
+};
+
+// fire manager
+export const fireManagerAPI = async (managerId) => {
+  try {
+    const response = await axios.delete(`${API_URL}/accounts/managers/${managerId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi sa thải quản lý:", error);
+    throw error;
+  }
+};

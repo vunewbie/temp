@@ -52,8 +52,8 @@ import newDishAdminIcon from './dashboard/admin/new-dish-icon.svg';
 import categoryIcon from './dashboard/admin/category-icon.svg';
 import newCategoryIcon from './dashboard/admin/new-category-icon.svg';
 import newDepartmentIcon from './dashboard/admin/new-department-icon.svg';
-import branchManagerIcon from './dashboard/admin/branch-manager-icon.svg';
-import newBranchManagerIcon from './dashboard/admin/new-branch-manager-icon.svg';
+import managerManagementIcon from './dashboard/admin/manager-management-icon.svg';
+import newManagerIcon from './dashboard/admin/new-manager-icon.svg';
 import promotionIcon from './dashboard/admin/promotion-icon.svg';
 import newPromotionIcon from './dashboard/admin/new-promotion-icon.svg';
 import statisticsIcon from './dashboard/admin/statistics-icon.svg';
@@ -204,8 +204,8 @@ export {
   categoryIcon,
   newCategoryIcon,
   newDepartmentIcon,
-  branchManagerIcon,
-  newBranchManagerIcon,
+  managerManagementIcon,
+  newManagerIcon,
   promotionIcon,
   newPromotionIcon,
   statisticsIcon,

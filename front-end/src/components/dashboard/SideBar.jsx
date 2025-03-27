@@ -7,38 +7,17 @@ import { useAuth } from '../../context/AuthContext';
 // styles
 import './SideBar.css';
 // common icons
-import accountIcon from '../../assets/dashboard/general/account-icon.svg';
-import passwordIcon from '../../assets/dashboard/general/password-icon.svg';
+import { accountIcon, passwordIcon } from '../../assets/index';
 // customer icons
-import purchaseIcon from '../../assets/dashboard/customer/purchase-icon.svg';
-import pointIcon from '../../assets/dashboard/customer/point-icon.svg';
+import { purchaseIcon, pointIcon } from '../../assets/index';
 // manager icons
-import employeeManagementIcon from '../../assets/dashboard/manager/employee-management-icon.svg';
-import recruitmentIcon from '../../assets/dashboard/manager/recruitment-icon.svg';
-import menuManagementIcon from '../../assets/dashboard/manager/menu-management-icon.svg';
-import newDishIcon from '../../assets/dashboard/manager/new-dish-icon.svg';
-import tableManagementIcon from '../../assets/dashboard/manager/table-management-icon.svg';
-import newTableIcon from '../../assets/dashboard/manager/new-table-icon.svg';
+import { employeeManagementIcon, recruitmentIcon, menuManagementIcon, newDishIcon, tableManagementIcon, newTableIcon } from '../../assets/index';
 // employee icons
-import serveIcon from '../../assets/dashboard/employee/serve-icon.svg';
-import reservationIcon from '../../assets/dashboard/employee/reservation-icon.svg';
-import deliveryIcon from '../../assets/dashboard/employee/delivery-icon.svg';
+import { serveIcon, reservationIcon, deliveryIcon } from '../../assets/index';
 // admin icons
-import areaIcon from '../../assets/dashboard/admin/area-icon.svg';
-import newAreaIcon from '../../assets/dashboard/admin/new-area-icon.svg';
-import branchIcon from '../../assets/dashboard/general/branch-icon.svg';
-import newBranchIcon from '../../assets/dashboard/admin/new-branch-icon.svg';
-import dishIcon from '../../assets/dashboard/admin/dish-icon.svg';
-import newDishAdminIcon from '../../assets/dashboard/admin/new-dish-icon.svg';
-import categoryIcon from '../../assets/dashboard/admin/category-icon.svg';
-import newCategoryIcon from '../../assets/dashboard/admin/new-category-icon.svg';
-import departmentIcon from '../../assets/dashboard/general/department-icon.svg';
-import newDepartmentIcon from '../../assets/dashboard/admin/new-department-icon.svg';
-import branchManagerIcon from '../../assets/dashboard/admin/branch-manager-icon.svg';
-import newBranchManagerIcon from '../../assets/dashboard/admin/new-branch-manager-icon.svg';
-import promotionIcon from '../../assets/dashboard/admin/promotion-icon.svg';
-import newPromotionIcon from '../../assets/dashboard/admin/new-promotion-icon.svg';
-import statisticsIcon from '../../assets/dashboard/admin/statistics-icon.svg';
+import { areaIcon, newAreaIcon, branchIcon, newBranchIcon, dishIcon, newDishAdminIcon, 
+  categoryIcon, newCategoryIcon, departmentIcon, newDepartmentIcon, managerManagementIcon, 
+  newManagerIcon, promotionIcon, newPromotionIcon, statisticsIcon } from '../../assets/index';
 
 const SideBar = ({ activeMenu, setActiveMenu }) => {
   const { user } = useAuth();
@@ -86,8 +65,8 @@ const SideBar = ({ activeMenu, setActiveMenu }) => {
     { id: 'new-category', label: 'Mục mới', icon: newCategoryIcon },
     { id: 'department', label: 'Bộ phận', icon: departmentIcon },
     { id: 'new-department', label: 'Bộ phận mới', icon: newDepartmentIcon },
-    { id: 'branch-manager', label: 'Quản lý chi nhánh', icon: branchManagerIcon },
-    { id: 'new-branch-manager', label: 'Quản lý chi nhánh mới', icon: newBranchManagerIcon },
+    { id: 'manager-management', label: 'Quản lý chi nhánh', icon: managerManagementIcon },
+    { id: 'new-manager', label: 'Quản lý chi nhánh mới', icon: newManagerIcon },
     { id: 'promotion', label: 'Ưu đãi', icon: promotionIcon },
     { id: 'new-promotion', label: 'Ưu đãi mới', icon: newPromotionIcon },
     { id: 'statistics', label: 'Thống kê', icon: statisticsIcon }

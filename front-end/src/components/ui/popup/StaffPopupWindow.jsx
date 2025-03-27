@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { updateEmployeeInfoAPI } from '../../../api/accounts/EmployeeAPI';
 import { listDepartmentInfoAPI } from '../../../api/establishments/DepartmentAPI';
 import { 
-    usernameIcon, emailIcon, phoneNumberIcon, citizenIdIcon, fullnameIcon,
+    emailIcon, phoneNumberIcon, citizenIdIcon, fullnameIcon,
     genderIcon, dateOfBirthIcon, dateJoinedIcon, addressIcon, departmentIcon
 } from '../../../assets';
 import { defaultAvatar } from '../../../assets';
