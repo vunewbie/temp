@@ -108,7 +108,7 @@ const VerifyOTP = () => {
         setSuccessMessage(response.data.message || 'Xác thực OTP thành công!'); 
         
         setTimeout(() => {
-          navigate('/login');
+          navigate('/');
         }, 2000);
       } else {
         const username = localStorage.getItem('username');

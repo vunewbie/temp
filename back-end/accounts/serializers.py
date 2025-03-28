@@ -114,7 +114,15 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
+        """
+        - AbstractUser has 'groups' and 'user_permissions'
+        - If we use 'fields = "__all__"', when data is received from client:
+            + If data is sent as JSON and don't have these fields, Django use JSONParser.
+            JsonParser won't create many-to-many fields.
+            + If data is sent as FormData, Django use MultiPartParser.
+            MultiPartParser will create empty lists for many-to-many fields. -> errors
+        """
+        exclude = ['groups', 'user_permissions']
         extra_kwargs = {
             'id': {'read_only': True},
             'password': {'write_only': True},
@@ -143,15 +151,6 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         
         return instance
-    
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-
-        # Not display groups and user_permissions on admin page
-        representation.pop('groups', None)
-        representation.pop('user_permissions', None)
-        
-        return representation
 
 class CustomerSerializer(serializers.ModelSerializer):
     user = UserSerializer()

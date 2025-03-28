@@ -147,9 +147,10 @@ class EmployeeListCreateAPIView(generics.ListCreateAPIView):
     def post(self, request):
         # token of manager user does not have branch attribute so permission add it to request
         data = request.data.copy()
-
+        
         if hasattr(request, 'branch'):
-            data['branch'] = request.branch
+            branch_id = request.branch.id if hasattr(request.branch, 'id') else request.branch
+            data['branch'] = branch_id
 
         serializer = self.get_serializer(data=data)
         
@@ -158,7 +159,8 @@ class EmployeeListCreateAPIView(generics.ListCreateAPIView):
             data['user']['is_active'] = False
             data['user']['type'] = 'E'
             
-            user = User.objects.create_user(**data['user'])
+            user_data = {k: v for k, v in data['user'].items()}
+            user = User.objects.create_user(**user_data)
             
             # remove user data from employee data
             employee_data = {k: v for k, v in data.items() if k != 'user'}

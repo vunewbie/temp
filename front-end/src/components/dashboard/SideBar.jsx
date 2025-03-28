@@ -11,7 +11,7 @@ import { accountIcon, passwordIcon } from '../../assets/index';
 // customer icons
 import { purchaseIcon, pointIcon } from '../../assets/index';
 // manager icons
-import { employeeManagementIcon, recruitmentIcon, menuManagementIcon, newDishIcon, tableManagementIcon, newTableIcon } from '../../assets/index';
+import { employeeManagementIcon, newEmployeeIcon, menuManagementIcon, newDishIcon, tableManagementIcon, newTableIcon } from '../../assets/index';
 // employee icons
 import { serveIcon, reservationIcon, deliveryIcon } from '../../assets/index';
 // admin icons
@@ -41,7 +41,7 @@ const SideBar = ({ activeMenu, setActiveMenu }) => {
 
   const managerMenuItems = [
     { id: 'employee-management', label: 'Nhân sự', icon: employeeManagementIcon },
-    { id: 'recruitment', label: 'Tuyển dụng', icon: recruitmentIcon },
+    { id: 'recruitment', label: 'Tuyển dụng', icon: newEmployeeIcon },
     { id: 'menu-management', label: 'Thực đơn', icon: menuManagementIcon },
     { id: 'new-dish', label: 'Món mới', icon: newDishIcon },
     { id: 'table-management', label: 'Bàn', icon: tableManagementIcon },

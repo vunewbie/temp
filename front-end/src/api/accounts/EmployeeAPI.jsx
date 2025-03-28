@@ -130,3 +130,56 @@ export const fireEmployeeAPI = async (employeeId) => {
     throw error;
   }
 };
+
+// create employee
+export const createEmployeeAPI = async (employeeData) => {
+  try {
+    // Check if employeeData is FormData
+    if (!(employeeData instanceof FormData)) {
+      throw new Error("Dữ liệu phải được gửi dưới dạng FormData để hỗ trợ tải lên avatar");
+    }
+    
+    const response = await axios.post(`${API_URL}/accounts/employees`, employeeData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi tạo nhân viên:", error);
+    
+    if (error.response) {
+      console.error("Server error:", error.response.status);
+      console.error("Response data:", JSON.stringify(error.response.data, null, 2));
+      
+      if (error.response.data) {
+        const errorData = error.response.data;
+        if (errorData.user) {
+          // errorData.user is an object, so we need to iterate over its keys
+          Object.keys(errorData.user).forEach(field => {
+            errorData.user[field] = errorData.user[field].map(err => translateErrorMessage(err));
+            console.error(`Lỗi ${field}:`, errorData.user[field]);
+          });
+        } else {
+          // errors that are not user info errors
+          Object.keys(errorData).forEach(field => {
+            if (Array.isArray(errorData[field])) {
+              errorData[field] = errorData[field].map(err => translateErrorMessage(err));
+              console.error(`Lỗi ${field}:`, errorData[field]);
+            }
+          });
+        }
+      }
+      
+      if (error.response.status === 401) {
+        console.error("Token hết hạn hoặc không hợp lệ");
+      } else if (error.response.status === 403) {
+        console.error("Không có quyền thực hiện hành động này");
+      }
+    }
+    
+    throw error;
+  }
+};

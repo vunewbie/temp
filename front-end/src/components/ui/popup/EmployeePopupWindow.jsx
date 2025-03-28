@@ -7,9 +7,9 @@ import {
 } from '../../../assets';
 import { defaultAvatar } from '../../../assets';
 import '../../dashboard/UserInfo.css';
-import './StaffPopupWindow.css';
+import './EmployeePopupWindow.css';
 
-const StaffPopupWindow = ({ employeeInfo, onClose }) => {
+const EmployeePopupWindow = ({ employeeInfo, onClose }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
@@ -385,4 +385,4 @@ const StaffPopupWindow = ({ employeeInfo, onClose }) => {
     );
 };
 
-export default StaffPopupWindow;
+export default EmployeePopupWindow;

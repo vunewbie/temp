@@ -129,3 +129,19 @@ export const fireManagerAPI = async (managerId) => {
     throw error;
   }
 };
+
+// create manager
+export const createManagerAPI = async (managerData) => {
+  try {
+    const response = await axios.post(`${API_URL}/accounts/managers`, managerData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi tạo quản lý:", error);
+    throw error;
+  }
+};

@@ -2,7 +2,7 @@ import Header from './layouts/header/Header';
 import Footer from './layouts/footer/Footer';
 import SuccessfulPopupWindow from './ui/popup/SuccessfulPopupWindow';
 import ErrorsPopupWindow from './ui/popup/ErrorsPopupWindow';
-import StaffPopupWindow from './ui/popup/StaffPopupWindow';
+import EmployeePopupWindow from './ui/popup/EmployeePopupWindow';
 import ManagerPopupWindow from './ui/popup/ManagerPopupWindow';
 import ScrollToTop from './ui/scrollToTop/ScrollToTop';
 
@@ -30,7 +30,7 @@ import Statistics from './dashboard/admin/Statistics';
 
 // Manager components
 import EmployeeManagement from './dashboard/manager/EmployeeManagement';
-import Recruitment from './dashboard/manager/Recruitment';
+import NewEmployee from './dashboard/manager/NewEmployee';
 import MenuManagement from './dashboard/manager/MenuManagement';
 import TableManagement from './dashboard/manager/TableManagement';
 import NewTable from './dashboard/manager/NewTable';
@@ -50,7 +50,7 @@ export {
   Footer,
   SuccessfulPopupWindow,
   ErrorsPopupWindow,
-  StaffPopupWindow,
+  EmployeePopupWindow,
   ManagerPopupWindow,
   ScrollToTop,
   ChangePassword,
@@ -72,7 +72,7 @@ export {
   NewPromotion,
   Statistics,
   EmployeeManagement,
-  Recruitment,
+  NewEmployee,
   MenuManagement,
   TableManagement,
   NewTable,

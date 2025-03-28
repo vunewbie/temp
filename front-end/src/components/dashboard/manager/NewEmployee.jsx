@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { listBranchInfoAPI } from '../../../api/establishments/BranchAPI';
-import { createManagerAPI } from '../../../api/accounts/ManagerAPI';
+import { listDepartmentInfoAPI } from '../../../api/establishments/DepartmentAPI';
+import { createEmployeeAPI } from '../../../api/accounts/EmployeeAPI';
 import { formatPhoneNumberForAPI } from '../../../utils';
 import { useNavigate } from 'react-router-dom';
-import './NewManager.css';
+import './NewEmployee.css';
 // all icons from assets
 import { 
   usernameIcon, emailIcon, phoneNumberIcon, citizenIdIcon, fullnameIcon,
-  genderIcon, dateOfBirthIcon, addressIcon, branchIcon, passwordIcon,
-  yearsOfExperienceIcon, salaryIcon
+  genderIcon, dateOfBirthIcon, addressIcon, departmentIcon, passwordIcon
 } from '../../../assets';
 
-const NewManager = () => {
+const NewEmployee = () => {
   const navigate = useNavigate();
   
-  // manager data state
+  // employee data state
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -24,9 +23,7 @@ const NewManager = () => {
     gender: 'M',
     dateOfBirth: '',
     address: '',
-    branch: '',
-    yearsOfExperience: 0,
-    salary: 0,
+    department: '',
     password: '',
     confirmPassword: '',
     avatar: null
@@ -40,40 +37,32 @@ const NewManager = () => {
   const [errors, setErrors] = useState([]);
   // success state
   const [success, setSuccess] = useState('');
-  // branches list
-  const [branches, setBranches] = useState([]);
+  // departments list
+  const [departments, setDepartments] = useState([]);
 
-  // fetch branches on component mount
+  // fetch departments on component mount
   useEffect(() => {
-    const fetchBranches = async () => {
+    const fetchDepartments = async () => {
       try {
-        const branchesData = await listBranchInfoAPI();
-        setBranches(branchesData);
+        const departmentsData = await listDepartmentInfoAPI();
+        setDepartments(departmentsData);
       } catch (err) {
-        console.error('Lỗi khi lấy danh sách chi nhánh:', err);
-        setErrors(['Không thể lấy danh sách chi nhánh. Vui lòng thử lại sau.']);
+        console.error('Lỗi khi lấy danh sách bộ phận:', err);
+        setErrors(['Không thể lấy danh sách bộ phận. Vui lòng thử lại sau.']);
       }
     };
     
-    fetchBranches();
+    fetchDepartments();
   }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const newValue = type === 'checkbox' ? checked : value;
     
-    // Xử lý chuyển đổi số cho salary và yearsOfExperience
-    if (name === 'salary' || name === 'yearsOfExperience') {
-      setFormData({
-        ...formData,
-        [name]: value === '' ? '' : Number(value)
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: newValue
-      });
-    }
+    setFormData({
+      ...formData,
+      [name]: newValue
+    });
   };
 
   const handleAvatarChange = (e) => {
@@ -149,7 +138,7 @@ const NewManager = () => {
     }
     
     // validate required fields
-    const requiredFields = ['phoneNumber', 'citizenId', 'fullName', 'dateOfBirth', 'branch'];
+    const requiredFields = ['phoneNumber', 'citizenId', 'fullName', 'dateOfBirth', 'department'];
     requiredFields.forEach(field => {
       if (!formData[field]) {
         newErrors.push(`${getFieldLabel(field)} là bắt buộc`);
@@ -165,15 +154,6 @@ const NewManager = () => {
     if (formData.citizenId && !/^\d{9,12}$/.test(formData.citizenId.replace(/\D/g, ''))) {
       newErrors.push('Số CMND/CCCD không hợp lệ');
     }
-
-    // Validate trường số
-    if (formData.yearsOfExperience < 0) {
-      newErrors.push('Số năm kinh nghiệm không thể là số âm');
-    }
-    
-    if (formData.salary < 0) {
-      newErrors.push('Lương không thể là số âm');
-    }
     
     setErrors(newErrors);
     return newErrors.length === 0;
@@ -187,9 +167,7 @@ const NewManager = () => {
       citizenId: 'CMND/CCCD',
       fullName: 'họ và tên',
       dateOfBirth: 'ngày sinh',
-      branch: 'chi nhánh',
-      yearsOfExperience: 'số năm kinh nghiệm',
-      salary: 'lương',
+      department: 'bộ phận',
       password: 'mật khẩu',
       confirmPassword: 'nhập lại mật khẩu',
       address: 'địa chỉ'
@@ -223,11 +201,9 @@ const NewManager = () => {
       formDataToSend.append('user.date_of_birth', formData.dateOfBirth);
       formDataToSend.append('user.password', formData.password);
       
-      // Add manager data
+      // Add employee data
       formDataToSend.append('address', formData.address);
-      formDataToSend.append('branch', formData.branch);
-      formDataToSend.append('years_of_experience', formData.yearsOfExperience);
-      formDataToSend.append('salary', formData.salary);
+      formDataToSend.append('department', formData.department);
       
       // Add avatar if provided
       if (formData.avatar) {
@@ -235,7 +211,7 @@ const NewManager = () => {
       }
       
       // Send request to API
-      const response = await createManagerAPI(formDataToSend);
+      const response = await createEmployeeAPI(formDataToSend);
       
       // Handle successful response
       setSuccess('Đăng ký thành công!');
@@ -249,7 +225,7 @@ const NewManager = () => {
         }, 1500);
       }
     } catch (err) {
-      console.error('Lỗi khi đăng ký quản lý:', err);
+      console.error('Lỗi khi đăng ký nhân viên:', err);
       
       if (err.response && err.response.data) {
         // Handle validation errors from the backend
@@ -283,28 +259,28 @@ const NewManager = () => {
   };
 
   return (
-    <div className="new-manager-container">
-      <h2>Đăng ký quản lý mới</h2>
+    <div className="recruitment-container">
+      <h2>Đăng ký nhân viên mới</h2>
       
-      {errors.length > 0 && <div className="new-manager-error-message">{errors.join('\n')}</div>}
-      {success && <div className="new-manager-success-message">{success}</div>}
+      {errors.length > 0 && <div className="recruit-error-message">{errors.join('\n')}</div>}
+      {success && <div className="recruit-success-message">{success}</div>}
       
       <form onSubmit={handleSubmit}>
-        <div className="new-manager-form-header">
-          <div className="new-manager-avatar-section">
-            <div className="new-manager-avatar-container">
+        <div className="recruit-form-header">
+          <div className="recruit-avatar-section">
+            <div className="recruit-avatar-container">
               <img 
                 src={avatarPreview || '/default-avatar.png'} 
                 alt="Avatar" 
-                className="new-manager-avatar-preview" 
+                className="recruit-avatar-preview" 
               />
-              <label htmlFor="avatar-input" className="new-manager-avatar-upload-label">
+              <label htmlFor="avatar-input" className="recruit-avatar-upload-label">
                 Thay đổi
               </label>
               <input 
                 type="file" 
                 id="avatar-input" 
-                className="new-manager-avatar-input" 
+                className="recruit-avatar-input" 
                 onChange={handleAvatarChange}
                 accept="image/*"
               />
@@ -312,12 +288,12 @@ const NewManager = () => {
           </div>
         </div>
         
-        <div className="new-manager-form-content">
-          <div className="new-manager-input-group">
-            <div className="new-manager-input-icon">
+        <div className="recruit-form-content">
+          <div className="recruit-input-group">
+            <div className="recruit-input-icon">
               <img src={usernameIcon} alt="Username Icon" />
             </div>
-            <div className="new-manager-input-wrapper">
+            <div className="recruit-input-wrapper">
               <label htmlFor="username">Tên đăng nhập</label>
               <input
                 type="text"
@@ -330,11 +306,11 @@ const NewManager = () => {
             </div>
           </div>
           
-          <div className="new-manager-input-group">
-            <div className="new-manager-input-icon">
+          <div className="recruit-input-group">
+            <div className="recruit-input-icon">
               <img src={emailIcon} alt="Email Icon" />
             </div>
-            <div className="new-manager-input-wrapper">
+            <div className="recruit-input-wrapper">
               <label htmlFor="email">Email</label>
               <input
                 type="email"
@@ -347,11 +323,11 @@ const NewManager = () => {
             </div>
           </div>
           
-          <div className="new-manager-input-group">
-            <div className="new-manager-input-icon">
+          <div className="recruit-input-group">
+            <div className="recruit-input-icon">
               <img src={phoneNumberIcon} alt="Phone Icon" />
             </div>
-            <div className="new-manager-input-wrapper">
+            <div className="recruit-input-wrapper">
               <label htmlFor="phoneNumber">Số điện thoại</label>
               <input
                 type="text"
@@ -364,11 +340,11 @@ const NewManager = () => {
             </div>
           </div>
           
-          <div className="new-manager-input-group">
-            <div className="new-manager-input-icon">
+          <div className="recruit-input-group">
+            <div className="recruit-input-icon">
               <img src={citizenIdIcon} alt="Citizen ID Icon" />
             </div>
-            <div className="new-manager-input-wrapper">
+            <div className="recruit-input-wrapper">
               <label htmlFor="citizenId">CMND/CCCD</label>
               <input
                 type="text"
@@ -381,11 +357,11 @@ const NewManager = () => {
             </div>
           </div>
           
-          <div className="new-manager-input-group">
-            <div className="new-manager-input-icon">
+          <div className="recruit-input-group">
+            <div className="recruit-input-icon">
               <img src={fullnameIcon} alt="Fullname Icon" />
             </div>
-            <div className="new-manager-input-wrapper">
+            <div className="recruit-input-wrapper">
               <label htmlFor="fullName">Họ và tên</label>
               <input
                 type="text"
@@ -398,11 +374,11 @@ const NewManager = () => {
             </div>
           </div>
           
-          <div className="new-manager-input-group">
-            <div className="new-manager-input-icon">
+          <div className="recruit-input-group">
+            <div className="recruit-input-icon">
               <img src={genderIcon} alt="Gender Icon" />
             </div>
-            <div className="new-manager-input-wrapper">
+            <div className="recruit-input-wrapper">
               <label htmlFor="gender">Giới tính</label>
               <select
                 id="gender"
@@ -417,11 +393,11 @@ const NewManager = () => {
             </div>
           </div>
           
-          <div className="new-manager-input-group">
-            <div className="new-manager-input-icon">
+          <div className="recruit-input-group">
+            <div className="recruit-input-icon">
               <img src={dateOfBirthIcon} alt="Date Of Birth Icon" />
             </div>
-            <div className="new-manager-input-wrapper">
+            <div className="recruit-input-wrapper">
               <label htmlFor="dateOfBirth">Ngày sinh</label>
               <input
                 type="date"
@@ -433,69 +409,33 @@ const NewManager = () => {
             </div>
           </div>
           
-          <div className="new-manager-input-group">
-            <div className="new-manager-input-icon">
-              <img src={branchIcon} alt="Branch Icon" />
+          <div className="recruit-input-group">
+            <div className="recruit-input-icon">
+              <img src={departmentIcon} alt="Department Icon" />
             </div>
-            <div className="new-manager-input-wrapper">
-              <label htmlFor="branch">Chi nhánh</label>
+            <div className="recruit-input-wrapper">
+              <label htmlFor="department">Bộ phận</label>
               <select
-                id="branch"
-                name="branch"
-                value={formData.branch}
+                id="department"
+                name="department"
+                value={formData.department}
                 onChange={handleChange}
               >
-                <option value="">-- Chọn chi nhánh --</option>
-                {branches.map(branch => (
-                  <option key={branch.id} value={branch.id}>
-                    {branch.name}
+                <option value="">-- Chọn bộ phận --</option>
+                {departments.map(dept => (
+                  <option key={dept.id} value={dept.id}>
+                    {dept.name}
                   </option>
                 ))}
               </select>
             </div>
           </div>
           
-          <div className="new-manager-input-group">
-            <div className="new-manager-input-icon">
-              <img src={yearsOfExperienceIcon} alt="Years Of Experience Icon" />
-            </div>
-            <div className="new-manager-input-wrapper">
-              <label htmlFor="yearsOfExperience">Số năm kinh nghiệm</label>
-              <input
-                type="number"
-                id="yearsOfExperience"
-                name="yearsOfExperience"
-                min="0"
-                value={formData.yearsOfExperience}
-                onChange={handleChange}
-                placeholder="Nhập số năm kinh nghiệm"
-              />
-            </div>
-          </div>
-          
-          <div className="new-manager-input-group">
-            <div className="new-manager-input-icon">
-              <img src={salaryIcon} alt="Salary Icon" />
-            </div>
-            <div className="new-manager-input-wrapper">
-              <label htmlFor="salary">Lương</label>
-              <input
-                type="number"
-                id="salary"
-                name="salary"
-                min="0"
-                value={formData.salary}
-                onChange={handleChange}
-                placeholder="Nhập mức lương"
-              />
-            </div>
-          </div>
-          
-          <div className="new-manager-input-group">
-            <div className="new-manager-input-icon">
+          <div className="recruit-input-group">
+            <div className="recruit-input-icon">
               <img src={passwordIcon} alt="Password Icon" />
             </div>
-            <div className="new-manager-input-wrapper">
+            <div className="recruit-input-wrapper">
               <label htmlFor="password">Mật khẩu</label>
               <input
                 type="password"
@@ -508,11 +448,11 @@ const NewManager = () => {
             </div>
           </div>
           
-          <div className="new-manager-input-group">
-            <div className="new-manager-input-icon">
+          <div className="recruit-input-group">
+            <div className="recruit-input-icon">
               <img src={passwordIcon} alt="Confirm Password Icon" />
             </div>
-            <div className="new-manager-input-wrapper">
+            <div className="recruit-input-wrapper">
               <label htmlFor="confirmPassword">Nhập lại mật khẩu</label>
               <input
                 type="password"
@@ -526,12 +466,12 @@ const NewManager = () => {
           </div>
         </div>
         
-        <div className="new-manager-address-section">
-          <div className="new-manager-input-group full-width">
-            <div className="new-manager-input-icon">
+        <div className="recruit-address-section">
+          <div className="recruit-input-group full-width">
+            <div className="recruit-input-icon">
               <img src={addressIcon} alt="Address Icon" />
             </div>
-            <div className="new-manager-input-wrapper">
+            <div className="recruit-input-wrapper">
               <label htmlFor="address">Địa chỉ</label>
               <input
                 type="text"
@@ -545,10 +485,10 @@ const NewManager = () => {
           </div>
         </div>
         
-        <div className="new-manager-form-actions">
+        <div className="recruit-form-actions">
           <button 
             type="submit" 
-            className="new-manager-save-button" 
+            className="recruit-save-button" 
             disabled={isLoading}
           >
             {isLoading ? 'Đang xử lý...' : 'Đăng Ký'}
@@ -559,4 +499,4 @@ const NewManager = () => {
   );
 };
 
-export default NewManager; 
+export default NewEmployee; 

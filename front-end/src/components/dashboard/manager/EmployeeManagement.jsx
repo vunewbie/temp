@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { listEmployeeInfoAPI, fireEmployeeAPI } from '../../../api';
 import { updateIcon, deleteIcon } from '../../../assets';
 import { defaultAvatar } from '../../../assets';
-import { StaffPopupWindow } from '../../../components';
+import { EmployeePopupWindow } from '../../../components';
 import './EmployeeManagement.css';
 
 const EmployeeManagement = () => {
@@ -223,7 +223,7 @@ const EmployeeManagement = () => {
       {/* Staff Popup Window for updating employee */}
       {showStaffPopup && selectedEmployeeId && (
         <div className="staff-popup-container">
-          <StaffPopupWindow 
+          <EmployeePopupWindow 
             employeeInfo={employees.find(employee => employee.user.id === selectedEmployeeId)} 
             onClose={handleCloseStaffPopup} 
           />

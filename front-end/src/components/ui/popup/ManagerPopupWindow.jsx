@@ -352,16 +352,26 @@ const ManagerPopupWindow = ({ managerInfo, onClose }) => {
                         <div className="form-group">
                             <label>
                                 <span className="form-icon-wrapper">
-                                    <img src={addressIcon} alt="Địa chỉ" className="form-field-icon" />
-                                    Địa chỉ:
+                                    <img src={salaryIcon} alt="Lương" className="form-field-icon" />
+                                    Lương (VNĐ):
                                 </span>
                             </label>
-                            <input
-                                type="text"
-                                value={managerData.address}
-                                disabled
-                            />
-                        </div>
+                            {isEditing ? (
+                                <input 
+                                    type="number" 
+                                    value={managerData.salary} 
+                                    onChange={handleSalaryChange}
+                                    min="0"
+                                    step="10000"
+                                />
+                            ) : (
+                                <input 
+                                    type="text" 
+                                    value={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(managerData.salary)} 
+                                    disabled 
+                                />
+                            )}
+                        </div>                        
                         <div className="form-group">
                             <label>
                                 <span className="form-icon-wrapper">
@@ -394,27 +404,17 @@ const ManagerPopupWindow = ({ managerInfo, onClose }) => {
                     {/* Hàng 4: Lương */}
                     <div className="form-row">
                         <div className="form-group">
-                            <label>
-                                <span className="form-icon-wrapper">
-                                    <img src={salaryIcon} alt="Lương" className="form-field-icon" />
-                                    Lương (VNĐ):
-                                </span>
-                            </label>
-                            {isEditing ? (
-                                <input 
-                                    type="number" 
-                                    value={managerData.salary} 
-                                    onChange={handleSalaryChange}
-                                    min="0"
-                                    step="10000"
+                                <label>
+                                    <span className="form-icon-wrapper">
+                                        <img src={addressIcon} alt="Địa chỉ" className="form-field-icon" />
+                                        Địa chỉ:
+                                    </span>
+                                </label>
+                                <input
+                                    type="text"
+                                    value={managerData.address}
+                                    disabled
                                 />
-                            ) : (
-                                <input 
-                                    type="text" 
-                                    value={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(managerData.salary)} 
-                                    disabled 
-                                />
-                            )}
                         </div>
                     </div>
                 </form>

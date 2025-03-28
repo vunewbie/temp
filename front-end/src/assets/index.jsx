@@ -32,7 +32,7 @@ import purchaseIcon from './dashboard/customer/purchase-icon.svg';
 // Manager-specific icons
 import yearsOfExperienceIcon from './dashboard/manager/years-of-experience-icon.svg';
 import employeeManagementIcon from './dashboard/manager/employee-management-icon.svg';
-import recruitmentIcon from './dashboard/manager/recruitment-icon.svg';
+import newEmployeeIcon from './dashboard/manager/recruitment-icon.svg';
 import menuManagementIcon from './dashboard/manager/menu-management-icon.svg';
 import newDishIcon from './dashboard/manager/new-dish-icon.svg';
 import tableManagementIcon from './dashboard/manager/table-management-icon.svg';
@@ -184,7 +184,7 @@ export {
   // Manager-specific icons
   yearsOfExperienceIcon,
   employeeManagementIcon,
-  recruitmentIcon,
+  newEmployeeIcon,
   menuManagementIcon,
   newDishIcon,
   tableManagementIcon,

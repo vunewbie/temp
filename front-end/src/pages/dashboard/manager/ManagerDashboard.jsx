@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import { SideBar, UserInfo, ChangePassword, EmployeeManagement, Recruitment,
+import { SideBar, UserInfo, ChangePassword, EmployeeManagement, NewEmployee,
          MenuManagement, TableManagement, NewTable, ManagerNewDish as NewDish
 } from '../../../components';
 import './ManagerDashboard.css';
@@ -37,7 +37,7 @@ const ManagerDashboard = () => {
       case 'employee-management':
         return <EmployeeManagement />;
       case 'recruitment':
-        return <Recruitment />;
+        return <NewEmployee />;
       case 'menu-management':
         return <MenuManagement />;
       case 'new-dish':

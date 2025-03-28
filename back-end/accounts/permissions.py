@@ -37,7 +37,7 @@ class IsSameBranchManager(BasePermission):
             if manager.branch is None:
                 raise PermissionDenied('Bạn chưa được phân công chi nhánh')
             
-            request.branch = manager.branch # request does not have branch attribute
+            request.branch = manager.branch
             
             return True
         
