@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { updateManagerInfoAPI } from '../../../api/accounts/ManagerAPI';
-import { listBranchInfoAPI } from '../../../api/establishments/BranchAPI';
+import { updateManagerInfoAPI, listBranchInfoAPI } from '../../../api';
 import { 
-    emailIcon, phoneNumberIcon, citizenIdIcon, fullnameIcon,
+    emailIcon, phoneNumberIcon, citizenIdIcon, fullnameIcon, defaultAvatar,
     genderIcon, dateOfBirthIcon, dateJoinedIcon, addressIcon, branchIcon, salaryIcon
 } from '../../../assets';
-import { defaultAvatar } from '../../../assets';
 import '../../dashboard/UserInfo.css';
 import './ManagerPopupWindow.css';
 
@@ -16,7 +14,6 @@ const ManagerPopupWindow = ({ managerInfo, onClose }) => {
     const [success, setSuccess] = useState('');
     const [branches, setBranches] = useState([]);
     
-    // user data
     const [userData, setUserData] = useState({
         id: '',
         username: '',
@@ -30,7 +27,6 @@ const ManagerPopupWindow = ({ managerInfo, onClose }) => {
         joinDate: '',
     });
     
-    // manager data
     const [managerData, setManagerData] = useState({
         address: '',
         branchId: null,
@@ -38,16 +34,12 @@ const ManagerPopupWindow = ({ managerInfo, onClose }) => {
         salary: 0,
     });
     
-    // avatar preview
     const [avatarPreview, setAvatarPreview] = useState('');
     
-    // Khởi tạo dữ liệu từ props khi component được tải
     useEffect(() => {
         const initializeData = async () => {
             try {
                 setIsLoading(true);
-                
-                // Lấy thông tin từ managerInfo prop
                 const userInfo = managerInfo.user || {};
                 
                 setUserData({
@@ -65,7 +57,6 @@ const ManagerPopupWindow = ({ managerInfo, onClose }) => {
                         new Date(userInfo.date_joined).toISOString().split('T')[0] : '',
                 });
                 
-                // Cập nhật thông tin manager
                 setManagerData({
                     address: managerInfo.address || '',
                     branchId: managerInfo.branch || null,
@@ -73,12 +64,10 @@ const ManagerPopupWindow = ({ managerInfo, onClose }) => {
                     salary: managerInfo.salary || 0,
                 });
                 
-                // Cập nhật avatar preview
                 if (userInfo.avatar) {
                     setAvatarPreview(userInfo.avatar);
                 }
                 
-                // Lấy danh sách các chi nhánh
                 const branchesData = await listBranchInfoAPI();
                 setBranches(branchesData);
                 
@@ -93,7 +82,6 @@ const ManagerPopupWindow = ({ managerInfo, onClose }) => {
         initializeData();
     }, [managerInfo]);
     
-    // Xử lý khi thay đổi chi nhánh
     const handleBranchChange = (e) => {
         const branchId = parseInt(e.target.value);
         const branch = branches.find(b => b.id === branchId);
@@ -105,7 +93,6 @@ const ManagerPopupWindow = ({ managerInfo, onClose }) => {
         });
     };
     
-    // Xử lý khi thay đổi lương
     const handleSalaryChange = (e) => {
         const salary = parseInt(e.target.value);
         
@@ -115,7 +102,6 @@ const ManagerPopupWindow = ({ managerInfo, onClose }) => {
         });
     };
     
-    // Xử lý khi submit form
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -123,7 +109,6 @@ const ManagerPopupWindow = ({ managerInfo, onClose }) => {
         setSuccess('');
         
         try {
-            // Kiểm tra xem có thay đổi không
             if (managerData.branchId === null && managerData.salary === 0) {
                 setSuccess('Không có thông tin nào được thay đổi.');
                 setIsLoading(false);
@@ -131,7 +116,6 @@ const ManagerPopupWindow = ({ managerInfo, onClose }) => {
                 return;
             }
             
-            // Cập nhật thông tin quản lý
             const updateData = {};
             
             if (managerData.branchId !== null) {
@@ -147,7 +131,6 @@ const ManagerPopupWindow = ({ managerInfo, onClose }) => {
             setSuccess('Thông tin đã được cập nhật thành công.');
             setIsEditing(false);
             
-            // Đóng popup sau 1 giây
             setTimeout(() => {
                 onClose();
             }, 1000);
@@ -156,12 +139,10 @@ const ManagerPopupWindow = ({ managerInfo, onClose }) => {
             console.error('Lỗi khi cập nhật thông tin quản lý:', err);
             
             if (err.response && err.response.data) {
-                // Lấy lỗi đầu tiên từ response data
                 const firstErrorField = Object.keys(err.response.data)[0];
                 const firstError = err.response.data[firstErrorField][0];
                 setError(firstError);
             } else {
-                // Lỗi chung
                 setError('Có lỗi xảy ra khi cập nhật thông tin. Vui lòng thử lại sau.');
             }
         } finally {
@@ -169,21 +150,17 @@ const ManagerPopupWindow = ({ managerInfo, onClose }) => {
         }
     };
     
-    // Hàm lấy URL hình ảnh đại diện
     const getAvatarUrl = (avatarPath) => {
         if (!avatarPath) return defaultAvatar;
         
-        // Nếu avatar đã có http/https, giữ nguyên
         if (avatarPath.startsWith('http://') || avatarPath.startsWith('https://')) {
             return avatarPath;
         }
         
-        // Nếu avatar là đường dẫn tương đối, tạo URL đầy đủ
         const baseUrl = import.meta.env.VITE_BACKEND_API.split('/api')[0];
         return `${baseUrl}${avatarPath}`;
     };
     
-    // Hiển thị trạng thái loading
     if (isLoading && !userData.username) {
         return (
             <div className="manager-popup-container">
@@ -248,7 +225,7 @@ const ManagerPopupWindow = ({ managerInfo, onClose }) => {
                 </div>
                 
                 <form>
-                    {/* Hàng 1: Email, SĐT, CCCD */}
+                    {/* Row 1: Email, Phone Number, Citizen ID */}
                     <div className="form-row">
                         <div className="form-group">
                             <label>
@@ -291,7 +268,7 @@ const ManagerPopupWindow = ({ managerInfo, onClose }) => {
                         </div>
                     </div>
                     
-                    {/* Hàng 2: Họ tên, Giới tính, Ngày sinh */}
+                    {/* Row 2: Full Name, Gender, Date of Birth */}
                     <div className="form-row">
                         <div className="form-group">
                             <label>
@@ -334,7 +311,7 @@ const ManagerPopupWindow = ({ managerInfo, onClose }) => {
                         </div>
                     </div>
                     
-                    {/* Hàng 3: Ngày tham gia, Địa chỉ, Chi nhánh */}
+                    {/* Row 3: Join Date, Address, Branch */}
                     <div className="form-row">
                         <div className="form-group">
                             <label>
@@ -401,7 +378,7 @@ const ManagerPopupWindow = ({ managerInfo, onClose }) => {
                         </div>
                     </div>
                     
-                    {/* Hàng 4: Lương */}
+                    {/* Row 4: Salary */}
                     <div className="form-row">
                         <div className="form-group">
                                 <label>

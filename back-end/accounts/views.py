@@ -18,6 +18,7 @@ from django.conf import settings
 from datetime import datetime, timedelta
 
 import requests, json, jwt
+import django_filters
 
 # return a pair of JWT tokens if login is successful
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -111,21 +112,24 @@ class AdminRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     
 # get all employees in the same branch as the manager and create new employee
 class EmployeeListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
     permission_classes = [IsManager]
     authentication_classes = [CustomTokenAuthentication]
-
-    # get all employees in the same branch as the manager
-    def get_queryset(self):
-        branch = getattr(self.request, 'branch', None)
-        
-        if branch is None:
-            return Employee.objects.none()
-        
-        return Employee.objects.filter(branch=branch)
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filterset_fields = ['department', 'branch']
     
     def get(self, request):
-        employees = self.get_queryset()
+        # Filter employees by branch's manager
+        if hasattr(request, 'branch'):
+            branch_id = request.branch.id if hasattr(request.branch, 'id') else request.branch
+            employees = self.filter_queryset(Employee.objects.filter(branch=branch_id))
+            
+            # sort by resignation_date with None (active employees) first
+            employees = employees.order_by('resignation_date', 'user__full_name')
+        else:
+            employees = Employee.objects.none()
+            
         serializer = self.serializer_class(employees, many=True)
         data = serializer.data
 

@@ -10,12 +10,8 @@ import {
   authPasswordIcon as passwordIcon,
   authEyeOffIcon as eyeOffIcon,
   authEyeOnIcon as eyeOnIcon,
-  googleIcon,
-  facebookIcon,
-  githubIcon,
-  registerPicture1,
-  registerPicture2,
-  registerPicture3
+  googleIcon, facebookIcon, githubIcon,
+  registerPicture1, registerPicture2, registerPicture3
 } from '../../../assets';
 // api
 import { customerRegisterAPI, getGoogleOAuth2CodeAPI, getFacebookOAuth2CodeAPI, getGitHubOAuth2CodeAPI } from "../../../api";

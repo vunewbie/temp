@@ -12,17 +12,12 @@ import './Home.css';
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedImage, setSelectedImage] = useState(null);
-
-  // Tạo mảng introImages từ các ảnh đã import
   const introImages = [intro1, intro2, intro3, intro4, intro5, intro6];
-
-  // Các thông tin chi nhánh
   const branchImages = {
     hanoi: [hn1, hn2, hn3, hn4, hn5, hn6],
     danang: [dn1, dn2, dn3, dn4, dn5, dn6],
     hochiminh: [hcm1, hcm2, hcm3, hcm4, hcm5, hcm6]
   };
-
   const branchInfo = {
     hanoi: [
       { title: 'Hadu Sushi - Đống Đa', description: 'Số 27 Thái Thịnh, Đống Đa, Hà Nội' },

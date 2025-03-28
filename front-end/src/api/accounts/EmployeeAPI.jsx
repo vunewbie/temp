@@ -25,7 +25,6 @@ export const updateEmployeeInfoAPI = async (employeeId, employeeData) => {
     let response;
     
     if (employeeData instanceof FormData) {
-      
       // DRF handles fields in formdata as { "user.field": value }
       response = await axios.patch(`${API_URL}/accounts/employees/${employeeId}`, employeeData, {
         headers: {
@@ -100,12 +99,13 @@ export const updateEmployeeInfoAPI = async (employeeId, employeeData) => {
 };
 
 // list employee info
-export const listEmployeeInfoAPI = async () => {
+export const listEmployeeInfoAPI = async (filters = {}) => {
   try {
     const response = await axios.get(`${API_URL}/accounts/employees`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('access_token')}`
-      }
+      },
+      params: filters
     });
     
     return response.data;

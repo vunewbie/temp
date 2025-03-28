@@ -15,7 +15,7 @@ const VerifyOTP = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [resendDisabled, setResendDisabled] = useState(false);
   const [countdown, setCountdown] = useState(60);
-  const [verifyType, setVerifyType] = useState(null); // 'register' hoặc 'forgot_password'
+  const [verifyType, setVerifyType] = useState(null); // 'register' or 'forgot_password'
   const [currentPicture, setCurrentPicture] = useState(0);
   
   // pictures

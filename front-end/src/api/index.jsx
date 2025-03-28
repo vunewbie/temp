@@ -45,6 +45,16 @@ import {
     updateManagerInfoAPI
 } from './accounts/ManagerAPI';
 
+// DepartmentAPI
+import {
+    listDepartmentInfoAPI
+} from './establishments/DepartmentAPI';
+
+// BranchAPI
+import {
+    listBranchInfoAPI
+} from './establishments/BranchAPI';
+
 export {
     // AuthsAPI
     normalLoginAPI,
@@ -81,5 +91,11 @@ export {
     
     // ManagerAPI
     retrieveManagerInfoAPI,
-    updateManagerInfoAPI
+    updateManagerInfoAPI,
+    
+    // DepartmentAPI
+    listDepartmentInfoAPI,
+    
+    // BranchAPI
+    listBranchInfoAPI
 };

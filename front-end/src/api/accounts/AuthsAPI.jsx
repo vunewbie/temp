@@ -85,7 +85,7 @@ export const forgotPasswordAPI = async (usernameOrEmail) => {
     } catch (error) {
         throw error;
     }
-}
+};
 
 // forgot password verify otp
 export const forgotPasswordVerifyOTPAPI = async (username, otpCode) => {
@@ -99,7 +99,7 @@ export const forgotPasswordVerifyOTPAPI = async (username, otpCode) => {
     } catch (error) {
         throw error;
     }
-}
+};
 
 // resend forgot password otp
 export const resendForgotPasswordOTPAPI = async (username) => {
@@ -113,7 +113,7 @@ export const resendForgotPasswordOTPAPI = async (username) => {
     } catch (error) {
         throw error;
     }
-}
+};
 
 // reset password
 export const resetPasswordAPI = async (resetToken, newPassword) => {
@@ -127,7 +127,7 @@ export const resetPasswordAPI = async (resetToken, newPassword) => {
     } catch (error) {
         throw error;
     }
-}
+};
 
 // google oauth2
 export const getGoogleOAuth2CodeAPI = () => {
@@ -221,7 +221,7 @@ export const refreshTokenAPI = async (refreshToken) => {
         console.error("Lỗi khi refresh token:", error);
         throw error;
     }
-}
+};
 
 // change password
 export const changePasswordAPI = async (oldPassword, newPassword) => {

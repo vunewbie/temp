@@ -1,5 +1,8 @@
+// Layouts components
 import Header from './layouts/header/Header';
 import Footer from './layouts/footer/Footer';
+
+// UI components
 import SuccessfulPopupWindow from './ui/popup/SuccessfulPopupWindow';
 import ErrorsPopupWindow from './ui/popup/ErrorsPopupWindow';
 import EmployeePopupWindow from './ui/popup/EmployeePopupWindow';

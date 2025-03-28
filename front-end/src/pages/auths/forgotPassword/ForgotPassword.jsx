@@ -2,13 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ForgotPassword.css';
 import { ErrorsPopupWindow, SuccessfulPopupWindow } from '../../../components';
-import { 
-  logo, 
-  authUsernameEmailIcon, 
-  forgotPicture1, 
-  forgotPicture2, 
-  forgotPicture3 
-} from '../../../assets';
+import { logo, authUsernameEmailIcon, forgotPicture1, forgotPicture2, forgotPicture3 } from '../../../assets';
 import { forgotPasswordAPI } from '../../../api';
 import { translateErrorMessage } from '../../../utils';
 

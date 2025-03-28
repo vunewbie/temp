@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { listEmployeeInfoAPI, fireEmployeeAPI } from '../../../api';
-import { updateIcon, deleteIcon } from '../../../assets';
-import { defaultAvatar } from '../../../assets';
+import { listEmployeeInfoAPI, fireEmployeeAPI, listDepartmentInfoAPI } from '../../../api';
+import { updateIcon, deleteIcon, defaultAvatar } from '../../../assets';
 import { EmployeePopupWindow } from '../../../components';
 import './EmployeeManagement.css';
 
@@ -14,11 +13,19 @@ const EmployeeManagement = () => {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [employeeToDelete, setEmployeeToDelete] = useState(null);
+  const [departments, setDepartments] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState('');
 
-  // Fetch employees when component mounts
+  // Fetch employees and departments when component mounts
   useEffect(() => {
+    fetchDepartments();
     fetchEmployees();
   }, []);
+
+  // Fetch employees when selected department changes
+  useEffect(() => {
+    fetchEmployees();
+  }, [selectedDepartment]);
 
   // Function to format avatar URL
   const getAvatarUrl = (avatarPath) => {
@@ -36,12 +43,31 @@ const EmployeeManagement = () => {
     return `${baseUrl}${avatarPath}`;
   };
 
+  // Function to fetch departments from API
+  const fetchDepartments = async () => {
+    try {
+      const data = await listDepartmentInfoAPI();
+      setDepartments(data);
+    } catch (err) {
+      console.error('Lỗi khi lấy danh sách bộ phận:', err);
+      setError('Không thể lấy danh sách bộ phận. Vui lòng thử lại sau.');
+    }
+  };
+
   // Function to fetch employees from API
   const fetchEmployees = async () => {
     try {
       setLoading(true);
-      const data = await listEmployeeInfoAPI();
-      setEmployees(data);
+      
+      // If a department is selected, filter by department
+      if (selectedDepartment) {
+        const data = await listEmployeeInfoAPI({ department: selectedDepartment });
+        setEmployees(data);
+      } else {
+        const data = await listEmployeeInfoAPI();
+        setEmployees(data);
+      }
+      
       setError('');
     } catch (err) {
       console.error('Lỗi khi lấy danh sách nhân viên:', err);
@@ -49,6 +75,11 @@ const EmployeeManagement = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Function to handle department selection change
+  const handleDepartmentChange = (e) => {
+    setSelectedDepartment(e.target.value);
   };
 
   // Function to handle employee update click
@@ -155,6 +186,37 @@ const EmployeeManagement = () => {
           </button>
         </div>
       )}
+
+      {/* Department filter */}
+      <div className="filter-container">
+        <div className="filter-content">
+          <div className="filter-item">
+            <label htmlFor="department-filter">Lọc theo bộ phận:</label>
+            <select 
+              id="department-filter" 
+              value={selectedDepartment} 
+              onChange={handleDepartmentChange}
+              className="department-select"
+            >
+              <option value="">Tất cả bộ phận</option>
+              {departments.map(department => (
+                <option key={department.id} value={department.id}>
+                  {department.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          {selectedDepartment && (
+            <button 
+              className="clear-filter-button"
+              onClick={() => setSelectedDepartment('')}
+              title="Xóa bộ lọc"
+            >
+              Xóa bộ lọc
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* Employees table */}
       <div className="employees-table-container">

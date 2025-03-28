@@ -22,7 +22,6 @@ const Reviews = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitted(true);
-    // Reset form after submission
     setReviewForm({
       name: '',
       email: '',
@@ -31,7 +30,6 @@ const Reviews = () => {
     });
   };
 
-  // Sample reviews
   const reviews = [
     {
       id: 1,
@@ -59,7 +57,6 @@ const Reviews = () => {
     }
   ];
 
-  // Generate stars based on rating
   const renderStars = (rating) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {

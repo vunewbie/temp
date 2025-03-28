@@ -26,6 +26,12 @@
   position: relative;
 }
 
+/* Loại bỏ hiệu ứng gradient ở cuối trang */
+.dashboard-content::after {
+  content: none;
+  display: none;
+}
+
 .dashboard-content::-webkit-scrollbar {
   width: 8px;
   background-color: rgba(0, 0, 0, 0.03);
@@ -42,6 +48,12 @@
 
 .dashboard-content.is-scrolling {
   box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.03);
+}
+
+/* Đảm bảo không có hiệu ứng gradient khi cuộn */
+.dashboard-content.is-scrolling::after {
+  content: none;
+  display: none;
 }
 
 /* Mobile Responsive */

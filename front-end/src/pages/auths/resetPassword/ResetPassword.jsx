@@ -3,15 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import './ResetPassword.css';
 import { ErrorsPopupWindow, SuccessfulPopupWindow } from '../../../components';
 // assets
-import { 
-  logo, 
-  authPasswordIcon, 
-  authEyeOffIcon, 
-  authEyeOnIcon, 
-  resetPicture1, 
-  resetPicture2, 
-  resetPicture3 
-} from '../../../assets';
+import { logo, authPasswordIcon, authEyeOffIcon, authEyeOnIcon, 
+         resetPicture1, resetPicture2, resetPicture3 } from '../../../assets';
 // api
 import { resetPasswordAPI } from '../../../api';
 // utils

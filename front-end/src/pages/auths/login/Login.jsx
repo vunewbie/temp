@@ -10,12 +10,8 @@ import {
   authPasswordIcon as passwordIcon,
   authEyeOffIcon as eyeOffIcon,
   authEyeOnIcon as eyeOnIcon,
-  googleIcon,
-  facebookIcon,
-  githubIcon,
-  loginPicture1,
-  loginPicture2,
-  loginPicture3
+  googleIcon, facebookIcon, githubIcon,
+  loginPicture1, loginPicture2, loginPicture3
 } from '../../../assets';
 
 const Login = () => {

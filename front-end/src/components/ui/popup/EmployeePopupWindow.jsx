@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { updateEmployeeInfoAPI } from '../../../api/accounts/EmployeeAPI';
-import { listDepartmentInfoAPI } from '../../../api/establishments/DepartmentAPI';
+import { updateEmployeeInfoAPI, listDepartmentInfoAPI } from '../../../api';
 import { 
-    emailIcon, phoneNumberIcon, citizenIdIcon, fullnameIcon,
+    emailIcon, phoneNumberIcon, citizenIdIcon, fullnameIcon, defaultAvatar,
     genderIcon, dateOfBirthIcon, dateJoinedIcon, addressIcon, departmentIcon
 } from '../../../assets';
-import { defaultAvatar } from '../../../assets';
 import '../../dashboard/UserInfo.css';
 import './EmployeePopupWindow.css';
 
@@ -40,13 +38,13 @@ const EmployeePopupWindow = ({ employeeInfo, onClose }) => {
     // avatar preview
     const [avatarPreview, setAvatarPreview] = useState('');
     
-    // Khởi tạo dữ liệu từ props khi component được tải
+    // initialize data from props when component is loaded
     useEffect(() => {
         const initializeData = async () => {
             try {
                 setIsLoading(true);
                 
-                // Lấy thông tin từ employeeInfo prop
+                // get data from employeeInfo prop
                 const userInfo = employeeInfo.user || {};
                 
                 setUserData({
@@ -64,19 +62,19 @@ const EmployeePopupWindow = ({ employeeInfo, onClose }) => {
                         new Date(userInfo.date_joined).toISOString().split('T')[0] : '',
                 });
                 
-                // Cập nhật thông tin employee
+                // update employee data
                 setEmployeeData({
                     address: employeeInfo.address || '',
                     departmentId: employeeInfo.department || null,
                     departmentName: employeeInfo.department_name || 'Chưa có bộ phận',
                 });
                 
-                // Cập nhật avatar preview
+                // update avatar preview
                 if (userInfo.avatar) {
                     setAvatarPreview(userInfo.avatar);
                 }
                 
-                // Lấy danh sách các bộ phận
+                // get list of departments
                 const departmentsData = await listDepartmentInfoAPI();
                 setDepartments(departmentsData);
                 
@@ -91,7 +89,7 @@ const EmployeePopupWindow = ({ employeeInfo, onClose }) => {
         initializeData();
     }, [employeeInfo]);
     
-    // Xử lý khi thay đổi bộ phận
+    // handle department change
     const handleDepartmentChange = (e) => {
         const departmentId = parseInt(e.target.value);
         const department = departments.find(d => d.id === departmentId);
@@ -103,7 +101,7 @@ const EmployeePopupWindow = ({ employeeInfo, onClose }) => {
         });
     };
     
-    // Xử lý khi submit form
+    // handle submit form
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -111,7 +109,7 @@ const EmployeePopupWindow = ({ employeeInfo, onClose }) => {
         setSuccess('');
         
         try {
-            // Nếu không có thay đổi, hiển thị thông báo
+            // if no changes, show message
             if (employeeData.departmentId === null) {
                 setSuccess('Không có thông tin nào được thay đổi.');
                 setIsLoading(false);
@@ -119,7 +117,7 @@ const EmployeePopupWindow = ({ employeeInfo, onClose }) => {
                 return;
             }
             
-            // Cập nhật thông tin nhân viên
+            // update employee data
             const updateData = {
                 department: employeeData.departmentId
             };
@@ -129,7 +127,7 @@ const EmployeePopupWindow = ({ employeeInfo, onClose }) => {
             setSuccess('Thông tin đã được cập nhật thành công.');
             setIsEditing(false);
             
-            // Đóng popup sau 1 giây
+            // close popup after 1 second
             setTimeout(() => {
                 onClose();
             }, 1000);
@@ -138,12 +136,12 @@ const EmployeePopupWindow = ({ employeeInfo, onClose }) => {
             console.error('Lỗi khi cập nhật thông tin nhân viên:', err);
             
             if (err.response && err.response.data) {
-                // Lấy lỗi đầu tiên từ response data
+                // get first error field from response data
                 const firstErrorField = Object.keys(err.response.data)[0];
                 const firstError = err.response.data[firstErrorField][0];
                 setError(firstError);
             } else {
-                // Lỗi chung
+                // general error
                 setError('Có lỗi xảy ra khi cập nhật thông tin. Vui lòng thử lại sau.');
             }
         } finally {
@@ -151,23 +149,23 @@ const EmployeePopupWindow = ({ employeeInfo, onClose }) => {
         }
     };
     
-    // Hàm lấy URL hình ảnh đại diện
+    // function to get avatar url
     const getAvatarUrl = (avatarPath) => {
         if (!avatarPath) return defaultAvatar;
         
-        // Nếu avatar đã có http/https, giữ nguyên
+        // if avatar has http/https, keep it
         if (avatarPath.startsWith('http://') || avatarPath.startsWith('https://')) {
             return avatarPath;
         }
         
-        // Nếu avatar là đường dẫn tương đối, tạo URL đầy đủ
-        // Ví dụ, nếu avatar là /media/avatars/image.jpg
-        // Chúng ta cần thêm API base URL
+        // if avatar is relative path, create full url
+        // for example, if avatar is /media/avatars/image.jpg
+        // we need to add API base url
         const baseUrl = import.meta.env.VITE_BACKEND_API.split('/api')[0];
         return `${baseUrl}${avatarPath}`;
     };
     
-    // Hiển thị trạng thái loading
+    // show loading state
     if (isLoading && !userData.username) {
         return (
             <div className="user-info-container popup-container staff-popup-window">

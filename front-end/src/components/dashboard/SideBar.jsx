@@ -7,17 +7,17 @@ import { useAuth } from '../../context/AuthContext';
 // styles
 import './SideBar.css';
 // common icons
-import { accountIcon, passwordIcon } from '../../assets/index';
+import { accountIcon, passwordIcon } from '../../assets';
 // customer icons
-import { purchaseIcon, pointIcon } from '../../assets/index';
+import { purchaseIcon, pointIcon } from '../../assets';
 // manager icons
-import { employeeManagementIcon, newEmployeeIcon, menuManagementIcon, newDishIcon, tableManagementIcon, newTableIcon } from '../../assets/index';
+import { employeeManagementIcon, newEmployeeIcon, menuManagementIcon, newDishIcon, tableManagementIcon, newTableIcon } from '../../assets';
 // employee icons
-import { serveIcon, reservationIcon, deliveryIcon } from '../../assets/index';
+import { serveIcon, reservationIcon, deliveryIcon } from '../../assets';
 // admin icons
 import { areaIcon, newAreaIcon, branchIcon, newBranchIcon, dishIcon, newDishAdminIcon, 
   categoryIcon, newCategoryIcon, departmentIcon, newDepartmentIcon, managerManagementIcon, 
-  newManagerIcon, promotionIcon, newPromotionIcon, statisticsIcon } from '../../assets/index';
+  newManagerIcon, promotionIcon, newPromotionIcon, statisticsIcon } from '../../assets';
 
 const SideBar = ({ activeMenu, setActiveMenu }) => {
   const { user } = useAuth();

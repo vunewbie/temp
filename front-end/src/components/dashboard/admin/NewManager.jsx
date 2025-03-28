@@ -62,7 +62,7 @@ const NewManager = () => {
     const { name, value, type, checked } = e.target;
     const newValue = type === 'checkbox' ? checked : value;
     
-    // Xử lý chuyển đổi số cho salary và yearsOfExperience
+    // Convert salary and yearsOfExperience to numbers
     if (name === 'salary' || name === 'yearsOfExperience') {
       setFormData({
         ...formData,
@@ -94,27 +94,27 @@ const NewManager = () => {
     }
   };
 
-  // Hàm kiểm tra mật khẩu và xác nhận mật khẩu
   const validatePasswordWithConfirmation = (password, confirmPassword) => {
     const errors = [];
     
-    // Kiểm tra mật khẩu có đủ độ dài không
+    // Check if password has enough length
     if (!password || password.length < 8) {
       errors.push('Mật khẩu phải có ít nhất 8 ký tự');
     }
     
-    // Kiểm tra xác nhận mật khẩu có khớp không
+    // Check if confirm password matches
     if (password !== confirmPassword) {
       errors.push('Mật khẩu xác nhận không khớp');
     }
     
-    // Kiểm tra mật khẩu có đủ mạnh không (có chữ hoa, chữ thường và số)
+    // Check if password is strong enough (has uppercase, lowercase and number),special character is optional
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
     const hasNumber = /\d/.test(password);
+    const hasSpecialCharacter = /[!@#$%^&*]/.test(password);
     
-    if (!(hasUpperCase && hasLowerCase && hasNumber)) {
-      errors.push('Mật khẩu phải có ít nhất một chữ hoa, một chữ thường và một số');
+    if (!(hasUpperCase && hasLowerCase && hasNumber && hasSpecialCharacter)) {
+      errors.push('Mật khẩu phải có ít nhất một chữ hoa, một chữ thường và một số, ký tự đặc biệt là tùy chọn');
     }
     
     return {
@@ -181,18 +181,18 @@ const NewManager = () => {
 
   const getFieldLabel = (fieldName) => {
     const labels = {
-      username: 'tên đăng nhập',
-      email: 'email',
-      phoneNumber: 'số điện thoại',
+      username: 'Tên Đăng Nhập',
+      email: 'Email',
+      phoneNumber: 'Số Điện Thoại',
       citizenId: 'CMND/CCCD',
-      fullName: 'họ và tên',
-      dateOfBirth: 'ngày sinh',
-      branch: 'chi nhánh',
-      yearsOfExperience: 'số năm kinh nghiệm',
-      salary: 'lương',
-      password: 'mật khẩu',
-      confirmPassword: 'nhập lại mật khẩu',
-      address: 'địa chỉ'
+      fullName: 'Họ Và Tên',
+      dateOfBirth: 'Ngày Sinh',
+      branch: 'Chi Nhánh',
+      yearsOfExperience: 'Năm Kinh Nghiệm',
+      salary: 'Lương',
+      password: 'Mật Khẩu',
+      confirmPassword: 'Nhập Lại Mật Khẩu',
+      address: 'Địa Chỉ'
     };
     
     return labels[fieldName] || fieldName;
@@ -246,7 +246,7 @@ const NewManager = () => {
         // Redirect to verification page after a short delay
         setTimeout(() => {
           navigate('/verify-otp?type=register');
-        }, 1500);
+        }, 1000);
       }
     } catch (err) {
       console.error('Lỗi khi đăng ký quản lý:', err);
