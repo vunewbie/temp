@@ -78,7 +78,7 @@ const ChangePassword = () => {
     
     setIsLoading(true);
     setError('');
-    setSuccess('');
+    setSuccess('Đổi mật khẩu thành công!');
     
     try {
       const response = await changePasswordAPI(

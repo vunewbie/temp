@@ -25,6 +25,13 @@ export const updateManagerInfoAPI = async (managerId, managerData) => {
     let response;
     
     if (managerData instanceof FormData) {
+      console.log("ManagerAPI: Gửi request với FormData");
+      
+      // Log FormData để kiểm tra
+      for (let pair of managerData.entries()) {
+        console.log(pair[0] + ":", pair[1] instanceof File ? 'File' : pair[1]);
+      }
+      
       // DRF handles fields in formdata as { "user.field": value }
       response = await axios.patch(`${API_URL}/accounts/managers/${managerId}`, managerData, {
         headers: {
@@ -33,27 +40,27 @@ export const updateManagerInfoAPI = async (managerId, managerData) => {
         }
       });
     } else {
-      // DRF handles JSON data as { "user.field": value } so we need to convert it
-      // to be consistent with the format of formdata
-      const processedData = JSON.parse(JSON.stringify(managerData));
+      console.log("ManagerAPI: Gửi request với JSON data:", JSON.stringify(managerData));
       
-      // convert data from { user: { field: value } } to { "user.field": value }
+      // Vì backend đang mong đợi format là { "user.field": value } thay vì { user: { field: value } }
+      // nên cần chuyển đổi dữ liệu JSON
       const formattedData = {};
       
-      if (processedData.user && typeof processedData.user === 'object') {
-        Object.keys(processedData.user).forEach(field => {
-          const value = processedData.user[field];
+      if (managerData.user && typeof managerData.user === 'object') {
+        Object.keys(managerData.user).forEach(field => {
+          const value = managerData.user[field];
           formattedData[`user.${field}`] = value === '' ? null : value;
         });
       }
       
-      // add fields that are not user fields
-      Object.keys(processedData).forEach(key => {
+      // Thêm các trường khác không thuộc về user
+      Object.keys(managerData).forEach(key => {
         if (key !== 'user') {
-          formattedData[key] = processedData[key] === '' ? null : processedData[key];
+          formattedData[key] = managerData[key] === '' ? null : managerData[key];
         }
       });
       
+      console.log("ManagerAPI: Dữ liệu đã format:", formattedData);
       response = await axios.patch(`${API_URL}/accounts/managers/${managerId}`, formattedData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
@@ -62,6 +69,7 @@ export const updateManagerInfoAPI = async (managerId, managerData) => {
       });
     }
     
+    console.log("ManagerAPI: Nhận phản hồi thành công:", response.data);
     return response.data;
   } catch (error) {
     console.error("Lỗi khi cập nhật thông tin quản lý:", error);

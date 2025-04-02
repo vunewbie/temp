@@ -20,26 +20,48 @@ export const retrieveAdminInfoAPI = async (adminId) => {
 // update admin info
 export const updateAdminInfoAPI = async (adminId, adminData) => {  
   try {
+    console.log('AdminAPI: Gửi request đến adminId:', adminId);
+    
     let response;
-    // formdata is less efficient than JSON, so we use JSON when there is no file upload
+    
     if (adminData instanceof FormData) {
+      console.log("AdminAPI: Gửi request với FormData");
+      
+      // Log FormData để kiểm tra
+      for (let pair of adminData.entries()) {
+        console.log(pair[0] + ":", pair[1] instanceof File ? 'File' : pair[1]);
+      }
+      
+      // FormData đã được chuẩn bị đúng từ UserInfo.jsx, gửi trực tiếp
       response = await axios.patch(`${API_URL}/accounts/admins/${adminId}`, adminData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
           'Content-Type': 'multipart/form-data'
         }
       });
-    } else {      
-      // process data before sending, ensure empty strings ('') are converted to null
-      const processedData = JSON.parse(JSON.stringify(adminData));
-
-      Object.keys(processedData).forEach(key => {
-        if (processedData[key] === '') {
-          processedData[key] = null;
+    } else {
+      console.log("AdminAPI: Gửi request với JSON data:", JSON.stringify(adminData));
+      
+      // Vì backend đang mong đợi format là { "user.field": value } thay vì { user: { field: value } }
+      // nên cần chuyển đổi dữ liệu JSON
+      const formattedData = {};
+      
+      if (adminData.user && typeof adminData.user === 'object') {
+        Object.keys(adminData.user).forEach(field => {
+          const value = adminData.user[field];
+          formattedData[`user.${field}`] = value === '' ? null : value;
+        });
+      }
+      
+      // Thêm các trường khác không thuộc về user
+      Object.keys(adminData).forEach(key => {
+        if (key !== 'user') {
+          formattedData[key] = adminData[key] === '' ? null : adminData[key];
         }
       });
       
-      response = await axios.patch(`${API_URL}/accounts/admins/${adminId}`, processedData, {
+      console.log("AdminAPI: Dữ liệu đã format:", formattedData);
+      response = await axios.patch(`${API_URL}/accounts/admins/${adminId}`, formattedData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
           'Content-Type': 'application/json'
@@ -47,6 +69,7 @@ export const updateAdminInfoAPI = async (adminId, adminData) => {
       });
     }
     
+    console.log("AdminAPI: Nhận phản hồi thành công:", response.data);
     return response.data;
   } catch (error) {
     console.error("Lỗi khi cập nhật thông tin quản trị viên:", error);

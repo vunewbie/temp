@@ -11,6 +11,7 @@ export const retrieveCustomerInfoAPI = async (customerId) => {
         Authorization: `Bearer ${localStorage.getItem('access_token')}`
       }
     });
+    
     return response.data;
   } catch (error) {
     console.error("Lỗi khi lấy thông tin khách hàng:", error);
@@ -30,31 +31,25 @@ export const updateCustomerInfoAPI = async (customerId, customerData) => {
           'Content-Type': 'multipart/form-data'
         }
       });
-    } else {      
-      const processedData = JSON.parse(JSON.stringify(customerData));
+    } else {
+      const formattedData = {};
       
-      const processNestedObject = (obj) => {
-        if (!obj || typeof obj !== 'object') return;
-        
-        Object.keys(obj).forEach(key => {
-          if (typeof obj[key] === 'object' && obj[key] !== null) {
-            processNestedObject(obj[key]);
-          } else if (obj[key] === '') {
-            obj[key] = null;
-          }
+      // convert '' to null
+      if (customerData.user && typeof customerData.user === 'object') {
+        Object.keys(customerData.user).forEach(field => {
+          const value = customerData.user[field];
+          formattedData[`user.${field}`] = value === '' ? null : value;
         });
-      };
+      }
       
-      processNestedObject(processedData);
-      
-      response = await axios.patch(`${API_URL}/accounts/customers/${customerId}`, processedData, {
+      response = await axios.patch(`${API_URL}/accounts/customers/${customerId}`, formattedData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
           'Content-Type': 'application/json'
         }
       });
     }
-    
+
     return response.data;
   } catch (error) {
     console.error("Lỗi khi cập nhật thông tin khách hàng:", error);

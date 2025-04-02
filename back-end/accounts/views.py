@@ -74,10 +74,27 @@ class CustomerRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
             response = {
                 "detail": "Không được phép đổi mật khẩu thông qua phương thức này."
             }
-
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
         
-        return super().patch(request, *args, **kwargs)
+        customer = self.get_object()
+        user_data = {}
+        
+        # Xử lý dữ liệu gửi lên từ client, hỗ trợ cả JSON và FormData
+        for key, value in request.data.items():
+            if key.startswith("user."):
+                user_field = key.split(".", 1)[1]
+                user_data[user_field] = value
+        
+        serializer = self.get_serializer(customer, data={'user': user_data}, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        
+        response = {
+            "message": "Thông tin đã được cập nhật thành công",
+            "data": serializer.data
+        }
+        
+        return Response(response, status=status.HTTP_200_OK)
     
 # retrieve and update admin information
 class AdminRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
@@ -107,7 +124,26 @@ class AdminRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
             }
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
         
-        return super().patch(request, *args, **kwargs)
+        admin = self.get_object()
+        
+        user_data = {}
+        
+        # data from front-end has {"user.field" : value } format
+        for key, value in request.data.items():
+            if key.startswith("user."):
+                user_field = key.split(".", 1)[1]
+                user_data[user_field] = value
+        
+        serializer = self.get_serializer(admin, data=user_data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        
+        response = {
+            "message": "Thông tin đã được cập nhật thành công",
+            "data": serializer.data
+        }
+        
+        return Response(response, status=status.HTTP_200_OK)
                 
     
 # get all employees in the same branch as the manager and create new employee
@@ -697,6 +733,22 @@ class GoogleLoginAPIView(generics.GenericAPIView):
         try:
             user = User.objects.get(email=email)
             created = False
+            
+            if user.type == 'E':
+                try:
+                    employee = Employee.objects.get(user=user)
+                    if employee.resignation_date is not None:
+                        return Response({"error": "Nhân viên đã nghỉ việc không thể đăng nhập"}, status=400)
+                except Employee.DoesNotExist:
+                    pass
+            elif user.type == 'M':
+                try:
+                    manager = Manager.objects.get(user=user)
+                    if manager.resignation_date is not None:
+                        return Response({"error": "Quản lý đã nghỉ việc không thể đăng nhập"}, status=400)
+                except Manager.DoesNotExist:
+                    pass
+                    
         except User.DoesNotExist:
             # Create a new user with a unique username
             base_username = email.split("@")[0]
@@ -780,6 +832,22 @@ class FacebookLoginAPIView(generics.GenericAPIView):
         try:
             user = User.objects.get(email=email)
             created = False
+            
+            if user.type == 'E':
+                try:
+                    employee = Employee.objects.get(user=user)
+                    if employee.resignation_date is not None:
+                        return Response({"error": "Nhân viên đã nghỉ việc không thể đăng nhập"}, status=400)
+                except Employee.DoesNotExist:
+                    pass
+            elif user.type == 'M':
+                try:
+                    manager = Manager.objects.get(user=user)
+                    if manager.resignation_date is not None:
+                        return Response({"error": "Quản lý đã nghỉ việc không thể đăng nhập"}, status=400)
+                except Manager.DoesNotExist:
+                    pass
+                    
         except User.DoesNotExist:
             base_username = email.split("@")[0]
             unique_username = generate_unique_username(base_username)
@@ -872,6 +940,22 @@ class GitHubLoginAPIView(generics.GenericAPIView):
         try:
             user = User.objects.get(email=email)
             created = False
+            
+            if user.type == 'E':
+                try:
+                    employee = Employee.objects.get(user=user)
+                    if employee.resignation_date is not None:
+                        return Response({"error": "Nhân viên đã nghỉ việc không thể đăng nhập"}, status=400)
+                except Employee.DoesNotExist:
+                    pass
+            elif user.type == 'M':
+                try:
+                    manager = Manager.objects.get(user=user)
+                    if manager.resignation_date is not None:
+                        return Response({"error": "Quản lý đã nghỉ việc không thể đăng nhập"}, status=400)
+                except Manager.DoesNotExist:
+                    pass
+                    
         except User.DoesNotExist:
             # Create a new user with a unique username
             base_username = email.split("@")[0]

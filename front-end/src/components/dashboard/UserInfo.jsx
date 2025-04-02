@@ -269,7 +269,12 @@ const UserInfo = () => {
     try {
       // check if anything has changed in common userData
       const userDataChanged = Object.keys(userData).some(
-        key => userData[key] !== initialUserData[key]
+        key => {
+          if (key === 'avatar') {
+            return userData[key] instanceof File;
+          }
+          return userData[key] !== initialUserData[key];
+        }
       );
       
       // check if anything has changed in specific user type data
@@ -295,10 +300,12 @@ const UserInfo = () => {
       }
 
       // prepare data to update
-      let updateData = {};
+      let updateData = {
+        user: {}
+      };
       
-      // add user field for all account types (including Admin)
-      if (!updateData.user) updateData.user = {};
+      // Check if avatar has changed
+      const hasAvatarChanged = userData.avatar instanceof File
       
       // process common user info
       if (userData.phoneNumber !== initialUserData.phoneNumber) {
@@ -337,45 +344,51 @@ const UserInfo = () => {
       }
 
       // if no user data has changed, remove user field from updateData
-      if (Object.keys(updateData.user).length === 0) {
+      if (Object.keys(updateData.user).length === 0 && !hasAvatarChanged) {
         delete updateData.user;
       }
 
-      // create FormData if there is an avatar to upload
-      let formData = null;
-      if (userData.avatar instanceof File) {
-        formData = new FormData();
+      // if avatar has changed
+      let dataToSend = null;
+      
+      if (hasAvatarChanged) {
+        // Use form data if avatar has changed
+        const formData = new FormData();
         
-        // use user.avatar for all account types
         formData.append('user.avatar', userData.avatar);
         
-        // add other fields to FormData
-        if (Object.keys(updateData).length > 0) {
-          Object.keys(updateData).forEach(key => {
-            if (key === 'user') {
-              Object.keys(updateData.user).forEach(userKey => {
-                formData.append(`user.${userKey}`, updateData.user[userKey]);
-              });
-            } else {
-              formData.append(key, updateData[key]);
-            }
+        // other user's fields
+        if (updateData.user) {
+          Object.keys(updateData.user).forEach(field => {
+            const value = updateData.user[field];
+            formData.append(`user.${field}`, value === null ? '' : value);
+            console.log(`Thêm user.${field}:`, value);
           });
         }
+        
+        // specified field
+        if (updateData.address !== undefined) {
+          formData.append('address', updateData.address === null ? '' : updateData.address);
+          console.log('Thêm address:', updateData.address);
+        }
+        
+        dataToSend = formData;
+      } else {
+        // If avatar didn't change -> use JSON
+        dataToSend = updateData;
       }
       
       // only call API if there is data to update
-      if (Object.keys(updateData).length > 0 || formData) {
-        console.log('Dữ liệu gửi đi:', formData || updateData);
-        
+      if (dataToSend) {    
         let response;
         if (user.type === 'C') {
-          response = await updateCustomerInfoAPI(user.id, formData || updateData);
+          response = await updateCustomerInfoAPI(user.id, dataToSend);
         } else if (user.type === 'A') {
-          response = await updateAdminInfoAPI(user.id, formData || updateData);
+          response = await updateAdminInfoAPI(user.id, dataToSend);
         } else if (user.type === 'M') {
-          response = await updateManagerInfoAPI(user.id, formData || updateData);
+          response = await updateManagerInfoAPI(user.id, dataToSend);
         } else if (user.type === 'E') {
-          response = await updateEmployeeInfoAPI(user.id, formData || updateData);
+          response = await updateEmployeeInfoAPI(user.id, dataToSend);
         }
       }
 

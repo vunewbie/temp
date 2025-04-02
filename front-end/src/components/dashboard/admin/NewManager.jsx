@@ -412,7 +412,6 @@ const NewManager = () => {
               >
                 <option value="M">Nam</option>
                 <option value="F">Nữ</option>
-                <option value="O">Khác</option>
               </select>
             </div>
           </div>

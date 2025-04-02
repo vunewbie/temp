@@ -227,7 +227,7 @@ export const refreshTokenAPI = async (refreshToken) => {
 export const changePasswordAPI = async (oldPassword, newPassword) => {
   try {
     const response = await axios.post(
-      `${API_URL}/accounts/change-password/`,
+      `${API_URL}/accounts/change-password`,
        { old_password: oldPassword, new_password: newPassword },
        { headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}`}
     });

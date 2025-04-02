@@ -25,6 +25,13 @@ export const updateEmployeeInfoAPI = async (employeeId, employeeData) => {
     let response;
     
     if (employeeData instanceof FormData) {
+      console.log("EmployeeAPI: Gửi request với FormData");
+      
+      // Log FormData để kiểm tra
+      for (let pair of employeeData.entries()) {
+        console.log(pair[0] + ":", pair[1] instanceof File ? 'File' : pair[1]);
+      }
+      
       // DRF handles fields in formdata as { "user.field": value }
       response = await axios.patch(`${API_URL}/accounts/employees/${employeeId}`, employeeData, {
         headers: {
@@ -33,27 +40,27 @@ export const updateEmployeeInfoAPI = async (employeeId, employeeData) => {
         }
       });
     } else {
-      // DRF handles JSON data as { "user.field": value } so we need to convert it
-      // to be consistent with the format of formdata
-      const processedData = JSON.parse(JSON.stringify(employeeData));
+      console.log("EmployeeAPI: Gửi request với JSON data:", JSON.stringify(employeeData));
       
-      // convert data from { user: { field: value } } to { "user.field": value }
+      // Vì backend đang mong đợi format là { "user.field": value } thay vì { user: { field: value } }
+      // nên cần chuyển đổi dữ liệu JSON
       const formattedData = {};
       
-      if (processedData.user && typeof processedData.user === 'object') {
-        Object.keys(processedData.user).forEach(field => {
-          const value = processedData.user[field];
+      if (employeeData.user && typeof employeeData.user === 'object') {
+        Object.keys(employeeData.user).forEach(field => {
+          const value = employeeData.user[field];
           formattedData[`user.${field}`] = value === '' ? null : value;
         });
       }
       
-      // add fields that are not user fields
-      Object.keys(processedData).forEach(key => {
+      // Thêm các trường khác không thuộc về user
+      Object.keys(employeeData).forEach(key => {
         if (key !== 'user') {
-          formattedData[key] = processedData[key] === '' ? null : processedData[key];
+          formattedData[key] = employeeData[key] === '' ? null : employeeData[key];
         }
       });
       
+      console.log("EmployeeAPI: Dữ liệu đã format:", formattedData);
       response = await axios.patch(`${API_URL}/accounts/employees/${employeeId}`, formattedData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
@@ -62,6 +69,7 @@ export const updateEmployeeInfoAPI = async (employeeId, employeeData) => {
       });
     }
     
+    console.log("EmployeeAPI: Nhận phản hồi thành công:", response.data);
     return response.data;
   } catch (error) {
     console.error("Lỗi khi cập nhật thông tin nhân viên:", error);

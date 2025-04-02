@@ -43,7 +43,8 @@ const VerifyOTP = () => {
   // check hashed_email in localStorage
   useEffect(() => {
     const hashedEmail = localStorage.getItem('hashedEmail');
-    if (!hashedEmail) {
+    const username = localStorage.getItem('username');
+    if (!hashedEmail && !username) {
       navigate('/login');
     }
   }, [navigate]);
