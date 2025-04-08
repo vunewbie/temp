@@ -55,6 +55,12 @@ import {
     listBranchInfoAPI
 } from './establishments/BranchAPI';
 
+// AreaAPI
+import {
+    listAreaInfoAPI,
+    updateAreaInfoAPI
+} from './establishments/AreaAPI';
+
 export {
     // AuthsAPI
     normalLoginAPI,
@@ -97,5 +103,9 @@ export {
     listDepartmentInfoAPI,
     
     // BranchAPI
-    listBranchInfoAPI
+    listBranchInfoAPI,
+    
+    // AreaAPI
+    listAreaInfoAPI,
+    updateAreaInfoAPI
 };

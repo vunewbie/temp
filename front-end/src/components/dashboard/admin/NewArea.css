@@ -1,88 +1,137 @@
 .new-area-container {
-  background-color: #ffffff;
-  border-radius: 12px;
-  padding: 30px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-.new-area-container:hover {
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .new-area-container h2 {
-  margin-top: 0;
-  margin-bottom: 28px;
-  color: #333;
-  font-size: 24px;
-  font-weight: 600;
-  position: relative;
-  padding-bottom: 10px;
-}
-
-.new-area-container h2::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 3px;
-  width: 50px;
-  background: linear-gradient(to right, #f97316, #fb923c);
-  border-radius: 3px;
-}
-
-.placeholder-text {
-  padding: 60px 40px;
   text-align: center;
-  color: #9ca3af;
-  font-size: 16px;
-  background-color: #f9fafb;
-  border-radius: 8px;
-  border: 1px dashed #d1d5db;
-  position: relative;
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.02);
+  margin-bottom: 30px;
+  color: #333;
 }
 
-.placeholder-text::before {
-  content: '';
-  display: block;
-  width: 60px;
-  height: 60px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z' /%3E%3C/svg%3E");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
+.new-area-form {
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.new-area-form-group {
   margin-bottom: 20px;
-  opacity: 0.6;
+}
+
+.new-area-form-group label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  color: #555;
+  font-weight: 500;
+}
+
+.new-area-form-group label img {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.new-area-form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.new-area-form-group input:focus {
+  border-color: #4a90e2;
+  outline: none;
+}
+
+.new-area-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.new-area-submit-button {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.new-area-submit-button:hover {
+  background-color: #357abd;
+}
+
+.new-area-cancel-button {
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+  padding: 12px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.new-area-cancel-button:hover {
+  background-color: #e0e0e0;
+}
+
+.new-area-error-message,
+.new-area-success-message {
+  padding: 12px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.new-area-error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+
+.new-area-success-message {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
+.new-area-close-button {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 0 8px;
 }
 
 @media (max-width: 768px) {
   .new-area-container {
+    padding: 10px;
+  }
+
+  .new-area-form {
     padding: 20px;
   }
-  
-  .new-area-container h2 {
-    text-align: center;
+
+  .new-area-form-actions {
+    flex-direction: column;
   }
-  
-  .new-area-container h2::after {
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  
-  .placeholder-text {
-    padding: 40px 20px;
-    min-height: 150px;
-  }
-  
-  .placeholder-text::before {
-    width: 40px;
-    height: 40px;
+
+  .new-area-submit-button,
+  .new-area-cancel-button {
+    width: 100%;
   }
 } 

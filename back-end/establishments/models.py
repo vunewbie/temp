@@ -46,7 +46,12 @@ class Branch(models.Model):
 class Table(models.Model):
     table_number = models.IntegerField(validators=[MinValueValidator(0)])
     number_of_seats = models.IntegerField(validators=[MinValueValidator(0)])
-    status = models.CharField(max_length=10, choices = [('A', 'Available'), ('R', 'Reserved'), ('O', 'Occupied')], default='A')
+    status = models.CharField(max_length=10, choices = [
+        ('A', 'Available'), 
+        ('B', 'Booked'), 
+        ('R', 'Reserving'),
+        ('F', 'Finished')], 
+        default='A')
 
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
 

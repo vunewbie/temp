@@ -8,6 +8,9 @@ import ErrorsPopupWindow from './ui/popup/ErrorsPopupWindow';
 import EmployeePopupWindow from './ui/popup/EmployeePopupWindow';
 import ManagerPopupWindow from './ui/popup/ManagerPopupWindow';
 import ScrollToTop from './ui/scrollToTop/ScrollToTop';
+import AreaPopupWindow from './ui/popup/AreaPopupWindow';
+import BranchPopupWindow from './ui/popup/BranchPopupWindow';
+import DepartmentPopupWindow from './ui/popup/DepartmentPopupWindow';
 
 // Dashboard components
 import ChangePassword from './dashboard/ChangePassword';
@@ -84,5 +87,8 @@ export {
   Reservation,
   Delivery,
   PurchaseHistory,
-  CumulativePointsHistory
+  CumulativePointsHistory,
+  AreaPopupWindow,
+  BranchPopupWindow,
+  DepartmentPopupWindow
 }; 

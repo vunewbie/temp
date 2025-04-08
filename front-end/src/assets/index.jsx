@@ -57,6 +57,12 @@ import newManagerIcon from './dashboard/admin/new-manager-icon.svg';
 import promotionIcon from './dashboard/admin/promotion-icon.svg';
 import newPromotionIcon from './dashboard/admin/new-promotion-icon.svg';
 import statisticsIcon from './dashboard/admin/statistics-icon.svg';
+import carParkingLotIcon from './dashboard/admin/car-parking-lot-icon.svg';
+import cityIcon from './dashboard/admin/city-icon.svg';
+import closingTimeIcon from './dashboard/admin/closing-time-icon.svg';
+import districtIcon from './dashboard/admin/district-icon.svg';
+import motorbikeParkingLotIcon from './dashboard/admin/motorbike-parking-lot-icon.svg';
+import openingTimeIcon from './dashboard/admin/opening-time-icon.svg';
 
 // Auths
 import authEmailIcon from './auths/email-icon.svg';
@@ -209,6 +215,12 @@ export {
   promotionIcon,
   newPromotionIcon,
   statisticsIcon,
+  carParkingLotIcon,
+  cityIcon,
+  closingTimeIcon,
+  districtIcon,
+  motorbikeParkingLotIcon,
+  openingTimeIcon,
   
   // Auths
   authEmailIcon,

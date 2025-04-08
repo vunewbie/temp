@@ -79,7 +79,6 @@ class CustomerRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
         customer = self.get_object()
         user_data = {}
         
-        # Xử lý dữ liệu gửi lên từ client, hỗ trợ cả JSON và FormData
         for key, value in request.data.items():
             if key.startswith("user."):
                 user_field = key.split(".", 1)[1]
@@ -776,8 +775,6 @@ class GoogleLoginAPIView(generics.GenericAPIView):
             user.save()
 
         user.backend = "django.contrib.auth.backends.ModelBackend"
-        login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-
         # generate JWT token
         refresh = RefreshToken.for_user(user)
         refresh["type"] = user.type
@@ -873,8 +870,6 @@ class FacebookLoginAPIView(generics.GenericAPIView):
             user.save()
 
         user.backend = "django.contrib.auth.backends.ModelBackend"
-        login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-
         refresh = RefreshToken.for_user(user)
         refresh["type"] = user.type
         refresh["username"] = user.username
@@ -981,8 +976,6 @@ class GitHubLoginAPIView(generics.GenericAPIView):
             user.save()
 
         user.backend = "django.contrib.auth.backends.ModelBackend"
-        login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-
         # generate JWT token
         refresh = RefreshToken.for_user(user)
         refresh["type"] = user.type

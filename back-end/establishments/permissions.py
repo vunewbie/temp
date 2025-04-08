@@ -37,3 +37,7 @@ class IsManagerOrAdmin(BasePermission):
         if isinstance(obj, Area):
             return request.user.type == 'A'
         return True
+
+class IsAdmin(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.type == 'A'
