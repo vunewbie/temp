@@ -3,12 +3,13 @@ import axios from "axios";
 const API_URL = import.meta.env.VITE_BACKEND_API;
 
 // list branch info
-export const listBranchInfoAPI = async () => {
+export const listBranchInfoAPI = async (filters = {}) => {
   try {
     const response = await axios.get(`${API_URL}/establishments/branches`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('access_token')}`
-      }
+      },
+      params: filters
     });
 
     return response.data;

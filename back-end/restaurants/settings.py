@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     # custom apps
     'accounts',
     'establishments',
+    'menu',
 
     # third-party apps
     'phonenumber_field',

@@ -13,7 +13,6 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 
 from django.utils import timezone
-from django.contrib.auth import login
 from django.conf import settings
 from datetime import datetime, timedelta
 

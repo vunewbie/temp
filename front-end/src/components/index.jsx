@@ -11,6 +11,7 @@ import ScrollToTop from './ui/scrollToTop/ScrollToTop';
 import AreaPopupWindow from './ui/popup/AreaPopupWindow';
 import BranchPopupWindow from './ui/popup/BranchPopupWindow';
 import DepartmentPopupWindow from './ui/popup/DepartmentPopupWindow';
+import DishPopupWindow from './ui/popup/DishPopupWindow';
 
 // Dashboard components
 import ChangePassword from './dashboard/ChangePassword';
@@ -90,5 +91,6 @@ export {
   CumulativePointsHistory,
   AreaPopupWindow,
   BranchPopupWindow,
-  DepartmentPopupWindow
+  DepartmentPopupWindow,
+  DishPopupWindow
 }; 

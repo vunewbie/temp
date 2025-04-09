@@ -72,7 +72,7 @@
 }
 
 .new-branch-submit-button {
-  background-color: #4a90e2;
+  background: linear-gradient(to right, #f97316, #fb923c);
   color: white;
   border: none;
   padding: 12px 24px;

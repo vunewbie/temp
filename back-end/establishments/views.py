@@ -7,6 +7,8 @@ from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+import django_filters
+
 class AreaListCreateAPIView(generics.ListCreateAPIView):
     queryset = Area.objects.all()
     serializer_class = AreaSerializer
@@ -91,6 +93,24 @@ class BranchListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = BranchSerializer
     permission_classes = [AllowAny]
     authentication_classes = [CustomTokenAuthentication]
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filterset_fields = ['area']
+
+    def get(self, request):
+        branches = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(branches, many=True)
+        data = serializer.data
+
+        for branch in data:
+            if branch.get('area'):
+                area_id = branch['area']
+                try:
+                    area = Area.objects.get(id=area_id)
+                    branch['area_name'] = f"{area.district}, {area.city}"
+                except Area.DoesNotExist:
+                    branch['area_name'] = 'Không tìm thấy khu vực'
+
+        return Response(data, status=status.HTTP_200_OK)
 
     def post(self, request):
         if request.user.type != 'A':
@@ -112,6 +132,21 @@ class BranchRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     # put request is not allowed
     def put(self, request, *args, **kwargs):
         return Response({'detail': 'Phương thức PUT không được phép'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def get(self, request, *args, **kwargs):
+        branch = self.get_object()
+        serializer = self.get_serializer(branch)
+        data = serializer.data
+
+        if data.get('area'):
+            area_id = data['area']
+            try:
+                area = Area.objects.get(id=area_id)
+                data['area_name'] = f"{area.district}, {area.city}"
+            except Area.DoesNotExist:
+                data['area_name'] = 'Không tìm thấy khu vực'
+
+        return Response(data, status=status.HTTP_200_OK)
 
     def patch(self, request, *args, **kwargs):
         if request.user.type != 'A':

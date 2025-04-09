@@ -63,6 +63,7 @@ import closingTimeIcon from './dashboard/admin/closing-time-icon.svg';
 import districtIcon from './dashboard/admin/district-icon.svg';
 import motorbikeParkingLotIcon from './dashboard/admin/motorbike-parking-lot-icon.svg';
 import openingTimeIcon from './dashboard/admin/opening-time-icon.svg';
+import categoryItemIcon from './dashboard/admin/category-item-icon.svg';
 
 // Auths
 import authEmailIcon from './auths/email-icon.svg';
@@ -221,6 +222,7 @@ export {
   districtIcon,
   motorbikeParkingLotIcon,
   openingTimeIcon,
+  categoryItemIcon,
   
   // Auths
   authEmailIcon,

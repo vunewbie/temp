@@ -61,6 +61,22 @@ import {
     updateAreaInfoAPI
 } from './establishments/AreaAPI';
 
+// CategoryAPI
+import {
+    listCategoryAPI,
+    createCategoryAPI,
+    updateCategoryAPI,
+    deleteCategoryAPI
+} from './menu/CategoryAPI';
+
+// DishAPI
+import {
+    listDishAPI,
+    createDishAPI,
+    updateDishAPI,
+    deleteDishAPI
+} from './menu/DishAPI';
+
 export {
     // AuthsAPI
     normalLoginAPI,
@@ -107,5 +123,17 @@ export {
     
     // AreaAPI
     listAreaInfoAPI,
-    updateAreaInfoAPI
+    updateAreaInfoAPI,
+
+    // CategoryAPI
+    listCategoryAPI,
+    createCategoryAPI,
+    updateCategoryAPI,
+    deleteCategoryAPI,
+
+    // DishAPI
+    listDishAPI,
+    createDishAPI,
+    updateDishAPI,
+    deleteDishAPI
 };
