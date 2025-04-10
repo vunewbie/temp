@@ -1,5 +1,6 @@
 from .serializers import *
 from .models import *
+from .permissions import *
 from accounts.models import Manager
 from accounts.authentication import CustomTokenAuthentication
 
@@ -9,56 +10,42 @@ from rest_framework.response import Response
 
 import django_filters
 
-class CategoryListCreateAPIView(generics.ListCreateAPIView):
+class CategoryListAPIView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [AllowAny]
+
+class CategoryCreateAPIView(generics.CreateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [IsAdmin]
     authentication_classes = [CustomTokenAuthentication]
-    
-    def post(self, request):
-        if request.user.type != 'A':
-            return Response({'detail': 'Chỉ chuỗi nhà hàng mới có quyền thêm danh mục'}, status=status.HTTP_403_FORBIDDEN)
-        
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-class CategoryRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+
+class CategoryRetrieveAPIView(generics.RetrieveAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [AllowAny]
+
+class CategoryUpdateAPIView(generics.UpdateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [IsAdmin]
     authentication_classes = [CustomTokenAuthentication]
-    
+
     # put method is not allowed
     def put(self, request, *args, **kwargs):
         return Response({'detail': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-    
-    def patch(self, request, *args, **kwargs):
-        if request.user.type != 'A':
-            return Response({'detail': 'Chỉ chuỗi nhà hàng mới có quyền cập nhật danh mục'}, status=status.HTTP_403_FORBIDDEN)
-        
-        category = self.get_object()
-        serializer = self.get_serializer(category, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        
-        response = {
-            "message": "Thông tin đã được cập nhật thành công",
-            "data": serializer.data
-        }
-        
-        return Response(response, status=status.HTTP_200_OK)
 
-class DishListCreateAPIView(generics.ListCreateAPIView):
+class CategoryDestroyAPIView(generics.DestroyAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [IsAdmin]
+    authentication_classes = [CustomTokenAuthentication]
+
+class DishListAPIView(generics.ListAPIView):
     queryset = Dish.objects.all()
     serializer_class = DishSerializer
     permission_classes = [AllowAny]
-    authentication_classes = [CustomTokenAuthentication]
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
-    filterset_fields = ['category']
 
     def get(self, request):
         dishes = self.filter_queryset(self.get_queryset())
@@ -76,49 +63,33 @@ class DishListCreateAPIView(generics.ListCreateAPIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
-    def post(self, request):
-        if request.user.type != 'A':
-            return Response({'detail': 'Chỉ chuỗi nhà hàng mới có quyền thêm món ăn'}, status=status.HTTP_403_FORBIDDEN)
-        
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-class DishRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+class DishCreateAPIView(generics.CreateAPIView):
+    queryset = Dish.objects.all()
+    serializer_class = DishSerializer
+    permission_classes = [IsAdmin]
+    authentication_classes = [CustomTokenAuthentication]
+
+class DishRetrieveAPIView(generics.RetrieveAPIView):
     queryset = Dish.objects.all()
     serializer_class = DishSerializer
     permission_classes = [AllowAny]
+
+class DishUpdateAPIView(generics.UpdateAPIView):
+    queryset = Dish.objects.all()
+    serializer_class = DishSerializer
+    permission_classes = [IsAdmin]
     authentication_classes = [CustomTokenAuthentication]
-    
+
     def put(self, request, *args, **kwargs):
         return Response({'detail': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     
-    def patch(self, request, *args, **kwargs):
-        if request.user.type != 'A':
-            return Response({'detail': 'Chỉ chuỗi nhà hàng mới có quyền cập nhật món ăn'}, status=status.HTTP_403_FORBIDDEN)
-        
-        # filter out status field
-        request.data.pop('status', None)
+class DishDestroyAPIView(generics.DestroyAPIView):
+    queryset = Dish.objects.all()
+    serializer_class = DishSerializer
+    permission_classes = [IsAdmin]
+    authentication_classes = [CustomTokenAuthentication]
 
-        dish = self.get_object()
-        serializer = self.get_serializer(dish, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        
-        response = {
-            "message": "Thông tin đã được cập nhật thành công",
-            "data": serializer.data
-        }
-
-        return Response(response, status=status.HTTP_200_OK)
-    
-    def delete(self, request, *args, **kwargs):
-        if request.user.type != 'A':
-            return Response({'detail': 'Chỉ chuỗi nhà hàng mới có quyền xóa món ăn'}, status=status.HTTP_403_FORBIDDEN)
-        
+    def delete(self, request, *args, **kwargs):        
         dish = self.get_object()
         dish.status = False
         dish.save()
@@ -127,12 +98,11 @@ class DishRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
         Menu.objects.filter(dish=dish).delete()
 
         return Response({'message': 'Món ăn đã được xóa thành công'}, status=status.HTTP_200_OK)
-        
-class MenuListCreateAPIView(generics.ListCreateAPIView):
+    
+class MenuListAPIView(generics.ListAPIView):
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
     permission_classes = [AllowAny]
-    authentication_classes = [CustomTokenAuthentication]
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
     filterset_fields = ['branch']
 
@@ -142,9 +112,8 @@ class MenuListCreateAPIView(generics.ListCreateAPIView):
         
         if category_id:
             queryset = queryset.filter(dish__category_id=category_id)
-            
         return queryset
-
+    
     def get(self, request):
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=True)
@@ -170,18 +139,20 @@ class MenuListCreateAPIView(generics.ListCreateAPIView):
             if menu.get('branch'):
                 branch_id = menu['branch']
                 try:
-                    from establishments.models import Branch
                     branch = Branch.objects.get(id=branch_id)
                     menu['branch_name'] = branch.name
                 except Branch.DoesNotExist:
                     menu['branch_name'] = 'Không tìm thấy chi nhánh'
 
         return Response(data, status=status.HTTP_200_OK)
+    
+class MenuCreateAPIView(generics.CreateAPIView):
+    queryset = Menu.objects.all()
+    serializer_class = MenuSerializer
+    permission_classes = [IsSameBranchManager]
+    authentication_classes = [CustomTokenAuthentication]
 
-    def post(self, request):
-        if request.user.type != 'M':
-            return Response({'detail': 'Chỉ có quản lý chi nhánh mới được thêm món vào menu chi nhánh'}, status=status.HTTP_403_FORBIDDEN)
-        
+    def post(self, request, *args, **kwargs):
         try:
             manager = Manager.objects.get(user=request.user)
             manager_branch_id = manager.branch.id
@@ -205,10 +176,15 @@ class MenuListCreateAPIView(generics.ListCreateAPIView):
         except Manager.DoesNotExist:
             return Response({'detail': 'Không tìm thấy thông tin quản lý'}, status=status.HTTP_403_FORBIDDEN)
     
-class MenuRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+class MenuRetrieveAPIView(generics.RetrieveAPIView):
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
     permission_classes = [AllowAny]
+
+class MenuUpdateAPIView(generics.UpdateAPIView):
+    queryset = Menu.objects.all()
+    serializer_class = MenuSerializer
+    permission_classes = [IsSameBranchManager]
     authentication_classes = [CustomTokenAuthentication]
     
     def put(self, request, *args, **kwargs):
@@ -249,7 +225,4 @@ class MenuRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
             
         except Manager.DoesNotExist:
             return Response({'detail': 'Không tìm thấy thông tin quản lý'}, status=status.HTTP_403_FORBIDDEN)
-    
-    def delete(self, request, *args, **kwargs):
-        return Response({'detail': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 

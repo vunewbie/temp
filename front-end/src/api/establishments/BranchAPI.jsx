@@ -6,9 +6,6 @@ const API_URL = import.meta.env.VITE_BACKEND_API;
 export const listBranchInfoAPI = async (filters = {}) => {
   try {
     const response = await axios.get(`${API_URL}/establishments/branches`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('access_token')}`
-      },
       params: filters
     });
 
@@ -22,7 +19,7 @@ export const listBranchInfoAPI = async (filters = {}) => {
 // update branch info
 export const updateBranchInfoAPI = async (branchId, branchData) => {
   try {
-    const response = await axios.patch(`${API_URL}/establishments/branches/${branchId}`, branchData, {
+    const response = await axios.patch(`${API_URL}/establishments/branches/${branchId}/update`, branchData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('access_token')}`
       }
@@ -38,7 +35,7 @@ export const updateBranchInfoAPI = async (branchId, branchData) => {
 // create branch
 export const createBranchAPI = async (branchData) => {
   try {
-    const response = await axios.post(`${API_URL}/establishments/branches`, branchData, {
+    const response = await axios.post(`${API_URL}/establishments/branches/create`, branchData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('access_token')}`
       }

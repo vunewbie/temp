@@ -25,14 +25,6 @@ export const updateManagerInfoAPI = async (managerId, managerData) => {
     let response;
     
     if (managerData instanceof FormData) {
-      console.log("ManagerAPI: Gửi request với FormData");
-      
-      // Log FormData để kiểm tra
-      for (let pair of managerData.entries()) {
-        console.log(pair[0] + ":", pair[1] instanceof File ? 'File' : pair[1]);
-      }
-      
-      // DRF handles fields in formdata as { "user.field": value }
       response = await axios.patch(`${API_URL}/accounts/managers/${managerId}`, managerData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
@@ -40,10 +32,6 @@ export const updateManagerInfoAPI = async (managerId, managerData) => {
         }
       });
     } else {
-      console.log("ManagerAPI: Gửi request với JSON data:", JSON.stringify(managerData));
-      
-      // Vì backend đang mong đợi format là { "user.field": value } thay vì { user: { field: value } }
-      // nên cần chuyển đổi dữ liệu JSON
       const formattedData = {};
       
       if (managerData.user && typeof managerData.user === 'object') {
@@ -53,14 +41,12 @@ export const updateManagerInfoAPI = async (managerId, managerData) => {
         });
       }
       
-      // Thêm các trường khác không thuộc về user
       Object.keys(managerData).forEach(key => {
         if (key !== 'user') {
           formattedData[key] = managerData[key] === '' ? null : managerData[key];
         }
       });
       
-      console.log("ManagerAPI: Dữ liệu đã format:", formattedData);
       response = await axios.patch(`${API_URL}/accounts/managers/${managerId}`, formattedData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
@@ -69,7 +55,6 @@ export const updateManagerInfoAPI = async (managerId, managerData) => {
       });
     }
     
-    console.log("ManagerAPI: Nhận phản hồi thành công:", response.data);
     return response.data;
   } catch (error) {
     console.error("Lỗi khi cập nhật thông tin quản lý:", error);

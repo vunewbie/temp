@@ -25,25 +25,16 @@ export const updateAdminInfoAPI = async (adminId, adminData) => {
     let response;
     
     if (adminData instanceof FormData) {
-      console.log("AdminAPI: Gửi request với FormData");
-      
-      // Log FormData để kiểm tra
-      for (let pair of adminData.entries()) {
-        console.log(pair[0] + ":", pair[1] instanceof File ? 'File' : pair[1]);
-      }
-      
-      // FormData đã được chuẩn bị đúng từ UserInfo.jsx, gửi trực tiếp
+      // FormData is prepared correctly from UserInfo.jsx, send directly
       response = await axios.patch(`${API_URL}/accounts/admins/${adminId}`, adminData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
           'Content-Type': 'multipart/form-data'
         }
       });
-    } else {
-      console.log("AdminAPI: Gửi request với JSON data:", JSON.stringify(adminData));
-      
-      // Vì backend đang mong đợi format là { "user.field": value } thay vì { user: { field: value } }
-      // nên cần chuyển đổi dữ liệu JSON
+    } else {      
+      // Because backend expects format { "user.field": value } instead of { user: { field: value } }
+      // so we need to convert the data
       const formattedData = {};
       
       if (adminData.user && typeof adminData.user === 'object') {
@@ -53,14 +44,13 @@ export const updateAdminInfoAPI = async (adminId, adminData) => {
         });
       }
       
-      // Thêm các trường khác không thuộc về user
+      // Add other fields that are not part of user
       Object.keys(adminData).forEach(key => {
         if (key !== 'user') {
           formattedData[key] = adminData[key] === '' ? null : adminData[key];
         }
       });
       
-      console.log("AdminAPI: Dữ liệu đã format:", formattedData);
       response = await axios.patch(`${API_URL}/accounts/admins/${adminId}`, formattedData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
@@ -69,7 +59,6 @@ export const updateAdminInfoAPI = async (adminId, adminData) => {
       });
     }
     
-    console.log("AdminAPI: Nhận phản hồi thành công:", response.data);
     return response.data;
   } catch (error) {
     console.error("Lỗi khi cập nhật thông tin quản trị viên:", error);

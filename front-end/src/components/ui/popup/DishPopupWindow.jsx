@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { listDishAPI, updateDishAPI, createDishAPI } from '../../../api';
+import { listCategoryAPI } from '../../../api/menu/CategoryAPI';
 import { defaultAvatar } from '../../../assets';
 import './DishPopupWindow.css';
 
@@ -19,7 +20,8 @@ const DishPopupWindow = ({ dishId, onClose }) => {
         description: '',
         image: null,
         category: '',
-        categoryName: ''
+        categoryName: '',
+        status: true // Giá trị mặc định khi tạo mới là Đang bán
     });
     
     // image preview
@@ -31,24 +33,19 @@ const DishPopupWindow = ({ dishId, onClose }) => {
             try {
                 setIsLoading(true);
                 
-                // get list of dishes to extract categories
-                const dishesData = await listDishAPI();
+                // Fetch categories and dish details concurrently
+                const [categoriesData, dishesData] = await Promise.all([
+                    listCategoryAPI(),
+                    listDishAPI()
+                ]);
                 
-                // Extract unique categories
-                const uniqueCategories = [];
-                const categoryIds = new Set();
+                // Format categories data
+                const formattedCategories = categoriesData.map(category => ({
+                    id: category.id,
+                    name: category.name
+                }));
                 
-                dishesData.forEach(dish => {
-                    if (dish.category && !categoryIds.has(dish.category)) {
-                        categoryIds.add(dish.category);
-                        uniqueCategories.push({
-                            id: dish.category,
-                            name: dish.category_name
-                        });
-                    }
-                });
-                
-                setCategories(uniqueCategories);
+                setCategories(formattedCategories);
                 
                 // If editing an existing dish, find it in the data
                 if (dishId) {
@@ -62,7 +59,8 @@ const DishPopupWindow = ({ dishId, onClose }) => {
                             description: dish.description || '',
                             image: dish.image || null,
                             category: dish.category || '',
-                            categoryName: dish.category_name || ''
+                            categoryName: dish.category_name || '',
+                            status: dish.status !== undefined ? dish.status : true
                         });
                         
                         // update image preview
@@ -71,6 +69,16 @@ const DishPopupWindow = ({ dishId, onClose }) => {
                         }
                     } else {
                         setError('Không tìm thấy thông tin món ăn.');
+                    }
+                } else {
+                    // Nếu đang tạo mới món ăn và có danh mục, thiết lập giá trị mặc định là danh mục đầu tiên
+                    if (formattedCategories.length > 0) {
+                        const defaultCategory = formattedCategories[0];
+                        setDishData(prevData => ({
+                            ...prevData,
+                            category: defaultCategory.id,
+                            categoryName: defaultCategory.name
+                        }));
                     }
                 }
                 
@@ -90,6 +98,7 @@ const DishPopupWindow = ({ dishId, onClose }) => {
         const { name, value } = e.target;
         
         if (name === 'category') {
+            // Find the selected category to get its name
             const category = categories.find(c => c.id === parseInt(value));
             setDishData({
                 ...dishData,
@@ -102,6 +111,13 @@ const DishPopupWindow = ({ dishId, onClose }) => {
             setDishData({
                 ...dishData,
                 price
+            });
+        } else if (name === 'status') {
+            // Convert string 'true'/'false' to boolean
+            const statusValue = value === 'true';
+            setDishData({
+                ...dishData,
+                status: statusValue
             });
         } else {
             setDishData({
@@ -144,6 +160,7 @@ const DishPopupWindow = ({ dishId, onClose }) => {
             formData.append('price', dishData.price);
             formData.append('description', dishData.description || '');
             formData.append('category', dishData.category);
+            formData.append('status', dishData.status.toString());
             
             // Only append image if it's a File object (new upload)
             if (dishData.image instanceof File) {
@@ -266,11 +283,11 @@ const DishPopupWindow = ({ dishId, onClose }) => {
                                         className="cancel-button"
                                         onClick={() => {
                                             setIsEditing(false);
-                                            // Reset form data
-                                            const dish = categories.find(c => c.id === dishData.category);
+                                            // Reset form data to last saved state
+                                            const category = categories.find(c => c.id === parseInt(dishData.category));
                                             setDishData({
                                                 ...dishData,
-                                                categoryName: dish ? dish.name : ''
+                                                categoryName: category ? category.name : ''
                                             });
                                         }}
                                     >
@@ -318,7 +335,7 @@ const DishPopupWindow = ({ dishId, onClose }) => {
                         <label>Danh mục:</label>
                         <select
                             name="category"
-                            value={dishData.category}
+                            value={dishData.category || ''}
                             onChange={handleChange}
                             disabled={!isEditing && !isCreating}
                             required
@@ -329,6 +346,21 @@ const DishPopupWindow = ({ dishId, onClose }) => {
                                     {category.name}
                                 </option>
                             ))}
+                        </select>
+                        {!dishData.category && isCreating && (
+                            <div className="field-error">Vui lòng chọn danh mục</div>
+                        )}
+                    </div>
+                    <div className="form-group">
+                        <label>Trạng thái:</label>
+                        <select
+                            name="status"
+                            value={dishData.status.toString()}
+                            onChange={handleChange}
+                            disabled={!isEditing && !isCreating}
+                        >
+                            <option value="true">Đang bán</option>
+                            <option value="false">Ngừng bán</option>
                         </select>
                     </div>
                 </div>

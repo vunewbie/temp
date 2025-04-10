@@ -11,7 +11,7 @@ export const listCategoryAPI = async () => {
 // update category
 export const updateCategoryAPI = async (categoryId, categoryData) => {
     try {
-        const response = await axios.patch(`${API_URL}/menu/categories/${categoryId}`, categoryData, {
+        const response = await axios.patch(`${API_URL}/menu/categories/${categoryId}/update`, categoryData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`
           }
@@ -27,7 +27,7 @@ export const updateCategoryAPI = async (categoryId, categoryData) => {
 // create category
 export const createCategoryAPI = async (categoryData) => {
     try {
-        const response = await axios.post(`${API_URL}/menu/categories`, categoryData, {
+        const response = await axios.post(`${API_URL}/menu/categories/create`, categoryData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`
           }
@@ -43,7 +43,7 @@ export const createCategoryAPI = async (categoryData) => {
 // delete category
 export const deleteCategoryAPI = async (categoryId) => {
   try {
-    const response = await axios.delete(`${API_URL}/menu/categories/${categoryId}`, {
+    const response = await axios.delete(`${API_URL}/menu/categories/${categoryId}/delete`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('access_token')}`
       }

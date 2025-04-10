@@ -31,7 +31,7 @@ urlpatterns = [
 
     path('log-out', LogoutAPIView.as_view(), name='log-out'),
 
-    path("auth/google/login/", GoogleLoginAPIView.as_view(), name="google-login"),
-    path("auth/facebook/login/", FacebookLoginAPIView.as_view(), name="facebook-login"),
-    path("auth/github/login/", GitHubLoginAPIView.as_view(), name="github-login"),
+    path("auth/google/login", GoogleLoginAPIView.as_view(), name="google-login"),
+    path("auth/facebook/login", FacebookLoginAPIView.as_view(), name="facebook-login"),
+    path("auth/github/login", GitHubLoginAPIView.as_view(), name="github-login"),
 ]

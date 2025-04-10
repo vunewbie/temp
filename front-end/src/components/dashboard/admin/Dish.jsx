@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { listDishAPI, deleteDishAPI } from '../../../api';
+import { listCategoryAPI } from '../../../api';
 import { updateIcon, deleteIcon, defaultAvatar } from '../../../assets';
 import { DishPopupWindow } from '../../../components';
 import './Dish.css';
@@ -46,46 +47,39 @@ const Dish = () => {
     try {
       setLoading(true);
       
-      // Get dishes data
-      const data = await listDishAPI();
+      // Get dishes data and categories simultaneously
+      const [dishesData, categoriesData] = await Promise.all([
+        listDishAPI(),
+        listCategoryAPI()
+      ]);
       
-      // If there are dishes, extract categories
-      if (data && data.length > 0) {
-        // Create a set of unique category IDs
-        const uniqueCategoryIds = new Set();
-        const categoryList = [];
-        
-        // Build category list and filter dishes by category if selected
-        let filteredDishes = data;
-        
-        data.forEach(dish => {
-          if (dish.category && !uniqueCategoryIds.has(dish.category)) {
-            uniqueCategoryIds.add(dish.category);
-            categoryList.push({ id: dish.category, name: dish.category_name });
-          }
-        });
-        
-        // If a category is selected, filter dishes
-        if (selectedCategory) {
-          filteredDishes = filteredDishes.filter(dish => dish.category === parseInt(selectedCategory));
-        }
-        
-        // Filter by status if needed
-        if (statusFilter !== 'all') {
-          const isActive = statusFilter === 'active';
-          filteredDishes = filteredDishes.filter(dish => dish.status === isActive);
-        }
-        
-        setCategories(categoryList);
-        setDishes(filteredDishes);
-      } else {
-        setDishes([]);
+      // Format categories data
+      const categoryList = categoriesData.map(category => ({
+        id: category.id,
+        name: category.name
+      }));
+      
+      setCategories(categoryList);
+      
+      // Filter dishes if needed
+      let filteredDishes = dishesData;
+      
+      // If a category is selected, filter dishes
+      if (selectedCategory) {
+        filteredDishes = filteredDishes.filter(dish => dish.category === parseInt(selectedCategory));
       }
       
+      // Filter by status if needed
+      if (statusFilter !== 'all') {
+        const isActive = statusFilter === 'active';
+        filteredDishes = filteredDishes.filter(dish => dish.status === isActive);
+      }
+      
+      setDishes(filteredDishes);
       setError('');
     } catch (err) {
-      console.error('Lỗi khi lấy danh sách món ăn:', err);
-      setError('Không thể lấy danh sách món ăn. Vui lòng thử lại sau.');
+      console.error('Lỗi khi lấy dữ liệu:', err);
+      setError('Không thể lấy dữ liệu. Vui lòng thử lại sau.');
     } finally {
       setLoading(false);
     }
@@ -128,6 +122,7 @@ const Dish = () => {
       // Close confirmation dialog
       setConfirmDelete(false);
       setDishToDelete(null);
+      window.location.reload();
     } catch (err) {
       console.error('Lỗi khi xóa món ăn:', err);
       setError('Không thể xóa món ăn. Vui lòng thử lại sau.');

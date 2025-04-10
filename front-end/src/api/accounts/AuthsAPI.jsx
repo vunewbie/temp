@@ -145,7 +145,7 @@ export const getGoogleOAuth2CodeAPI = () => {
 
 export const googleLoginAPI = async (code) => {
   try {
-    const response = await axios.post(`${API_URL}/accounts/auth/google/login/`, { code });
+    const response = await axios.post(`${API_URL}/accounts/auth/google/login`, { code });
     return response;
   } catch (error) {
     throw error;
@@ -168,7 +168,7 @@ export const getFacebookOAuth2CodeAPI = () => {
 
 export const facebookLoginAPI = async (code) => {
   try {
-    const response = await axios.post(`${API_URL}/accounts/auth/facebook/login/`, { code });
+    const response = await axios.post(`${API_URL}/accounts/auth/facebook/login`, { code });
     return response;
   } catch (error) {
     throw error;
@@ -191,7 +191,7 @@ export const getGitHubOAuth2CodeAPI = () => {
 
 export const gitHubLoginAPI = async (code) => {
   try {
-    const response = await axios.post(`${API_URL}/accounts/auth/github/login/`, { code });
+    const response = await axios.post(`${API_URL}/accounts/auth/github/login`, { code });
     return response;
   } catch (error) {
     throw error;
