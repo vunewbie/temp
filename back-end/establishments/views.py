@@ -9,28 +9,34 @@ from rest_framework.response import Response
 
 import django_filters
 
-class AreaListAPIView(generics.ListAPIView):
+class AreaListCreateAPIView(generics.ListCreateAPIView):
     queryset = Area.objects.all()
     serializer_class = AreaSerializer
-    permission_classes = [AllowAny]
+    
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAdmin()]
+    
+    def get_authenticators(self):
+        if self.request.method == 'GET':
+            return []
+        return [CustomTokenAuthentication()]
 
-class AreaCreateAPIView(generics.CreateAPIView):
+class AreaRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     queryset = Area.objects.all()
     serializer_class = AreaSerializer
-    permission_classes = [IsAdmin]
-    authentication_classes = [CustomTokenAuthentication]
-
-class AreaRetrieveAPIView(generics.RetrieveAPIView):
-    queryset = Area.objects.all()
-    serializer_class = AreaSerializer
-    permission_classes = [AllowAny]
-
-class AreaUpdateAPIView(generics.UpdateAPIView):
-    queryset = Area.objects.all()
-    serializer_class = AreaSerializer
-    permission_classes = [IsAdmin]
-    authentication_classes = [CustomTokenAuthentication]
-
+    
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAdmin()]
+    
+    def get_authenticators(self):
+        if self.request.method == 'GET':
+            return []
+        return [CustomTokenAuthentication()]
+    
     def put(self, request, *args, **kwargs):
         return Response({'detail': 'Phương thức PUT không được phép'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     
@@ -71,12 +77,21 @@ class DepartmentRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIVi
     def delete(self, request, *args, **kwargs):
         return Response({'detail': 'Phương thức DELETE không được phép'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-class BranchListAPIView(generics.ListAPIView):
+class BranchListCreateAPIView(generics.ListCreateAPIView):
     queryset = Branch.objects.all()
     serializer_class = BranchSerializer
-    permission_classes = [AllowAny]
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
     filterset_fields = ['area']
+    
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAdmin()]
+    
+    def get_authenticators(self):
+        if self.request.method == 'GET':
+            return []
+        return [CustomTokenAuthentication()]
 
     def get(self, request):
         branches = self.filter_queryset(self.get_queryset())
@@ -94,16 +109,19 @@ class BranchListAPIView(generics.ListAPIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
-class BranchCreateAPIView(generics.CreateAPIView):
+class BranchRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     queryset = Branch.objects.all()
     serializer_class = BranchSerializer
-    permission_classes = [IsAdmin]
-    authentication_classes = [CustomTokenAuthentication]
-
-class BranchRetrieveAPIView(generics.RetrieveAPIView):
-    queryset = Branch.objects.all()
-    serializer_class = BranchSerializer
-    permission_classes = [AllowAny]
+    
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAdmin()]
+    
+    def get_authenticators(self):
+        if self.request.method == 'GET':
+            return []
+        return [CustomTokenAuthentication()]
 
     def get(self, request, *args, **kwargs):
         branch = self.get_object()
@@ -119,12 +137,6 @@ class BranchRetrieveAPIView(generics.RetrieveAPIView):
                 data['area_name'] = 'Không tìm thấy khu vực'
 
         return Response(data, status=status.HTTP_200_OK)
-
-class BranchUpdateAPIView(generics.UpdateAPIView):
-    queryset = Branch.objects.all()
-    serializer_class = BranchSerializer
-    permission_classes = [IsAdmin]
-    authentication_classes = [CustomTokenAuthentication]
 
     def put(self, request, *args, **kwargs):
         return Response({'detail': 'Phương thức PUT không được phép'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)

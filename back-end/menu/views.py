@@ -3,6 +3,7 @@ from .models import *
 from .permissions import *
 from accounts.models import Manager
 from accounts.authentication import CustomTokenAuthentication
+from establishments.models import Branch
 
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
@@ -10,43 +11,51 @@ from rest_framework.response import Response
 
 import django_filters
 
-class CategoryListAPIView(generics.ListAPIView):
+class CategoryListCreateAPIView(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [AllowAny]
+    
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAdmin()]
+    
+    def get_authenticators(self):
+        if self.request.method == 'GET':
+            return []
+        return [CustomTokenAuthentication()]
 
-class CategoryCreateAPIView(generics.CreateAPIView):
+class CategoryRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAdmin]
-    authentication_classes = [CustomTokenAuthentication]
+    
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAdmin()]
+    
+    def get_authenticators(self):
+        if self.request.method == 'GET':
+            return []
+        return [CustomTokenAuthentication()]
 
-class CategoryRetrieveAPIView(generics.RetrieveAPIView):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    permission_classes = [AllowAny]
-
-class CategoryUpdateAPIView(generics.UpdateAPIView):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    permission_classes = [IsAdmin]
-    authentication_classes = [CustomTokenAuthentication]
-
-    # put method is not allowed
     def put(self, request, *args, **kwargs):
         return Response({'detail': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-class CategoryDestroyAPIView(generics.DestroyAPIView):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    permission_classes = [IsAdmin]
-    authentication_classes = [CustomTokenAuthentication]
-
-class DishListAPIView(generics.ListAPIView):
+class DishListCreateAPIView(generics.ListCreateAPIView):
     queryset = Dish.objects.all()
     serializer_class = DishSerializer
-    permission_classes = [AllowAny]
-
+    
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAdmin()]
+    
+    def get_authenticators(self):
+        if self.request.method == 'GET':
+            return []
+        return [CustomTokenAuthentication()]
+    
     def get(self, request):
         dishes = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(dishes, many=True)
@@ -63,32 +72,23 @@ class DishListAPIView(generics.ListAPIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
-class DishCreateAPIView(generics.CreateAPIView):
+class DishRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Dish.objects.all()
     serializer_class = DishSerializer
-    permission_classes = [IsAdmin]
-    authentication_classes = [CustomTokenAuthentication]
-
-class DishRetrieveAPIView(generics.RetrieveAPIView):
-    queryset = Dish.objects.all()
-    serializer_class = DishSerializer
-    permission_classes = [AllowAny]
-
-class DishUpdateAPIView(generics.UpdateAPIView):
-    queryset = Dish.objects.all()
-    serializer_class = DishSerializer
-    permission_classes = [IsAdmin]
-    authentication_classes = [CustomTokenAuthentication]
+    
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAdmin()]
+    
+    def get_authenticators(self):
+        if self.request.method == 'GET':
+            return []
+        return [CustomTokenAuthentication()]
 
     def put(self, request, *args, **kwargs):
         return Response({'detail': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     
-class DishDestroyAPIView(generics.DestroyAPIView):
-    queryset = Dish.objects.all()
-    serializer_class = DishSerializer
-    permission_classes = [IsAdmin]
-    authentication_classes = [CustomTokenAuthentication]
-
     def delete(self, request, *args, **kwargs):        
         dish = self.get_object()
         dish.status = False
@@ -99,12 +99,21 @@ class DishDestroyAPIView(generics.DestroyAPIView):
 
         return Response({'message': 'Món ăn đã được xóa thành công'}, status=status.HTTP_200_OK)
     
-class MenuListAPIView(generics.ListAPIView):
+class MenuListCreateAPIView(generics.ListCreateAPIView):
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
-    permission_classes = [AllowAny]
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
     filterset_fields = ['branch']
+    
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsSameBranchManager()]
+    
+    def get_authenticators(self):
+        if self.request.method == 'GET':
+            return []
+        return [CustomTokenAuthentication()]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -146,12 +155,6 @@ class MenuListAPIView(generics.ListAPIView):
 
         return Response(data, status=status.HTTP_200_OK)
     
-class MenuCreateAPIView(generics.CreateAPIView):
-    queryset = Menu.objects.all()
-    serializer_class = MenuSerializer
-    permission_classes = [IsSameBranchManager]
-    authentication_classes = [CustomTokenAuthentication]
-
     def post(self, request, *args, **kwargs):
         try:
             manager = Manager.objects.get(user=request.user)
@@ -176,17 +179,20 @@ class MenuCreateAPIView(generics.CreateAPIView):
         except Manager.DoesNotExist:
             return Response({'detail': 'Không tìm thấy thông tin quản lý'}, status=status.HTTP_403_FORBIDDEN)
     
-class MenuRetrieveAPIView(generics.RetrieveAPIView):
+class MenuRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
-    permission_classes = [AllowAny]
-
-class MenuUpdateAPIView(generics.UpdateAPIView):
-    queryset = Menu.objects.all()
-    serializer_class = MenuSerializer
-    permission_classes = [IsSameBranchManager]
-    authentication_classes = [CustomTokenAuthentication]
     
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsSameBranchManager()]
+    
+    def get_authenticators(self):
+        if self.request.method == 'GET':
+            return []
+        return [CustomTokenAuthentication()]
+
     def put(self, request, *args, **kwargs):
         return Response({'detail': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     

@@ -11,7 +11,7 @@ export const listDishAPI = async () => {
 // update dish
 export const updateDishAPI = async (dishId, dishData) => {
   try {
-    const response = await axios.patch(`${API_URL}/menu/dishes/${dishId}/update`, dishData, {
+    const response = await axios.patch(`${API_URL}/menu/dishes/${dishId}`, dishData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('access_token')}`
       }
@@ -27,7 +27,7 @@ export const updateDishAPI = async (dishId, dishData) => {
 // create dish
 export const createDishAPI = async (dishData) => {
   try {
-    const response = await axios.post(`${API_URL}/menu/dishes/create`, dishData, {
+    const response = await axios.post(`${API_URL}/menu/dishes`, dishData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('access_token')}`
       }
@@ -43,7 +43,7 @@ export const createDishAPI = async (dishData) => {
 // delete dish
 export const deleteDishAPI = async (dishId) => {
   try {
-    const response = await axios.delete(`${API_URL}/menu/dishes/${dishId}/delete`, {
+    const response = await axios.delete(`${API_URL}/menu/dishes/${dishId}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('access_token')}`
       }

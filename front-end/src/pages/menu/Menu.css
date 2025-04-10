@@ -1,142 +1,64 @@
-.menu-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
+/* Main Menu Page Container */
+.menu-page-container {
+  display: flex;
+  width: 100%;
+  min-height: calc(100vh - 80px); /* Adjust based on your header/footer */
 }
 
-.menu-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.menu-header h1 {
-  font-size: 2.5rem;
-  color: #333;
-  margin-bottom: 0.5rem;
-}
-
-.subtitle {
-  font-size: 1.2rem;
-  color: #666;
-}
-
-.menu-categories {
+/* Sidebar */
+.menu-page-sidebar {
+  width: 30%;
+  padding: 10px 12px;
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 2.5rem;
 }
 
-.category-button {
-  padding: 0.75rem 1.5rem;
-  background-color: #f5f5f5;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  color: #333;
-  cursor: pointer;
-  transition: all 0.3s;
+/* Content Area */
+.menu-page-content {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
-.category-button:hover {
-  background-color: #e0e0e0;
-}
-
-.category-button.active {
-  background-color: #f97316;
-  color: white;
-}
-
-.menu-items {
+/* Menu Items Grid */
+.menu-items-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
-.menu-item {
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s;
-  background-color: white;
+/* Responsive adjustments */
+@media (max-width: 1280px) {
+  .menu-items-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-.menu-item:hover {
-  transform: translateY(-5px);
-}
-
-.menu-item-image {
-  height: 200px;
-  background-color: #eee;
-}
-
-.placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f0f0f0;
-  color: #999;
-  font-size: 0.9rem;
-}
-
-.placeholder::after {
-  content: "Hình ảnh món ăn";
-}
-
-.menu-item-content {
-  padding: 1.5rem;
-}
-
-.menu-item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.75rem;
-}
-
-.menu-item-header h3 {
-  font-size: 1.3rem;
-  color: #333;
-  margin: 0;
-}
-
-.menu-item-price {
-  font-weight: bold;
-  color: #f97316;
-}
-
-.menu-item-description {
-  color: #666;
-  margin-bottom: 1.25rem;
-  line-height: 1.5;
-}
-
-.order-button {
-  background-color: #f97316;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.order-button:hover {
-  background-color: #ea580c;
+@media (max-width: 992px) {
+  .menu-page-container {
+    flex-direction: column;
+  }
+  
+  .menu-page-sidebar,
+  .menu-page-content {
+    width: 100%;
+  }
+  
+  .menu-page-sidebar {
+    order: 1;
+  }
+  
+  .menu-page-content {
+    order: 2;
+  }
 }
 
 @media (max-width: 768px) {
-  .menu-header h1 {
-    font-size: 2rem;
-  }
-  
-  .menu-items {
+  .menu-items-grid {
     grid-template-columns: 1fr;
-  }
-  
-  .category-button {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
   }
 } 

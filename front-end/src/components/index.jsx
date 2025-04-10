@@ -12,6 +12,9 @@ import AreaPopupWindow from './ui/popup/AreaPopupWindow';
 import BranchPopupWindow from './ui/popup/BranchPopupWindow';
 import DepartmentPopupWindow from './ui/popup/DepartmentPopupWindow';
 import DishPopupWindow from './ui/popup/DishPopupWindow';
+import MenuSideBar from './ui/menuSideBar/MenuSideBar';
+import MenuItem from './ui/menuItem/MenuItem';
+import PaginationBar from './ui/paginationBar/PaginationBar';
 
 // Dashboard components
 import ChangePassword from './dashboard/ChangePassword';
@@ -92,5 +95,8 @@ export {
   AreaPopupWindow,
   BranchPopupWindow,
   DepartmentPopupWindow,
-  DishPopupWindow
+  DishPopupWindow,
+  MenuSideBar,
+  MenuItem,
+  PaginationBar
 }; 

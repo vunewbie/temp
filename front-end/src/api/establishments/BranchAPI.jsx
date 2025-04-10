@@ -19,7 +19,7 @@ export const listBranchInfoAPI = async (filters = {}) => {
 // update branch info
 export const updateBranchInfoAPI = async (branchId, branchData) => {
   try {
-    const response = await axios.patch(`${API_URL}/establishments/branches/${branchId}/update`, branchData, {
+    const response = await axios.patch(`${API_URL}/establishments/branches/${branchId}`, branchData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('access_token')}`
       }
@@ -35,7 +35,7 @@ export const updateBranchInfoAPI = async (branchId, branchData) => {
 // create branch
 export const createBranchAPI = async (branchData) => {
   try {
-    const response = await axios.post(`${API_URL}/establishments/branches/create`, branchData, {
+    const response = await axios.post(`${API_URL}/establishments/branches`, branchData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('access_token')}`
       }

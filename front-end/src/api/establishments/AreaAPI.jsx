@@ -21,7 +21,7 @@ export const listAreaInfoAPI = async () => {
 // update area info
 export const updateAreaInfoAPI = async (areaId, areaData) => {
   try {
-    const response = await axios.patch(`${API_URL}/establishments/areas/${areaId}/update`, areaData, {
+    const response = await axios.patch(`${API_URL}/establishments/areas/${areaId}`, areaData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('access_token')}`
       }
@@ -37,7 +37,7 @@ export const updateAreaInfoAPI = async (areaId, areaData) => {
 // create area
 export const createAreaAPI = async (areaData) => {
   try {
-    const response = await axios.post(`${API_URL}/establishments/areas/create`, areaData, {
+    const response = await axios.post(`${API_URL}/establishments/areas`, areaData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('access_token')}`
       }
