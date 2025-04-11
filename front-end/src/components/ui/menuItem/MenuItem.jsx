@@ -17,6 +17,7 @@ const MenuItem = ({ dish }) => {
   
   return (
     <div className="menu-item-container">
+      {/* Hàng 1: Phần ảnh chiếm 60% chiều cao */}
       <div className="menu-item-image">
         {image ? (
           <img src={image} alt={name} loading="lazy" />
@@ -31,11 +32,14 @@ const MenuItem = ({ dish }) => {
         {status === 'promotion' && <span className="menu-item-badge promotion">Sale</span>}
       </div>
       
+      {/* Hàng 2: Phần nội dung chiếm 40% chiều cao, chia thành 2 cột */}
       <div className="menu-item-content">
+        {/* Cột 1: Tên món chiếm 60% chiều ngang */}
         <div className="menu-item-name">
           <h3>{name}</h3>
         </div>
         
+        {/* Cột 2: Giá chiếm 40% chiều ngang */}
         <div className="menu-item-price">
           <span>{formatPrice(price)}</span>
         </div>

@@ -13,7 +13,7 @@ const MEDIA_URL = import.meta.env.VITE_MEDIA_URL;
 
 const Menu = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(9);
+  const [itemsPerPage] = useState(6);
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
