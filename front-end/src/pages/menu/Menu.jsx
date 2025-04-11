@@ -1,166 +1,166 @@
 import React, { useState, useEffect } from 'react';
 import { MenuSideBar, MenuItem, PaginationBar } from '../../components';
 import './Menu.css';
+import { IoRestaurantOutline } from 'react-icons/io5';
+
+// Import API functions
+import { listMenuItemsAPI } from '../../api/menu/MenuAPI';
+import { listAreaInfoAPI } from '../../api/establishments/AreaAPI';
+import { listBranchInfoAPI } from '../../api/establishments/BranchAPI';
+
+// Base URL cho media files từ biến môi trường
+const MEDIA_URL = import.meta.env.VITE_MEDIA_URL;
 
 const Menu = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(9);
+  const [menuItems, setMenuItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  // Filters state
   const [filters, setFilters] = useState({
-    area: 'Tất cả',
-    branch: 'Tất cả',
+    area: '',
+    branch: '',
     category: 'Tất cả',
     dish: 'Tất cả'
   });
+  
+  // State store branch name and area
+  const [currentBranchName, setCurrentBranchName] = useState('');
 
-  // Dummy data - sau này sẽ được thay thế bằng dữ liệu từ API
-  const menuItems = [
-    {
-      id: 1,
-      name: 'Gỏi Cuốn Tôm Thịt',
-      description: 'Gỏi cuốn tươi với tôm, thịt heo, bún và rau thơm',
-      price: 65000,
-      category: 'appetizer',
-      image: '',
-      status: 'hot'
-    },
-    {
-      id: 2,
-      name: 'Chả Giò Hải Sản',
-      description: 'Chả giò giòn rụm với nhân hải sản thơm ngon',
-      price: 75000,
-      category: 'appetizer',
-      image: '',
-      status: ''
-    },
-    {
-      id: 3,
-      name: 'Bò Lúc Lắc',
-      description: 'Thịt bò xào với ớt chuông và các loại gia vị đặc biệt',
-      price: 150000,
-      category: 'main',
-      image: '',
-      status: 'new'
-    },
-    {
-      id: 4,
-      name: 'Cá Hồi Nướng Miso',
-      description: 'Cá hồi tươi nướng với sốt miso truyền thống',
-      price: 180000,
-      category: 'main',
-      image: '',
-      status: ''
-    },
-    {
-      id: 5,
-      name: 'Bánh Flan Caramel',
-      description: 'Bánh flan mềm mịn với lớp caramel ngọt ngào',
-      price: 45000,
-      category: 'dessert',
-      image: '',
-      status: ''
-    },
-    {
-      id: 6,
-      name: 'Chè Hạt Sen',
-      description: 'Chè hạt sen thơm ngon với nước cốt dừa',
-      price: 40000,
-      category: 'dessert',
-      image: '',
-      status: 'promotion'
-    },
-    {
-      id: 7,
-      name: 'Sinh Tố Xoài',
-      description: 'Sinh tố xoài tươi ngon với đá xay mịn',
-      price: 55000,
-      category: 'drink',
-      image: '',
-      status: ''
-    },
-    {
-      id: 8,
-      name: 'Trà Sen Vàng',
-      description: 'Trà thơm với hương sen tinh tế',
-      price: 45000,
-      category: 'drink',
-      image: '',
-      status: ''
-    },
-    {
-      id: 9,
-      name: 'Phở Bò Tái Nạm',
-      description: 'Phở bò với nước dùng ngọt thanh và thịt bò mềm',
-      price: 85000,
-      category: 'main',
-      image: '',
-      status: 'hot'
-    },
-    {
-      id: 10,
-      name: 'Bún Chả Hà Nội',
-      description: 'Bún chả với thịt nướng thơm lừng và nước mắm ngọt thanh',
-      price: 75000,
-      category: 'main',
-      image: '',
-      status: ''
-    },
-    {
-      id: 11,
-      name: 'Bánh Mì Thịt Nướng',
-      description: 'Bánh mì giòn với thịt nướng, rau sống và sốt đặc biệt',
-      price: 35000,
-      category: 'appetizer',
-      image: '',
-      status: ''
-    },
-    {
-      id: 12,
-      name: 'Cơm Cháy Sườn Sốt',
-      description: 'Cơm cháy giòn với sườn xào chua ngọt',
-      price: 95000,
-      category: 'main',
-      image: '',
-      status: 'new'
-    }
-  ];
-
-  // Lọc món ăn theo danh mục từ bộ lọc
-  const filteredItems = filters.category === 'Tất cả' 
-    ? menuItems 
-    : menuItems.filter(item => {
-      // Chuyển đổi tên danh mục tiếng Việt sang loại danh mục tiếng Anh trong dữ liệu
-      const categoryMap = {
-        'Khai Vị': 'appetizer',
-        'Món Chính': 'main',
-        'Tráng Miệng': 'dessert',
-        'Đồ Uống': 'drink'
-      };
+  // Fetch initial data - get first area and branch to display
+  useEffect(() => {
+    const initializeData = async () => {
+      try {
+        setLoading(true);
+        
+        // Get area list
+        const areaData = await listAreaInfoAPI();
+        if (areaData.length > 0) {
+          const firstArea = areaData[0];
+          
+          // Get branch list in first area
+          const branchData = await listBranchInfoAPI({ area: firstArea.id });
+          if (branchData.length > 0) {
+            const firstBranch = branchData[0];
+            
+            // Update filters with first area and branch
+            setFilters(prev => ({
+              ...prev,
+              area: firstArea.id,
+              branch: firstBranch.id
+            }));
+            
+            // Store branch name
+            setCurrentBranchName(firstBranch.name);
+            
+            // Get menu of first branch
+            await fetchMenuItems(firstBranch.id);
+          }
+        }
+        
+        setLoading(false);
+      } catch (err) {
+        console.error('Lỗi khi khởi tạo dữ liệu:', err);
+        setError('Không thể tải dữ liệu. Vui lòng thử lại sau.');
+        setLoading(false);
+      }
+    };
+    
+    initializeData();
+  }, []);
+  
+  // Function to get menu data based on filters
+  const fetchMenuItems = async (branchId, categoryId = null, dishId = null) => {
+    try {
+      setLoading(true);
       
-      const categoryToFilter = categoryMap[filters.category] || filters.category;
-      return item.category === categoryToFilter;
-    });
+      // Prepare filter parameters for API
+      const apiFilters = { branch: branchId };
+      
+      if (categoryId && categoryId !== 'Tất cả') {
+        apiFilters.category = categoryId;
+      }
+      
+      // Get menu data from API
+      const data = await listMenuItemsAPI(apiFilters);
+      
+      // Filter out only items with is_available=true
+      const availableMenuItems = data.filter(menu => menu.is_available === true);
+      
+      // If there is a filter for specific dish
+      if (dishId && dishId !== 'Tất cả') {
+        const filteredData = availableMenuItems.filter(item => item.dish === dishId);
+        
+        // Convert data to format suitable for MenuItem
+        const formattedItems = filteredData.map(menu => ({
+          id: menu.id,
+          name: menu.dish_name,
+          price: menu.dish_price,
+          image: menu.dish_image ? `${MEDIA_URL}${menu.dish_image}` : '',
+          status: menu.status || ''
+        }));
+        
+        setMenuItems(formattedItems);
+      } else {
+        // No filter for specific dish
+        // Convert data to format suitable for MenuItem
+        const formattedItems = availableMenuItems.map(menu => ({
+          id: menu.id,
+          name: menu.dish_name,
+          price: menu.dish_price,
+          image: menu.dish_image ? `${MEDIA_URL}${menu.dish_image}` : '',
+          status: menu.status || ''
+        }));
+        
+        setMenuItems(formattedItems);
+      }
+      
+      setLoading(false);
+    } catch (err) {
+      console.error('Lỗi khi lấy dữ liệu menu:', err);
+      setError('Không thể tải dữ liệu menu. Vui lòng thử lại sau.');
+      setLoading(false);
+    }
+  };
 
-  // Phân trang
+  // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = menuItems.slice(indexOfFirstItem, indexOfLastItem);
   
-  // Tính tổng số trang
-  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  // Calculate total pages
+  const totalPages = Math.ceil(menuItems.length / itemsPerPage);
 
-  // Xử lý khi chuyển trang
+  // Handle page change
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Xử lý khi thay đổi bộ lọc
+  // Handle filter change
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
-    setCurrentPage(1); // Reset về trang đầu tiên khi thay đổi bộ lọc
+    setCurrentPage(1); // Reset to first page when filters change
+    
+    // Find current branch name if branch changes
+    if (newFilters.branch !== filters.branch) {
+      listBranchInfoAPI({ area: newFilters.area }).then(branches => {
+        const selectedBranch = branches.find(branch => branch.id === newFilters.branch);
+        if (selectedBranch) {
+          setCurrentBranchName(selectedBranch.name);
+        }
+      }).catch(error => {
+        console.error('Lỗi khi lấy thông tin chi nhánh:', error);
+      });
+    }
+    
+    // Get new data based on filters
+    fetchMenuItems(newFilters.branch, newFilters.category, newFilters.dish);
   };
 
-  // Reset lại trang đầu tiên khi số lượng món ăn thay đổi
+  // Reset to first page when menu items change
   useEffect(() => {
     if (currentPage > totalPages && totalPages > 0) {
       setCurrentPage(1);
@@ -174,18 +174,34 @@ const Menu = () => {
       </div>
       
       <div className="menu-page-content">
-        <div className="menu-items-grid">
-          {currentItems.map(item => (
-            <MenuItem key={item.id} dish={item} />
-          ))}
-        </div>
-        
-        {totalPages > 1 && (
-          <PaginationBar 
-            currentPage={currentPage} 
-            totalPages={totalPages} 
-            onPageChange={handlePageChange} 
-          />
+        {loading ? (
+          <div className="menu-loading">Đang tải dữ liệu...</div>
+        ) : error ? (
+          <div className="menu-error">{error}</div>
+        ) : menuItems.length === 0 ? (
+          <div className="menu-empty">Không có món ăn nào phù hợp với bộ lọc.</div>
+        ) : (
+          <div className="menu-items-container">
+            <h2 className="menu-items-title">
+              <IoRestaurantOutline size={24} className="icon" />
+              Thực Đơn {currentBranchName && `- ${currentBranchName}`}
+              <span className="menu-items-count">({menuItems.length} món)</span>
+            </h2>
+            
+            <div className="menu-items-grid">
+              {currentItems.map(item => (
+                <MenuItem key={item.id} dish={item} />
+              ))}
+            </div>
+            
+            {totalPages > 1 && (
+              <PaginationBar 
+                currentPage={currentPage} 
+                totalPages={totalPages} 
+                onPageChange={handlePageChange} 
+              />
+            )}
+          </div>
         )}
       </div>
     </div>

@@ -1,25 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './MenuSideBar.css';
 import { TbFilter, TbFilterOff } from 'react-icons/tb';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { BsCheckCircleFill } from 'react-icons/bs';
 import { areaIcon, branchIcon, categoryIcon, dishIcon } from '../../../assets';
 
+// Import các API functions
+import { listAreaInfoAPI } from '../../../api/establishments/AreaAPI';
+import { listBranchInfoAPI } from '../../../api/establishments/BranchAPI';
+import { listCategoryAPI } from '../../../api/menu/CategoryAPI';
+import { listMenuItemsAPI } from '../../../api/menu/MenuAPI';
+
 const MenuSideBar = ({ onFilterChange }) => {
-  const [selectedArea, setSelectedArea] = useState('Tất cả');
-  const [selectedBranch, setSelectedBranch] = useState('Tất cả');
+  // States for final selected value (after applying)
+  const [selectedArea, setSelectedArea] = useState('');
+  const [selectedBranch, setSelectedBranch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tất cả');
   const [selectedDish, setSelectedDish] = useState('Tất cả');
   
-  // Các giá trị tạm thời để lưu trữ trước khi áp dụng
-  const [tempSelectedArea, setTempSelectedArea] = useState('Tất cả');
-  const [tempSelectedBranch, setTempSelectedBranch] = useState('Tất cả');
+  // States for temporary value (before applying)
+  const [tempSelectedArea, setTempSelectedArea] = useState('');
+  const [tempSelectedBranch, setTempSelectedBranch] = useState('');
   const [tempSelectedCategory, setTempSelectedCategory] = useState('Tất cả');
   const [tempSelectedDish, setTempSelectedDish] = useState('Tất cả');
   
-  // Biến kiểm tra xem có cần áp dụng bộ lọc không
+  // States for list data from API
+  const [areas, setAreas] = useState([]);
+  const [branches, setBranches] = useState([]);
+  const [categories, setCategories] = useState([{ id: 0, name: 'Tất cả' }]);
+  const [dishes, setDishes] = useState([{ id: 0, name: 'Tất cả' }]);
+  
+  // Variable to check if there is any change to apply
   const [filterChanged, setFilterChanged] = useState(false);
   
+  // State to manage open/closed sections
   const [openSections, setOpenSections] = useState({
     area: false,
     branch: false,
@@ -27,9 +41,108 @@ const MenuSideBar = ({ onFilterChange }) => {
     dish: false
   });
 
+  // Fetch area list when component is mounted
+  useEffect(() => {
+    const fetchAreas = async () => {
+      try {
+        const areaData = await listAreaInfoAPI();
+        setAreas(areaData);
+        
+        // If there is area data, select the first area as default
+        if (areaData.length > 0) {
+          const firstArea = areaData[0];
+          setSelectedArea(firstArea.id);
+          setTempSelectedArea(firstArea.id);
+        }
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách khu vực:', error);
+      }
+    };
+    
+    fetchAreas();
+  }, []);
+  
+  // Fetch branch list when area changes
+  useEffect(() => {
+    const fetchBranches = async () => {
+      if (tempSelectedArea) {
+        try {
+          const branchData = await listBranchInfoAPI({ area: tempSelectedArea });
+          setBranches(branchData);
+          
+          // If there is branch data, select the first branch as default
+          if (branchData.length > 0) {
+            const firstBranch = branchData[0];
+            setTempSelectedBranch(firstBranch.id);
+          } else {
+            setTempSelectedBranch('');
+          }
+        } catch (error) {
+          console.error('Lỗi khi lấy danh sách chi nhánh:', error);
+        }
+      }
+    };
+    
+    fetchBranches();
+  }, [tempSelectedArea]);
+  
+  // Fetch category list when component is mounted
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const categoryData = await listCategoryAPI();
+        // Add "All" option to the beginning of the list
+        setCategories([{ id: 0, name: 'Tất cả' }, ...categoryData]);
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách danh mục:', error);
+      }
+    };
+    
+    fetchCategories();
+  }, []);
+  
+  // Fetch dish list when branch or category changes
+  useEffect(() => {
+    const fetchDishes = async () => {
+      if (tempSelectedBranch) {
+        try {
+          const filters = {
+            branch: tempSelectedBranch
+          };
+          
+          if (tempSelectedCategory !== 'Tất cả') {
+            filters.category = tempSelectedCategory;
+          }
+          
+          const menuData = await listMenuItemsAPI(filters);
+          
+          // Filter out items with is_available = true
+          const availableMenuItems = menuData.filter(menu => menu.is_available === true);
+          
+          // Create dish list from filtered menu data
+          const dishOptions = availableMenuItems.map(menu => ({
+            id: menu.dish,
+            name: menu.dish_name
+          }));
+          
+          // Remove duplicate dishes
+          const uniqueDishes = Array.from(new Map(dishOptions.map(dish => 
+            [dish.id, dish])).values());
+          
+          // Add "All" option to the beginning of the list
+          setDishes([{ id: 0, name: 'Tất cả' }, ...uniqueDishes]);
+        } catch (error) {
+          console.error('Lỗi khi lấy danh sách món ăn:', error);
+        }
+      }
+    };
+    
+    fetchDishes();
+  }, [tempSelectedBranch, tempSelectedCategory]);
+  
   const toggleSection = (section) => {
     const newOpenSections = { ...openSections };
-    // Đóng tất cả section khác
+    // Close all other sections
     Object.keys(newOpenSections).forEach(key => {
       newOpenSections[key] = key === section ? !newOpenSections[key] : false;
     });
@@ -37,23 +150,32 @@ const MenuSideBar = ({ onFilterChange }) => {
   };
 
   const resetFilters = () => {
-    setSelectedArea('Tất cả');
-    setSelectedBranch('Tất cả');
-    setSelectedCategory('Tất cả');
-    setSelectedDish('Tất cả');
+    // If there is area data, select the first area as default
+    if (areas.length > 0) {
+      const firstArea = areas[0];
+      setSelectedArea(firstArea.id);
+      setTempSelectedArea(firstArea.id);
+      
+      // Get branch list of the first area
+      const firstAreaBranches = branches.filter(branch => branch.area === firstArea.id);
+      if (firstAreaBranches.length > 0) {
+        setSelectedBranch(firstAreaBranches[0].id);
+        setTempSelectedBranch(firstAreaBranches[0].id);
+      }
+    }
     
-    setTempSelectedArea('Tất cả');
-    setTempSelectedBranch('Tất cả');
+    setSelectedCategory('Tất cả');
     setTempSelectedCategory('Tất cả');
+    setSelectedDish('Tất cả');
     setTempSelectedDish('Tất cả');
     
     setFilterChanged(false);
     
-    // Notify parent component about filter change
+    // Notify the parent component about the filter change
     if (onFilterChange) {
       onFilterChange({
-        area: 'Tất cả',
-        branch: 'Tất cả',
+        area: areas.length > 0 ? areas[0].id : '',
+        branch: branches.length > 0 ? branches.filter(branch => branch.area === (areas.length > 0 ? areas[0].id : ''))[0]?.id : '',
         category: 'Tất cả',
         dish: 'Tất cả'
       });
@@ -71,13 +193,13 @@ const MenuSideBar = ({ onFilterChange }) => {
       setTempSelectedDish(value);
     }
 
-    // Đóng dropdown sau khi chọn
+    // Close dropdown after selecting
     setOpenSections({
       ...openSections,
       [type]: false
     });
     
-    // Kiểm tra xem có thay đổi nào so với bộ lọc hiện tại không
+    // Check if there is any change compared to the current filter
     const hasChanges = 
       value !== (type === 'area' ? selectedArea : 
       type === 'branch' ? selectedBranch : 
@@ -89,7 +211,7 @@ const MenuSideBar = ({ onFilterChange }) => {
     }
   };
   
-  // Áp dụng các bộ lọc tạm thời
+  // Apply temporary filters
   const applyFilters = () => {
     setSelectedArea(tempSelectedArea);
     setSelectedBranch(tempSelectedBranch);
@@ -98,7 +220,7 @@ const MenuSideBar = ({ onFilterChange }) => {
     
     setFilterChanged(false);
     
-    // Notify parent component about filter change
+    // Notify the parent component about the filter change
     if (onFilterChange) {
       onFilterChange({
         area: tempSelectedArea,
@@ -109,11 +231,26 @@ const MenuSideBar = ({ onFilterChange }) => {
     }
   };
 
-  // Danh sách các tùy chọn lọc
-  const areaOptions = ['Tất cả', 'Hà Nội', 'Đà Nẵng', 'Hồ Chí Minh'];
-  const branchOptions = ['Tất cả', 'Chi nhánh 1', 'Chi nhánh 2', 'Chi nhánh 3'];
-  const categoryOptions = ['Tất cả', 'Khai Vị', 'Món Chính', 'Tráng Miệng', 'Đồ Uống'];
-  const dishOptions = ['Tất cả', 'Món Nhật', 'Món Hàn', 'Món Việt', 'Món Âu'];
+  // Get display name for selected area
+  const getAreaDisplayName = (areaId) => {
+    if (areaId === '') return '';
+    const area = areas.find(a => a.id === areaId);
+    return area ? `${area.district}, ${area.city}` : '';
+  };
+  
+  // Get display name for selected branch
+  const getBranchDisplayName = (branchId) => {
+    if (branchId === '') return '';
+    const branch = branches.find(b => b.id === branchId);
+    return branch ? branch.name : '';
+  };
+  
+  // Get display name for selected category
+  const getCategoryDisplayName = (categoryId) => {
+    if (categoryId === 'Tất cả') return 'Tất cả';
+    const category = categories.find(c => c.id === categoryId);
+    return category ? category.name : '';
+  };
 
   return (
     <div className="msb-container">
@@ -132,7 +269,7 @@ const MenuSideBar = ({ onFilterChange }) => {
             <img src={areaIcon} alt="Khu vực" className="msb-section-icon" />
             <div className="msb-select-info">
               <span className="msb-select-label">Khu Vực</span>
-              <span className="msb-selected-value">{tempSelectedArea}</span>
+              <span className="msb-selected-value">{getAreaDisplayName(tempSelectedArea)}</span>
             </div>
             {openSections.area ? (
               <IoIosArrowUp className="msb-arrow-icon" />
@@ -143,13 +280,13 @@ const MenuSideBar = ({ onFilterChange }) => {
           
           {openSections.area && (
             <div className="msb-dropdown-content">
-              {areaOptions.map((option) => (
+              {areas.map((area) => (
                 <div 
-                  key={option} 
-                  className={`msb-dropdown-item ${tempSelectedArea === option ? 'selected' : ''}`}
-                  onClick={() => handleTempChange('area', option)}
+                  key={area.id} 
+                  className={`msb-dropdown-item ${tempSelectedArea === area.id ? 'selected' : ''}`}
+                  onClick={() => handleTempChange('area', area.id)}
                 >
-                  {option}
+                  {`${area.district}, ${area.city}`}
                 </div>
               ))}
             </div>
@@ -165,7 +302,7 @@ const MenuSideBar = ({ onFilterChange }) => {
             <img src={branchIcon} alt="Chi nhánh" className="msb-section-icon" />
             <div className="msb-select-info">
               <span className="msb-select-label">Chi Nhánh</span>
-              <span className="msb-selected-value">{tempSelectedBranch}</span>
+              <span className="msb-selected-value">{getBranchDisplayName(tempSelectedBranch)}</span>
             </div>
             {openSections.branch ? (
               <IoIosArrowUp className="msb-arrow-icon" />
@@ -176,13 +313,13 @@ const MenuSideBar = ({ onFilterChange }) => {
           
           {openSections.branch && (
             <div className="msb-dropdown-content">
-              {branchOptions.map((option) => (
+              {branches.map((branch) => (
                 <div 
-                  key={option} 
-                  className={`msb-dropdown-item ${tempSelectedBranch === option ? 'selected' : ''}`}
-                  onClick={() => handleTempChange('branch', option)}
+                  key={branch.id} 
+                  className={`msb-dropdown-item ${tempSelectedBranch === branch.id ? 'selected' : ''}`}
+                  onClick={() => handleTempChange('branch', branch.id)}
                 >
-                  {option}
+                  {branch.name}
                 </div>
               ))}
             </div>
@@ -198,7 +335,7 @@ const MenuSideBar = ({ onFilterChange }) => {
             <img src={categoryIcon} alt="Mục" className="msb-section-icon" />
             <div className="msb-select-info">
               <span className="msb-select-label">Mục</span>
-              <span className="msb-selected-value">{tempSelectedCategory}</span>
+              <span className="msb-selected-value">{getCategoryDisplayName(tempSelectedCategory)}</span>
             </div>
             {openSections.category ? (
               <IoIosArrowUp className="msb-arrow-icon" />
@@ -209,13 +346,13 @@ const MenuSideBar = ({ onFilterChange }) => {
           
           {openSections.category && (
             <div className="msb-dropdown-content">
-              {categoryOptions.map((option) => (
+              {categories.map((category) => (
                 <div 
-                  key={option} 
-                  className={`msb-dropdown-item ${tempSelectedCategory === option ? 'selected' : ''}`}
-                  onClick={() => handleTempChange('category', option)}
+                  key={category.id} 
+                  className={`msb-dropdown-item ${tempSelectedCategory === (category.id === 0 ? 'Tất cả' : category.id) ? 'selected' : ''}`}
+                  onClick={() => handleTempChange('category', category.id === 0 ? 'Tất cả' : category.id)}
                 >
-                  {option}
+                  {category.name}
                 </div>
               ))}
             </div>
@@ -231,7 +368,7 @@ const MenuSideBar = ({ onFilterChange }) => {
             <img src={dishIcon} alt="Món ăn" className="msb-section-icon" />
             <div className="msb-select-info">
               <span className="msb-select-label">Món Ăn</span>
-              <span className="msb-selected-value">{tempSelectedDish}</span>
+              <span className="msb-selected-value">{tempSelectedDish === 'Tất cả' ? 'Tất cả' : dishes.find(d => d.id === tempSelectedDish)?.name || ''}</span>
             </div>
             {openSections.dish ? (
               <IoIosArrowUp className="msb-arrow-icon" />
@@ -242,13 +379,13 @@ const MenuSideBar = ({ onFilterChange }) => {
           
           {openSections.dish && (
             <div className="msb-dropdown-content">
-              {dishOptions.map((option) => (
+              {dishes.map((dish) => (
                 <div 
-                  key={option} 
-                  className={`msb-dropdown-item ${tempSelectedDish === option ? 'selected' : ''}`}
-                  onClick={() => handleTempChange('dish', option)}
+                  key={dish.id} 
+                  className={`msb-dropdown-item ${tempSelectedDish === (dish.id === 0 ? 'Tất cả' : dish.id) ? 'selected' : ''}`}
+                  onClick={() => handleTempChange('dish', dish.id === 0 ? 'Tất cả' : dish.id)}
                 >
-                  {option}
+                  {dish.name}
                 </div>
               ))}
             </div>

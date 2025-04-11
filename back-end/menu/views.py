@@ -55,7 +55,7 @@ class DishListCreateAPIView(generics.ListCreateAPIView):
         if self.request.method == 'GET':
             return []
         return [CustomTokenAuthentication()]
-    
+
     def get(self, request):
         dishes = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(dishes, many=True)
@@ -88,7 +88,7 @@ class DishRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 
     def put(self, request, *args, **kwargs):
         return Response({'detail': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-    
+
     def delete(self, request, *args, **kwargs):        
         dish = self.get_object()
         dish.status = False
@@ -154,7 +154,7 @@ class MenuListCreateAPIView(generics.ListCreateAPIView):
                     menu['branch_name'] = 'Không tìm thấy chi nhánh'
 
         return Response(data, status=status.HTTP_200_OK)
-    
+
     def post(self, request, *args, **kwargs):
         try:
             manager = Manager.objects.get(user=request.user)
@@ -192,7 +192,7 @@ class MenuRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
         if self.request.method == 'GET':
             return []
         return [CustomTokenAuthentication()]
-
+    
     def put(self, request, *args, **kwargs):
         return Response({'detail': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     

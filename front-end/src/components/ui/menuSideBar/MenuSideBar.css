@@ -219,33 +219,33 @@
 }
 
 .msb-select-label {
-  font-size: 18px; /* Tăng cỡ chữ */
+  font-size: 18px; /* Increase font size */
   color: #555;
   font-weight: 500;
   margin-bottom: 2px;
 }
 
 .msb-selected-value {
-  font-size: 20px; /* Tăng cỡ chữ */
+  font-size: 18px; /* Increase font size */
   color: #333;
   font-weight: 600;
 }
 
 .msb-arrow-icon {
-  font-size: 22px; /* Tăng kích thước icon */
+  font-size: 22px; /* Increase icon size */
 }
 
 .msb-dropdown-content {
-  max-height: 220px; /* Tăng chiều cao tối đa */
+  max-height: 220px; /* Increase max height */
   overflow-y: auto;
   background-color: #fff;
 }
 
 .msb-dropdown-item {
-  padding: 12px 16px 12px 46px; /* Tăng padding */
+  padding: 12px 16px 12px 46px; /* Increase padding */
   cursor: pointer;
   transition: background-color 0.2s;
-  font-size: 18px; /* Tăng cỡ chữ */
+  font-size: 18px; /* Increase font size */
   color: #333;
 }
 
@@ -256,14 +256,14 @@
   background-color: #f9f9f9;
 }
 
-/* Container cho các nút */
+/* Container for buttons */
 .msb-buttons {
   display: flex;
   justify-content: space-between;
   gap: 10px;
 }
 
-/* Nút Xóa Bộ Lọc */
+/* Reset Filter Button */
 .msb-reset-button {
   display: flex;
   align-items: center;
@@ -295,7 +295,7 @@
   color: white;
 }
 
-/* Nút Áp Dụng */
+/* Apply Button */
 .msb-apply-button {
   display: flex;
   align-items: center;
@@ -339,7 +339,7 @@
 /* Scrollbar styles */
 .msb-content::-webkit-scrollbar,
 .msb-dropdown-content::-webkit-scrollbar {
-  width: 10px; /* Tăng kích thước scrollbar */
+  width: 10px; /* Increase scrollbar size */
 }
 
 .msb-content::-webkit-scrollbar-track,
@@ -349,13 +349,13 @@
 
 .msb-content::-webkit-scrollbar-thumb,
 .msb-dropdown-content::-webkit-scrollbar-thumb {
-  background: #ff9f5a; /* Màu cam nhạt cho scrollbar */
+  background: #ff9f5a; /* Light orange color for scrollbar */
   border-radius: 5px;
 }
 
 .msb-content::-webkit-scrollbar-thumb:hover,
 .msb-dropdown-content::-webkit-scrollbar-thumb:hover {
-  background: #ff7518; /* Màu cam khi hover scrollbar */
+  background: #ff7518; /* Orange color when hovering scrollbar */
 }
 
 /* Responsive adjustments */
